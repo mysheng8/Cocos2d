@@ -4,7 +4,7 @@
 #include "cocos2d.h"
 #include "CheckerBoard.h"
 
-
+using namespace cocos2d;
 struct Grid
 {
 	int x;
@@ -20,7 +20,7 @@ ROCK=2
 };
 class CheckerBoard;
 
-class CheckerPiece
+class CheckerPiece: public CCNode
 {
 	friend class CheckerBoard;
 public:
@@ -39,7 +39,8 @@ public:
 	CheckerPiece& operator=(const CheckerPiece& rhs);
 
 
-	void Clear(){m_type=PieceType(0);m_sp->removeFromParent();};
+	void Clear();
+	void onRemoveSprite(CCNode* node);
 	void AddContent(int num,bool isRock);
 	void BreakRock();
 	

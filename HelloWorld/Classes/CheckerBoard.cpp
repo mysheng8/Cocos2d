@@ -62,7 +62,7 @@ int CheckerBoard::previewDropPos(const int column)
 CheckerPiece* CheckerBoard::addPiece(const int column,const int num,const bool isRock)
 {
 	int row = previewDropPos(column);
-	if (row=7)
+	if (row==7)
 		return 0;
 	content[column][row].AddContent(num,isRock);
 	int rock=isRock?2:0;
@@ -240,22 +240,23 @@ void CheckerBoard::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
 		int row = previewDropPos(m_column);
 		if (row!=7)
 		{
-			CCActionInterval*  drop = CCMoveTo::create(3, ccp(m_origin.x+m_delta*m_column+0.5*m_delta, m_origin.y+m_delta*row+0.5*m_delta));
-
+			CCActionInterval*  drop = CCMoveTo::create(0.5f, ccp(m_origin.x+m_delta*m_column+0.5*m_delta, m_origin.y+m_delta*row+0.5*m_delta));
+			CCActionInterval* move_ease_out = CCEaseOut::create((CCActionInterval*)(drop->copy()->autorelease()) , 0.5f);
 			
-			preview->runAction( CCSequence::create(drop,CCCallFuncN::create(this, callfuncN_selector(CheckerBoard::onPreviewDrop)),NULL));
+			preview->runAction( CCSequence::create(move_ease_out,CCCallFuncN::create(this, callfuncN_selector(CheckerBoard::onPreviewDrop)),NULL));
 		}
 	}
 }
 
 void CheckerBoard::onPreviewDrop(CCNode* node)
 {
-	preview->removeFromParent();
-	preview=0;
+	CheckerBoard* parent=static_cast<CheckerBoard*>(node->getParent());
+	node->removeFromParent();
+	node=0;
 
-	CheckerPiece* cp=addPiece(m_column,m_nextNum,m_nextIsRock);
+	CheckerPiece* cp=parent->addPiece(m_column,m_nextNum,m_nextIsRock);
 	if(cp)
-		removePiece(cp->GetGrid());
+		parent->removePiece(cp->GetGrid());
 }
 
 

@@ -34,3 +34,14 @@ CheckerPiece& CheckerPiece::operator=(const CheckerPiece& rhs)
 	m_sp=m_parent->DrawPiece(m_grid,m_num,m_rock);
 	return *this;
 };
+void CheckerPiece::Clear()
+{
+	m_type=PieceType(0);
+	CCActionInterval*  fadeIn = CCFadeOut::create(1.0f);
+	m_sp->runAction(CCSequence::create(fadeIn,CCCallFuncN::create(this, callfuncN_selector(CheckerPiece::onRemoveSprite)),NULL));
+};
+
+void CheckerPiece::onRemoveSprite(CCNode* node)
+{
+	node->removeFromParent();
+}
