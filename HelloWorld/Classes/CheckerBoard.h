@@ -44,6 +44,10 @@ private:
 	float m_delta;
 
 	int containsTouchLocation(CCTouch* touch);
+	int previewDropPos(const int column);
+
+	void onPreviewDrop(CCNode* node);
+
 	void checkPiece(const Grid element);//check each checkerpiece number if it's equal to length of line.
 	void removePiece(const Grid element);
 	void reorginizePiece();

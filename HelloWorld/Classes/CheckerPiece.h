@@ -26,7 +26,7 @@ class CheckerPiece
 public:
 	CheckerPiece():m_type(PieceType(0)),m_num(0),m_rock(0){};
 	~CheckerPiece(){};
-	void init(const CheckerBoard* parent,Grid grid){m_parent=parent;m_grid=grid;};
+	void init(CheckerBoard* parent,Grid grid){m_parent=parent;m_grid=grid;};
 	bool IsEmpty(){return m_type==PieceType(0);};
 	bool IsRock(){return m_type==PieceType(2);};
 	bool IsNum(){return m_type==PieceType(1);};
@@ -49,7 +49,7 @@ private:
 	int m_num;
 	int m_rock;
 	cocos2d::CCSprite* m_sp;
-	const CheckerBoard* m_parent;
+	CheckerBoard* m_parent;
 	Grid m_grid;
 
 

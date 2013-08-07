@@ -39,6 +39,7 @@ bool CheckerBoard::init()
 	srand((unsigned)time(NULL)); 
 
 	DrawBoard();
+	/*
 	addPiece(2,3,false);
 	addPiece(1,1,false);
 	addPiece(4,4,false);
@@ -46,24 +47,30 @@ bool CheckerBoard::init()
 	addPiece(6,2,false);
 	addPiece(1,5,false);
 	addPiece(0,5,false);
+	*/
 	return true; 
 
 }
-
-CheckerPiece* CheckerBoard::addPiece(const int column,const int num,const bool isRock)
+int CheckerBoard::previewDropPos(const int column)
 {
 	unsigned int i(0);
 	while(i!=7&&(!content[column][i].IsEmpty()))
 		++i;
-	if (i==7)
-		return 0;
-	content[column][i].AddContent(num,isRock);
-	int rock=isRock?2:0;
-	CCSprite *sp=DrawPiece(Grid(column,i),num,rock);
-	content[column][i].SetSprite(sp);
-	return &content[column][i];
-
+	return i;
 }
+
+CheckerPiece* CheckerBoard::addPiece(const int column,const int num,const bool isRock)
+{
+	int row = previewDropPos(column);
+	if (row=7)
+		return 0;
+	content[column][row].AddContent(num,isRock);
+	int rock=isRock?2:0;
+	CCSprite *sp=DrawPiece(Grid(column,row),num,rock);
+	content[column][row].SetSprite(sp);
+	return &content[column][row];
+}
+
 void  CheckerBoard::checkPiece(const Grid element)
 {
 	removeList.clear();
@@ -93,7 +100,7 @@ void  CheckerBoard::checkPiece(const Grid element)
 			removeList.push_back(cp);
 		++n;
 	}
-	/*
+	
 	unsigned int j=0;
 	while(j!=7&&!content[element.x][j].IsEmpty())
 		++j;
@@ -101,11 +108,11 @@ void  CheckerBoard::checkPiece(const Grid element)
 	while(n!=7)
 	{
 		cp=&content[element.x][n];
-		if((!cp->IsEmpty())&&(!cp->IsRock())&&(sum==cp->GetNum()))
+		if(cp->IsNum()&&j==cp->GetNum())
 			removeList.push_back(cp);
 		++n;
 	}
-	*/
+	
 }
 
 
@@ -119,12 +126,12 @@ void CheckerBoard::reorginizePiece()
 		{
 			if(!content[i][j].IsEmpty())
 			{
-				++k;
 				if(j!=k)
 				{
 					content[i][k]=content[i][j];
 					content[i][j].Clear();
 				}
+				++k;
 			}
 			++j;
 		}
@@ -230,16 +237,28 @@ void CheckerBoard::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
 {
 	if (m_column>=0)
 		{
-		CheckerPiece* cp=addPiece(m_column,m_nextNum,m_nextIsRock);
-		if(preview)
+		int row = previewDropPos(m_column);
+		if (row!=7)
 		{
-			preview->removeFromParent();
-			preview=0;
+			CCActionInterval*  drop = CCMoveTo::create(3, ccp(m_origin.x+m_delta*m_column+0.5*m_delta, m_origin.y+m_delta*row+0.5*m_delta));
+
+			
+			preview->runAction( CCSequence::create(drop,CCCallFuncN::create(this, callfuncN_selector(CheckerBoard::onPreviewDrop)),NULL));
 		}
-		removePiece(cp->GetGrid());
-		
 	}
 }
+
+void CheckerBoard::onPreviewDrop(CCNode* node)
+{
+	preview->removeFromParent();
+	preview=0;
+
+	CheckerPiece* cp=addPiece(m_column,m_nextNum,m_nextIsRock);
+	if(cp)
+		removePiece(cp->GetGrid());
+}
+
+
 void CheckerBoard::registerWithTouchDispatcher(void)
 {
 	CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate(this,0, true);
