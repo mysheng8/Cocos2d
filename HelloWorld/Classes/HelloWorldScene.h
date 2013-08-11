@@ -17,6 +17,10 @@ public:
     
     // implement the "static node()" method manually
     CREATE_FUNC(HelloWorld);
+
+	void Pause(CCObject* sender);
+	void Resume(CCObject* sender);
+
 };
 
 #endif // __HELLOWORLD_SCENE_H__

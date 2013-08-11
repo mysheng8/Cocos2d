@@ -5,9 +5,9 @@
 #include "CheckerPiece.h"
 #include <stdio.h>
 #include <vector>
-
+#include <bitset>
 using std::vector;
-
+using std::bitset;
 using namespace cocos2d;
 
 
@@ -25,6 +25,8 @@ public:
 	CheckerPiece* addPiece(const int column ,const int num,const bool isRock);
 	CCSprite* DrawPiece(const Grid element,const int num,const int rock);
 
+	void onRemovedPieces();
+	void onDropPieces();
 	virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
     virtual void ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent);
     virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
@@ -36,6 +38,11 @@ private:
 	CheckerPiece **content;
 	CCSprite* preview;
 	vector<CheckerPiece*> removeList;
+
+	int m_removedPieces;
+	int m_dropedPieces;
+	int m_preDropPieces;
+
 	int m_nextNum;// the number of next ball
 	bool m_nextIsRock;// if the next ball is a rock
 	int m_column;//current touch column
@@ -47,11 +54,14 @@ private:
 	int previewDropPos(const int column);
 
 	void onPreviewDrop(CCNode* node);
+	//check each checkerpiece number if it's equal to length of line.
+	void checkColumnPiece(const int column);
+	void checkRowPiece(const int row);
+	
+	void startLink(const Grid element);
+	void removePieces();
 
-	void checkPiece(const Grid element);//check each checkerpiece number if it's equal to length of line.
-	void removePiece(const Grid element);
-	void reorginizePiece();
-
+	void arrangePieceColumn(int column);
 	void DrawBoard();
 	
 

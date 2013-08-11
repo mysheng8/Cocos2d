@@ -34,20 +34,24 @@ bool CheckerBoard::init()
 	m_delta=(winSize.width<winSize.height?winSize.width:winSize.height)/9.0;
 	m_origin=CCPoint( origin.x+winSize.width/2-3.5*m_delta, origin.y+winSize.height/2-4*m_delta);
 
-
-
+	m_removedPieces=0;
+	m_dropedPieces=0;
+	m_preDropPieces=0;
 	srand((unsigned)time(NULL)); 
 
 	DrawBoard();
-	/*
-	addPiece(2,3,false);
+	
+	addPiece(2,5,false);
 	addPiece(1,1,false);
 	addPiece(4,4,false);
 	addPiece(6,3,true);
 	addPiece(6,2,false);
 	addPiece(1,5,false);
 	addPiece(0,5,false);
-	*/
+	addPiece(0,5,false);
+	addPiece(2,5,false);
+	addPiece(2,2,false);
+	addPiece(2,6,false);
 	return true; 
 
 }
@@ -71,18 +75,31 @@ CheckerPiece* CheckerBoard::addPiece(const int column,const int num,const bool i
 	return &content[column][row];
 }
 
-void  CheckerBoard::checkPiece(const Grid element)
+void CheckerBoard::checkColumnPiece(const int column)
 {
-	removeList.clear();
+	CheckerPiece* cp;
+	unsigned int j(0),n(0);
+	while(j!=7&&!content[column][j].IsEmpty())
+		++j;
+	while(n!=7)
+	{
+		cp=&content[column][n];
+		if(cp->IsNum()&&j==cp->GetNum())
+			removeList.push_back(cp);
+		++n;
+	}
+}
+void CheckerBoard::checkRowPiece(const int row)
+{
 	CheckerPiece* cp;
 	unsigned int i(0),sum(0),n(0);
 	while(i!=7)
 	{
-		if(content[i][element.y].IsEmpty())
+		if(content[i][row].IsEmpty())
 		{
 			while(n!=i)
 			{
-				cp=&content[n][element.y];
+				cp=&content[n][row];
 				if(cp->IsNum()&&sum==cp->GetNum())
 					removeList.push_back(cp);
 				++n;
@@ -95,58 +112,90 @@ void  CheckerBoard::checkPiece(const Grid element)
 	}
 	while(n!=7)
 	{
-		cp=&content[n][element.y];
+		cp=&content[n][row];
 		if(cp->IsNum()&&sum==cp->GetNum())
 			removeList.push_back(cp);
 		++n;
 	}
-	
-	unsigned int j=0;
-	while(j!=7&&!content[element.x][j].IsEmpty())
-		++j;
-	n=0;
-	while(n!=7)
-	{
-		cp=&content[element.x][n];
-		if(cp->IsNum()&&j==cp->GetNum())
-			removeList.push_back(cp);
-		++n;
-	}
-	
 }
 
-
-void CheckerBoard::reorginizePiece()
+void CheckerBoard::onRemovedPieces()
 {
-	unsigned int i(0);
-	while(i!=7)
+	++m_removedPieces;	
+	if (m_removedPieces==removeList.size())
 	{
-		unsigned int j(0),k(0);
-		while(j!=7)
+		m_removedPieces=0;
+		unsigned int i(0);
+		m_preDropPieces=0;
+		while(i!=7)
 		{
-			if(!content[i][j].IsEmpty())
-			{
-				if(j!=k)
-				{
-					content[i][k]=content[i][j];
-					content[i][j].Clear();
-				}
-				++k;
-			}
-			++j;
+			arrangePieceColumn(i);
+			++i;
 		}
-		++i;
 	}
 }
 
-void CheckerBoard::removePiece(const Grid element)
+void CheckerBoard::onDropPieces()
 {
-	checkPiece(element);
+	++m_dropedPieces;	
+	if (m_dropedPieces==m_preDropPieces)
+	{
+		m_dropedPieces=0;
+		removePieces();
+	}
+}
+
+
+
+void CheckerBoard::arrangePieceColumn(int column)
+{
+	unsigned int j(0),k(0);
+	while(j!=7)
+	{
+		if(!(content[column][j].IsEmpty()))
+		{
+			if(j!=k)
+			{
+				content[column][k]=content[column][j];
+				content[column][j].Drop((j-k)*m_delta);
+				++m_preDropPieces;
+			}
+			++k;
+		}
+		++j;
+	}
+}
+
+
+void CheckerBoard::startLink(const Grid element)
+{
+	removeList.clear();
+	checkColumnPiece(element.x);
+	checkRowPiece(element.y);
 	for(vector<CheckerPiece*>::iterator it=removeList.begin();it!=removeList.end();++it)
 	{
 		(*it)->Clear();
 	}
-	reorginizePiece();
+}
+
+void CheckerBoard::removePieces()
+{
+	removeList.clear();
+	unsigned int i(0),j(0);
+	while(i!=7)
+	{
+		checkColumnPiece(i);
+		++i;
+	}
+	while(j!=7)
+	{
+		checkRowPiece(j);
+		++j;
+	}
+	for(vector<CheckerPiece*>::iterator it=removeList.begin();it!=removeList.end();++it)
+	{
+		(*it)->Clear();
+	}
 }
 
 void CheckerBoard::DrawBoard()
@@ -159,9 +208,7 @@ void CheckerBoard::DrawBoard()
 			pSprite->setPosition(ccp(m_delta*i+m_origin.x, m_delta*j+m_origin.y));
 			this->addChild(pSprite, 0);
 		}
-	
 	}
-
 }
 
 CCSprite* CheckerBoard::DrawPiece(const Grid element,const int num,const int rock)
@@ -173,7 +220,7 @@ CCSprite* CheckerBoard::DrawPiece(const Grid element,const int num,const int roc
 			n=num-1;
 		CCSprite* pSprite = CCSprite::create("piece.png",CCRectMake(n*34,0,34,34));
 		pSprite->setPosition(ccp(m_delta*element.x+0.5*m_delta+m_origin.x, m_delta*element.y+0.5*m_delta +m_origin.y));
-		this->addChild(pSprite, 0);
+		addChild(pSprite);
 		return pSprite;
 }
 
@@ -256,7 +303,7 @@ void CheckerBoard::onPreviewDrop(CCNode* node)
 
 	CheckerPiece* cp=parent->addPiece(m_column,m_nextNum,m_nextIsRock);
 	if(cp)
-		parent->removePiece(cp->GetGrid());
+		parent->startLink(cp->GetGrid());
 }
 
 

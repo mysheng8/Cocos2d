@@ -48,8 +48,18 @@ bool HelloWorld::init()
 	pCloseItem->setPosition(ccp(origin.x + visibleSize.width - pCloseItem->getContentSize().width/2 ,
                                 origin.y + pCloseItem->getContentSize().height/2));
 
+	CCMenuItemFont *pauseItem = CCMenuItemFont::create("Pause", this, menu_selector(HelloWorld::Pause) );
+
+    pauseItem->setFontSizeObj(30);
+    pauseItem->setFontName("Marker Felt");
+	pauseItem->setPosition(ccp(origin.x +pauseItem->getContentSize().width/2 ,origin.y + visibleSize.height-pauseItem->getContentSize().height/2));
+	CCMenuItemFont *resumeItem = CCMenuItemFont::create("Resume", this, menu_selector(HelloWorld::Resume) );
+
+    resumeItem->setFontSizeObj(30);
+    resumeItem->setFontName("Marker Felt");
+	resumeItem->setPosition(ccp(origin.x +resumeItem->getContentSize().width/2 ,origin.y + visibleSize.height-pauseItem->getContentSize().height-resumeItem->getContentSize().height/2));
     // create menu, it's an autorelease object
-    CCMenu* pMenu = CCMenu::create(pCloseItem, NULL);
+    CCMenu* pMenu = CCMenu::create(pCloseItem, pauseItem, resumeItem,NULL);
     pMenu->setPosition(CCPointZero);
     this->addChild(pMenu, 1);
 
@@ -80,6 +90,15 @@ bool HelloWorld::init()
     return true;
 }
 
+void HelloWorld::Pause(CCObject* pSender)
+{
+	CCDirector::sharedDirector()->pause();
+}
+
+void HelloWorld::Resume(CCObject* pSender)
+{
+	CCDirector::sharedDirector()->resume();
+}
 
 void HelloWorld::menuCloseCallback(CCObject* pSender)
 {

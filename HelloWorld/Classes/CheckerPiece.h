@@ -38,9 +38,10 @@ public:
 
 	CheckerPiece& operator=(const CheckerPiece& rhs);
 
-
+	void Drop(float dis);
+	void onDropSprite();
 	void Clear();
-	void onRemoveSprite(CCNode* node);
+	void onRemoveSprite();
 	void AddContent(int num,bool isRock);
 	void BreakRock();
 	
