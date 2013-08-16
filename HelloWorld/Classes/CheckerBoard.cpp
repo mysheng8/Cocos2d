@@ -1,7 +1,8 @@
 
 #include <stdio.h> 
 #include <time.h> 
-
+#include "resource.h"
+#include "VisibleRect.h"
 #include "CheckerBoard.h"
 
 
@@ -204,9 +205,9 @@ void CheckerBoard::DrawBoard()
 	{
 		for ( int j=0;j!=8;++j)
 		{
-			CCSprite* pSprite = CCSprite::create("anchor.png");
+			CCSprite* pSprite = CCSprite::create(s_pPathAnchor);
 			pSprite->setPosition(ccp(m_delta*i+m_origin.x, m_delta*j+m_origin.y));
-			this->addChild(pSprite, 0);
+			this->addChild(pSprite, 1);
 		}
 	}
 }
@@ -218,7 +219,7 @@ CCSprite* CheckerBoard::DrawPiece(const Grid element,const int num,const int roc
 			n=9-rock;
 		else
 			n=num-1;
-		CCSprite* pSprite = CCSprite::create("piece.png",CCRectMake(n*34,0,34,34));
+		CCSprite* pSprite = CCSprite::create(s_pPathPiece,CCRectMake(n*34,0,34,34));
 		pSprite->setPosition(ccp(m_delta*element.x+0.5*m_delta+m_origin.x, m_delta*element.y+0.5*m_delta +m_origin.y));
 		addChild(pSprite);
 		return pSprite;

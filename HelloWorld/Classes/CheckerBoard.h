@@ -8,9 +8,9 @@
 #include <bitset>
 using std::vector;
 using std::bitset;
-using namespace cocos2d;
 
 
+USING_NS_CC;
 
 class CheckerPiece;
 struct Grid;
@@ -20,10 +20,10 @@ class CheckerBoard: public CCLayer
 public:
 	virtual bool init();  
 
-	CREATE_FUNC(CheckerBoard);
-
 	CheckerPiece* addPiece(const int column ,const int num,const bool isRock);
 	CCSprite* DrawPiece(const Grid element,const int num,const int rock);
+
+	CREATE_FUNC(CheckerBoard);
 
 	void onRemovedPieces();
 	void onDropPieces();
@@ -69,7 +69,5 @@ private:
 
 
 };
-
-
 
 #endif

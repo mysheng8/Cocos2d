@@ -14,8 +14,7 @@ CCScene* HelloWorld::scene()
     // add layer as a child to scene
     scene->addChild(layer);
 
-	CheckerBoard *boardLayer = CheckerBoard::create();
-	scene->addChild(boardLayer);
+
 	//boardLayer->autorelease();
     // return the scene
     return scene;
