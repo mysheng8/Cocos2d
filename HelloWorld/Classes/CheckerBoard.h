@@ -3,11 +3,13 @@
 
 #include "cocos2d.h"
 #include "CheckerPiece.h"
+#include "Score.h"
 #include <stdio.h>
 #include <vector>
-#include <bitset>
+
+
 using std::vector;
-using std::bitset;
+
 
 
 USING_NS_CC;
@@ -25,7 +27,7 @@ public:
 
 	CREATE_FUNC(CheckerBoard);
 
-	void onRemovedPieces();
+	void onRemovedPieces(const Grid element);
 	void onDropPieces();
 	virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
     virtual void ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent);
@@ -47,8 +49,6 @@ private:
 	bool m_nextIsRock;// if the next ball is a rock
 	int m_column;//current touch column
 
-	CCPoint m_origin;
-	float m_delta;
 
 	int containsTouchLocation(CCTouch* touch);
 	int previewDropPos(const int column);
@@ -61,9 +61,12 @@ private:
 	void startLink(const Grid element);
 	void removePieces();
 
-	void arrangePieceColumn(int column);
+	void arrangePieceColumn(const int column);
 	void DrawBoard();
+
+	void breakRock(const Grid element);
 	
+	Score *mScore;
 
 
 

@@ -21,6 +21,8 @@ public:
 
 	static float width();
 	static float height();
+	static float unit();
+	static CCPoint origin();
 private:
     static void lazyInit();
     static CCRect s_visibleRect;

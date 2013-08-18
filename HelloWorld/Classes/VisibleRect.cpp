@@ -83,3 +83,15 @@ float VisibleRect::height()
     lazyInit();
     return s_visibleRect.size.height;
 }
+
+float VisibleRect::unit()
+{
+    lazyInit();
+    return (s_visibleRect.size.width<s_visibleRect.size.height?s_visibleRect.size.width:s_visibleRect.size.height)/9.0;
+}
+
+CCPoint VisibleRect::origin()
+{
+    lazyInit();
+    return ccp(s_visibleRect.origin.x+s_visibleRect.size.width/2-3.5*unit(), s_visibleRect.origin.y+s_visibleRect.size.height/2-4*unit());
+}

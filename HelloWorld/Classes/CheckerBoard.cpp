@@ -30,11 +30,6 @@ bool CheckerBoard::init()
 
 	this->setTouchEnabled(true);
 
-	CCSize winSize = CCDirector::sharedDirector()->getVisibleSize();
-    CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
-	m_delta=(winSize.width<winSize.height?winSize.width:winSize.height)/9.0;
-	m_origin=CCPoint( origin.x+winSize.width/2-3.5*m_delta, origin.y+winSize.height/2-4*m_delta);
-
 	m_removedPieces=0;
 	m_dropedPieces=0;
 	m_preDropPieces=0;
@@ -53,6 +48,12 @@ bool CheckerBoard::init()
 	addPiece(2,5,false);
 	addPiece(2,2,false);
 	addPiece(2,6,false);
+
+	mScore = Score::create();
+	mScore->setPosition(ccp( VisibleRect::right().x - 60, VisibleRect::top().y - 80));
+	addChild(mScore,2);
+
+
 	return true; 
 
 }
@@ -120,8 +121,11 @@ void CheckerBoard::checkRowPiece(const int row)
 	}
 }
 
-void CheckerBoard::onRemovedPieces()
+void CheckerBoard::onRemovedPieces(const Grid element)
 {
+	breakRock(element);
+
+	//re-arrange pieces after all the checked pieces removed.
 	++m_removedPieces;	
 	if (m_removedPieces==removeList.size())
 	{
@@ -136,6 +140,19 @@ void CheckerBoard::onRemovedPieces()
 	}
 }
 
+void CheckerBoard::breakRock(const Grid element)
+{
+
+	if(element.x!=6&&content[element.x+1][element.y].IsRock())
+		content[element.x+1][element.y].BreakRock();
+	if(element.x!=0&&content[element.x-1][element.y].IsRock())
+		content[element.x-1][element.y].BreakRock();
+	if(element.y!=6&&content[element.x][element.y+1].IsRock())
+		content[element.x][element.y+1].BreakRock();
+	if(element.y!=0&&content[element.x][element.y-1].IsRock())
+		content[element.x][element.y-1].BreakRock();
+}
+
 void CheckerBoard::onDropPieces()
 {
 	++m_dropedPieces;	
@@ -148,7 +165,7 @@ void CheckerBoard::onDropPieces()
 
 
 
-void CheckerBoard::arrangePieceColumn(int column)
+void CheckerBoard::arrangePieceColumn(const int column)
 {
 	unsigned int j(0),k(0);
 	while(j!=7)
@@ -158,7 +175,7 @@ void CheckerBoard::arrangePieceColumn(int column)
 			if(j!=k)
 			{
 				content[column][k]=content[column][j];
-				content[column][j].Drop((j-k)*m_delta);
+				content[column][j].Drop((j-k)*VisibleRect::unit());
 				++m_preDropPieces;
 			}
 			++k;
@@ -171,11 +188,14 @@ void CheckerBoard::arrangePieceColumn(int column)
 void CheckerBoard::startLink(const Grid element)
 {
 	removeList.clear();
+	mScore->resetMulti();
+
 	checkColumnPiece(element.x);
 	checkRowPiece(element.y);
 	for(vector<CheckerPiece*>::iterator it=removeList.begin();it!=removeList.end();++it)
 	{
 		(*it)->Clear();
+		mScore->scoreUp();
 	}
 }
 
@@ -193,10 +213,14 @@ void CheckerBoard::removePieces()
 		checkRowPiece(j);
 		++j;
 	}
+	if(!removeList.empty())
+		mScore->raiseMulti();
 	for(vector<CheckerPiece*>::iterator it=removeList.begin();it!=removeList.end();++it)
 	{
 		(*it)->Clear();
+		mScore->scoreUp();
 	}
+
 }
 
 void CheckerBoard::DrawBoard()
@@ -206,10 +230,15 @@ void CheckerBoard::DrawBoard()
 		for ( int j=0;j!=8;++j)
 		{
 			CCSprite* pSprite = CCSprite::create(s_pPathAnchor);
-			pSprite->setPosition(ccp(m_delta*i+m_origin.x, m_delta*j+m_origin.y));
+			pSprite->setPosition(ccp(VisibleRect::unit()*i+VisibleRect::origin().x, VisibleRect::unit()*j+VisibleRect::origin().y));
 			this->addChild(pSprite, 1);
 		}
 	}
+	CCSprite* pSprite = CCSprite::create(s_pPathBG);
+
+    pSprite->setPosition(ccp(VisibleRect::center().x,  VisibleRect::center().y));
+
+    addChild(pSprite, 0);
 }
 
 CCSprite* CheckerBoard::DrawPiece(const Grid element,const int num,const int rock)
@@ -220,7 +249,8 @@ CCSprite* CheckerBoard::DrawPiece(const Grid element,const int num,const int roc
 		else
 			n=num-1;
 		CCSprite* pSprite = CCSprite::create(s_pPathPiece,CCRectMake(n*34,0,34,34));
-		pSprite->setPosition(ccp(m_delta*element.x+0.5*m_delta+m_origin.x, m_delta*element.y+0.5*m_delta +m_origin.y));
+		pSprite->setPosition(ccp(VisibleRect::unit()*element.x+0.5*VisibleRect::unit()+VisibleRect::origin().x, VisibleRect::unit()*element.y+0.5*VisibleRect::unit() +VisibleRect::origin().y));
+		//pSprite->autorelease();
 		addChild(pSprite);
 		return pSprite;
 }
@@ -230,7 +260,7 @@ int CheckerBoard::containsTouchLocation(CCTouch* touch)
 {
 	for ( int i=0;i!=7;++i)
 	{
-		CCRect rect=CCRectMake(m_delta*i+m_origin.x, m_origin.y, m_delta, m_delta*7);
+		CCRect rect=CCRectMake(VisibleRect::unit()*i+VisibleRect::origin().x, VisibleRect::origin().y, VisibleRect::unit(), VisibleRect::unit()*7);
 		if (rect.containsPoint(touch->getLocation()))
 		{
 			return i;
@@ -249,6 +279,9 @@ bool CheckerBoard::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)
 		int rock=m_nextIsRock?2:0;
 		preview=DrawPiece(Grid(m_column,7),m_nextNum,rock);
 	}
+	else
+		
+		preview=0;
 	return true;
 }
 
@@ -288,7 +321,7 @@ void CheckerBoard::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
 		int row = previewDropPos(m_column);
 		if (row!=7)
 		{
-			CCActionInterval*  drop = CCMoveTo::create(0.5f, ccp(m_origin.x+m_delta*m_column+0.5*m_delta, m_origin.y+m_delta*row+0.5*m_delta));
+			CCActionInterval*  drop = CCMoveTo::create(0.5f, ccp( VisibleRect::origin().x+ VisibleRect::unit()*m_column+0.5* VisibleRect::unit(),  VisibleRect::origin().y+ VisibleRect::unit()*row+0.5* VisibleRect::unit()));
 			CCActionInterval* move_ease_out = CCEaseOut::create((CCActionInterval*)(drop->copy()->autorelease()) , 0.5f);
 			
 			preview->runAction( CCSequence::create(move_ease_out,CCCallFuncN::create(this, callfuncN_selector(CheckerBoard::onPreviewDrop)),NULL));

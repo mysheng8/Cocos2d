@@ -4,7 +4,7 @@
 #include "cocos2d.h"
 #include "CheckerBoard.h"
 
-using namespace cocos2d;
+USING_NS_CC;
 struct Grid
 {
 	int x;
@@ -33,7 +33,7 @@ public:
 	int GetNum(){return m_num;};
 	int GetRock(){return m_rock;};
 
-	void SetSprite(cocos2d::CCSprite* sp){m_sp=sp;};
+	void SetSprite(CCSprite* sp){m_sp=sp;};
 	Grid GetGrid(){return m_grid;};
 
 	CheckerPiece& operator=(const CheckerPiece& rhs);
@@ -50,7 +50,7 @@ private:
 	PieceType m_type;
 	int m_num;
 	int m_rock;
-	cocos2d::CCSprite* m_sp;
+	CCSprite* m_sp;
 	CheckerBoard* m_parent;
 	Grid m_grid;
 

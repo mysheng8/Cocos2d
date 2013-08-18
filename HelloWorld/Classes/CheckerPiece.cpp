@@ -1,6 +1,6 @@
 #include"CheckerPiece.h"
 #include"CheckerBoard.h"
-#include<stdexcept>
+
 USING_NS_CC;
 
 void CheckerPiece::AddContent(int num,bool isRock)
@@ -23,7 +23,11 @@ void CheckerPiece::BreakRock()
 	if(m_rock>0)
 		--m_rock;
 	if(m_rock==0)
+	{
 		m_type=PieceType(1);
+	}
+	m_sp->removeFromParent();
+	m_sp=m_parent->DrawPiece(m_grid,m_num,m_rock);
 }
 
 CheckerPiece& CheckerPiece::operator=(const CheckerPiece& rhs)
@@ -45,7 +49,7 @@ void CheckerPiece::Clear()
 void CheckerPiece::onRemoveSprite()
 {
 	m_sp->removeFromParent();
-	m_parent->onRemovedPieces();
+	m_parent->onRemovedPieces(m_grid);
 }
 
 void CheckerPiece::Drop(float dis)
