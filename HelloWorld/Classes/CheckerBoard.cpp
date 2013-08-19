@@ -4,7 +4,7 @@
 #include "resource.h"
 #include "VisibleRect.h"
 #include "CheckerBoard.h"
-
+#include <algorithm>
 
 USING_NS_CC;
 
@@ -36,24 +36,34 @@ bool CheckerBoard::init()
 	srand((unsigned)time(NULL)); 
 
 	DrawBoard();
-	
+	/*
 	addPiece(2,5,false);
 	addPiece(1,1,false);
 	addPiece(4,4,false);
 	addPiece(6,3,true);
 	addPiece(6,2,false);
-	addPiece(1,5,false);
+	addPiece(1,2,false);
 	addPiece(0,5,false);
 	addPiece(0,5,false);
 	addPiece(2,5,false);
 	addPiece(2,2,false);
 	addPiece(2,6,false);
-
+	*/
+	addPiece(0,1,false);
+	addPiece(0,7,true);
+	addPiece(1,2,false);
+	addPiece(2,3,false);
+	addPiece(3,4,false);
+	addPiece(4,5,false);
+	addPiece(5,6,false);
+	addPiece(6,7,false);
+	
 	mScore = Score::create();
 	mScore->setPosition(ccp( VisibleRect::right().x - 60, VisibleRect::top().y - 80));
 	addChild(mScore,2);
-
-
+#ifdef DEBUGVIEW
+	DebugView();
+#endif
 	return true; 
 
 }
@@ -86,8 +96,12 @@ void CheckerBoard::checkColumnPiece(const int column)
 	while(n!=7)
 	{
 		cp=&content[column][n];
-		if(cp->IsNum()&&j==cp->GetNum())
-			removeList.push_back(cp);
+		if(cp->IsNum()&&j == cp->GetNum())
+		{
+			vector<CheckerPiece*>::size_type wc =count(removeList.begin(), removeList.end(), cp); 
+			if(!wc)
+				removeList.push_back(cp);
+		}
 		++n;
 	}
 }
@@ -103,7 +117,13 @@ void CheckerBoard::checkRowPiece(const int row)
 			{
 				cp=&content[n][row];
 				if(cp->IsNum()&&sum==cp->GetNum())
-					removeList.push_back(cp);
+				{
+					vector<CheckerPiece*>::size_type wc =count(removeList.begin(), removeList.end(), cp); 
+					if(!wc)
+					{
+						removeList.push_back(cp);
+					}
+				}
 				++n;
 			}
 			sum=0;
@@ -116,7 +136,16 @@ void CheckerBoard::checkRowPiece(const int row)
 	{
 		cp=&content[n][row];
 		if(cp->IsNum()&&sum==cp->GetNum())
-			removeList.push_back(cp);
+		{
+			vector<CheckerPiece*>::size_type wc =count(removeList.begin(), removeList.end(), cp); 
+			if(!wc)
+			{
+				removeList.push_back(cp);
+				char string[20] = {0};
+				sprintf(string, "remove column:%d", n);
+				CCLog(string);
+			}
+		}
 		++n;
 	}
 }
@@ -137,6 +166,8 @@ void CheckerBoard::onRemovedPieces(const Grid element)
 			arrangePieceColumn(i);
 			++i;
 		}
+		if (m_preDropPieces==0)
+			removePieces();
 	}
 }
 
@@ -151,6 +182,7 @@ void CheckerBoard::breakRock(const Grid element)
 		content[element.x][element.y+1].BreakRock();
 	if(element.y!=0&&content[element.x][element.y-1].IsRock())
 		content[element.x][element.y-1].BreakRock();
+		
 }
 
 void CheckerBoard::onDropPieces()
@@ -182,36 +214,47 @@ void CheckerBoard::arrangePieceColumn(const int column)
 		}
 		++j;
 	}
+#ifdef DEBUGVIEW
+	DebugView();
+#endif
 }
-
+bool Comp(const CheckerPiece* a, const CheckerPiece* b)
+{
+	return a > b ;
+}
 
 void CheckerBoard::startLink(const Grid element)
 {
 	removeList.clear();
 	mScore->resetMulti();
 
-	checkColumnPiece(element.x);
+	
 	checkRowPiece(element.y);
+	checkColumnPiece(element.x);
 	for(vector<CheckerPiece*>::iterator it=removeList.begin();it!=removeList.end();++it)
 	{
 		(*it)->Clear();
 		mScore->scoreUp();
 	}
+#ifdef DEBUGVIEW
+	DebugView();
+#endif
 }
 
 void CheckerBoard::removePieces()
 {
 	removeList.clear();
 	unsigned int i(0),j(0);
-	while(i!=7)
-	{
-		checkColumnPiece(i);
-		++i;
-	}
+
 	while(j!=7)
 	{
 		checkRowPiece(j);
 		++j;
+	}
+	while(i!=7)
+	{
+		checkColumnPiece(i);
+		++i;
 	}
 	if(!removeList.empty())
 		mScore->raiseMulti();
@@ -220,7 +263,9 @@ void CheckerBoard::removePieces()
 		(*it)->Clear();
 		mScore->scoreUp();
 	}
-
+#ifdef DEBUGVIEW
+	DebugView();
+#endif
 }
 
 void CheckerBoard::DrawBoard()
@@ -345,3 +390,32 @@ void CheckerBoard::registerWithTouchDispatcher(void)
 {
 	CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate(this,0, true);
 }
+#ifdef DEBUGVIEW
+void CheckerBoard::DebugView()
+{
+	for (int i=0;i!=7;++i)
+	{
+		for(int j=0;j!=7;++j)
+		{
+			
+			int num=content[i][j].GetNum();
+			int rock=content[i][j].GetRock();
+			int type=content[i][j].GetType();
+			char string[30] = {0};
+			sprintf(string, "num:%d\r\nrock:%d\r\ntype:%d", num, rock,type);
+			CCLabelTTF* label = CCLabelTTF::create(string, "Marker Felt",9); 
+			label->setColor(ccc3(0,0,0));
+			label->setPosition(ccp(VisibleRect::unit()*i+0.5*VisibleRect::unit()+VisibleRect::origin().x, VisibleRect::unit()*j+0.5*VisibleRect::unit() +VisibleRect::origin().y));
+			addChild(label,100);
+			
+			if((7*i+j)<Debuglabels.size()&&Debuglabels[7*i+j])
+			{
+				Debuglabels[7*i+j]->removeFromParent();
+				Debuglabels[7*i+j]=label;
+			}
+			else
+				Debuglabels.push_back(label);
+		}
+	}
+}
+#endif

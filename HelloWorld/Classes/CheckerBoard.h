@@ -10,7 +10,7 @@
 
 using std::vector;
 
-
+//#define DEBUGVIEW
 
 USING_NS_CC;
 
@@ -38,6 +38,7 @@ public:
 private:
 
 	CheckerPiece **content;
+	
 	CCSprite* preview;
 	vector<CheckerPiece*> removeList;
 
@@ -67,10 +68,11 @@ private:
 	void breakRock(const Grid element);
 	
 	Score *mScore;
-
-
-
-
+#ifdef DEBUGVIEW
+	void DebugView();
+	
+	vector<CCLabelTTF*> Debuglabels;
+#endif
 };
 
 #endif

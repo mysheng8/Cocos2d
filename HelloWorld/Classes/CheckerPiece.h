@@ -32,6 +32,7 @@ public:
 	bool IsNum(){return m_type==PieceType(1);};
 	int GetNum(){return m_num;};
 	int GetRock(){return m_rock;};
+	int GetType(){return (int)m_type;}
 
 	void SetSprite(CCSprite* sp){m_sp=sp;};
 	Grid GetGrid(){return m_grid;};
