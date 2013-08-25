@@ -39,7 +39,7 @@ public:
 
 	CheckerPiece& operator=(const CheckerPiece& rhs);
 
-	void Drop(float dis);
+	void MoveVT(float dis);
 	void onDropSprite();
 	void Clear();
 	void onRemoveSprite();

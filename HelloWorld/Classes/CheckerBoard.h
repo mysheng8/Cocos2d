@@ -29,6 +29,11 @@ public:
 
 	void onRemovedPieces(const Grid element);
 	void onDropPieces();
+
+	void setRockRate(float rate){rockRate = rate;};
+
+	bool levelUp();
+
 	virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
     virtual void ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent);
     virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
@@ -41,6 +46,8 @@ private:
 	
 	CCSprite* preview;
 	vector<CheckerPiece*> removeList;
+
+	float rockRate;
 
 	int m_removedPieces;
 	int m_dropedPieces;
@@ -66,6 +73,8 @@ private:
 	void DrawBoard();
 
 	void breakRock(const Grid element);
+
+
 	
 	Score *mScore;
 #ifdef DEBUGVIEW

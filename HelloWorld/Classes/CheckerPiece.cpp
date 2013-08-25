@@ -52,7 +52,7 @@ void CheckerPiece::onRemoveSprite()
 	m_parent->onRemovedPieces(m_grid);
 }
 
-void CheckerPiece::Drop(float dis)
+void CheckerPiece::MoveVT(float dis)
 {
 	m_type=PieceType(0);
 	CCActionInterval*  drop = CCMoveBy::create(0.001f*dis, ccp(0,-dis));

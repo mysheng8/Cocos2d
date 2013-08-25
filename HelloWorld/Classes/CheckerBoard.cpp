@@ -34,7 +34,7 @@ bool CheckerBoard::init()
 	m_dropedPieces=0;
 	m_preDropPieces=0;
 	srand((unsigned)time(NULL)); 
-
+	rockRate=6.0f;
 	DrawBoard();
 	/*
 	addPiece(2,5,false);
@@ -56,8 +56,12 @@ bool CheckerBoard::init()
 	addPiece(3,4,false);
 	addPiece(4,5,false);
 	addPiece(5,6,false);
-	addPiece(6,7,false);
-	
+	addPiece(6,7,true);
+
+
+	CCLabelBMFont* label = CCLabelBMFont::create("Score", s_pPathScoreFont);
+	label->setPosition(ccp( VisibleRect::right().x - 60, VisibleRect::top().y - 50));
+	addChild(label,2);
 	mScore = Score::create();
 	mScore->setPosition(ccp( VisibleRect::right().x - 60, VisibleRect::top().y - 80));
 	addChild(mScore,2);
@@ -185,6 +189,23 @@ void CheckerBoard::breakRock(const Grid element)
 		
 }
 
+bool CheckerBoard::levelUp()
+{
+	for(unsigned int i=0;i!=7;++i)
+	{
+		unsigned int j = 6;
+		if (!content[i][j].IsEmpty())
+			return false;
+		while(j!=-1)
+		{
+			content[i][j]=content[i][j-1];
+			content[i][j].MoveVT(-1);
+			--j;
+		}
+	}
+	return true;
+}
+
 void CheckerBoard::onDropPieces()
 {
 	++m_dropedPieces;	
@@ -207,7 +228,7 @@ void CheckerBoard::arrangePieceColumn(const int column)
 			if(j!=k)
 			{
 				content[column][k]=content[column][j];
-				content[column][j].Drop((j-k)*VisibleRect::unit());
+				content[column][j].MoveVT((j-k)*VisibleRect::unit());
 				++m_preDropPieces;
 			}
 			++k;
@@ -320,12 +341,11 @@ bool CheckerBoard::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)
 	if (m_column>=0&&m_column<7)
 	{
 		m_nextNum=rand()%7+1;
-		m_nextIsRock=rand()%10>8;
+		m_nextIsRock=rand()%10>rockRate;
 		int rock=m_nextIsRock?2:0;
 		preview=DrawPiece(Grid(m_column,7),m_nextNum,rock);
 	}
 	else
-		
 		preview=0;
 	return true;
 }
