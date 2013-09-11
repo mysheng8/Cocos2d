@@ -2,6 +2,8 @@
 #include "resource.h"
 #include "VisibleRect.h"
 #include "GameScene.h"
+#include <stdio.h>
+#include <string>
 
 #define LINE_SPACE          80
 
@@ -23,7 +25,7 @@ MenuScene::MenuScene()
     m_pItemMenu->addChild(pNewItem, 2);
     pNewItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 1* LINE_SPACE) ));
 
-	// add menu new game
+	// add menu resume game
 	CCLabelBMFont* resumelabel = CCLabelBMFont::create(g_Menu[1].c_str(), s_pPathMenuFont);     
     CCMenuItemLabel* pResumeItem = CCMenuItemLabel::create(resumelabel, this, menu_selector(MenuScene::resumeCallback));
     m_pItemMenu->addChild(pResumeItem, 2);

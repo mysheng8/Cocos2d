@@ -4,6 +4,7 @@
 #include "cocos2d.h"
 #include "CheckerBoard.h"
 #include "MenuScene.h"
+#include "GameOver.h"
 
 USING_NS_CC;
 
@@ -23,9 +24,13 @@ public:
 
 	void resumeGame();
 
-	CheckerBoard *boardLayer;
+	void gameOver();
+
+	CheckerGame *gameLayer;
 
 	MenuScene* menuLayer;
+
+	GameOver* overLayer;
 };
 
 #endif // __GAME_SCENE_H__

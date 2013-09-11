@@ -1,6 +1,3 @@
-
-#include <stdio.h> 
-#include <time.h> 
 #include "resource.h"
 #include "VisibleRect.h"
 #include "CheckerBoard.h"
@@ -8,12 +5,9 @@
 
 USING_NS_CC;
 
-bool CheckerBoard::init()
+CheckerBoard::CheckerBoard(CheckerGame *parent)
 {
-	if ( !CCLayer::init() )
-    {
-        return false;
-    }
+	m_parent	=	parent;
 
 	content=new CheckerPiece*[7];
 	for(int i=0;i!=7;++i)
@@ -28,50 +22,19 @@ bool CheckerBoard::init()
 		}
 	}
 
-	this->setTouchEnabled(true);
-
-	m_removedPieces=0;
-	m_dropedPieces=0;
-	m_preDropPieces=0;
-	srand((unsigned)time(NULL)); 
-	rockRate=6.0f;
-	DrawBoard();
-	/*
-	addPiece(2,5,false);
-	addPiece(1,1,false);
-	addPiece(4,4,false);
-	addPiece(6,3,true);
-	addPiece(6,2,false);
-	addPiece(1,2,false);
-	addPiece(0,5,false);
-	addPiece(0,5,false);
-	addPiece(2,5,false);
-	addPiece(2,2,false);
-	addPiece(2,6,false);
-	*/
-	addPiece(0,1,false);
-	addPiece(0,7,true);
-	addPiece(1,2,false);
-	addPiece(2,3,false);
-	addPiece(3,4,false);
-	addPiece(4,5,false);
-	addPiece(5,6,false);
-	addPiece(6,7,true);
+	m_removedPieces		=	0;
+	m_dropedPieces		=	0;
+	m_preDropPieces		=	0;
 
 
-	CCLabelBMFont* label = CCLabelBMFont::create("Score", s_pPathScoreFont);
-	label->setPosition(ccp( VisibleRect::right().x - 60, VisibleRect::top().y - 50));
-	addChild(label,2);
-	mScore = Score::create();
-	mScore->setPosition(ccp( VisibleRect::right().x - 60, VisibleRect::top().y - 80));
-	addChild(mScore,2);
+
+
+
 #ifdef DEBUGVIEW
 	DebugView();
 #endif
-	return true; 
-
 }
-int CheckerBoard::previewDropPos(const int column)
+int CheckerBoard::getHeight(const int column)
 {
 	unsigned int i(0);
 	while(i!=7&&(!content[column][i].IsEmpty()))
@@ -81,18 +44,19 @@ int CheckerBoard::previewDropPos(const int column)
 
 CheckerPiece* CheckerBoard::addPiece(const int column,const int num,const bool isRock)
 {
-	int row = previewDropPos(column);
+	int row = getHeight(column);
 	if (row==7)
 		return 0;
 	content[column][row].AddContent(num,isRock);
 	int rock=isRock?2:0;
-	CCSprite *sp=DrawPiece(Grid(column,row),num,rock);
+	CCSprite *sp=m_parent->DrawPiece(Grid(column,row),num,rock);
 	content[column][row].SetSprite(sp);
 	return &content[column][row];
 }
 
 void CheckerBoard::checkColumnPiece(const int column)
 {
+	bool hasRemoved(false);
 	CheckerPiece* cp;
 	unsigned int j(0),n(0);
 	while(j!=7&&!content[column][j].IsEmpty())
@@ -105,12 +69,16 @@ void CheckerBoard::checkColumnPiece(const int column)
 			vector<CheckerPiece*>::size_type wc =count(removeList.begin(), removeList.end(), cp); 
 			if(!wc)
 				removeList.push_back(cp);
+			hasRemoved=true;
 		}
 		++n;
 	}
+	if(hasRemoved)
+		m_parent->DrawGuide(Grid(column,0),Grid(column,j-1));
 }
 void CheckerBoard::checkRowPiece(const int row)
 {
+	bool hasRemoved(false);
 	CheckerPiece* cp;
 	unsigned int i(0),sum(0),n(0);
 	while(i!=7)
@@ -127,8 +95,14 @@ void CheckerBoard::checkRowPiece(const int row)
 					{
 						removeList.push_back(cp);
 					}
+					hasRemoved=true;
 				}
 				++n;
+			}
+			if(hasRemoved)
+			{
+				m_parent->DrawGuide(Grid(i-sum,row),Grid(i-1,row));
+				hasRemoved=false;
 			}
 			sum=0;
 		}
@@ -149,9 +123,12 @@ void CheckerBoard::checkRowPiece(const int row)
 				sprintf(string, "remove column:%d", n);
 				CCLog(string);
 			}
+			hasRemoved=true;
 		}
 		++n;
 	}
+	if(hasRemoved)
+		m_parent->DrawGuide(Grid(7-sum,row),Grid(6,row));
 }
 
 void CheckerBoard::onRemovedPieces(const Grid element)
@@ -193,15 +170,23 @@ bool CheckerBoard::levelUp()
 {
 	for(unsigned int i=0;i!=7;++i)
 	{
-		unsigned int j = 6;
+		int j = 6;
 		if (!content[i][j].IsEmpty())
 			return false;
-		while(j!=-1)
+		while(j!=0)
 		{
-			content[i][j]=content[i][j-1];
-			content[i][j].MoveVT(-1);
+			if(!content[i][j-1].IsEmpty())
+			{
+				content[i][j]=content[i][j-1];
+				content[i][j].Rise(VisibleRect::unit());
+			}
+			int t2=content[i][j].GetNum();
 			--j;
 		}
+		int num=rand()%7+1;
+		content[i][0].AddContent(num,true);
+		CCSprite *sp=m_parent->DrawPiece(Grid(i,0),num,2);
+		content[i][0].SetSprite(sp);
 	}
 	return true;
 }
@@ -228,7 +213,8 @@ void CheckerBoard::arrangePieceColumn(const int column)
 			if(j!=k)
 			{
 				content[column][k]=content[column][j];
-				content[column][j].MoveVT((j-k)*VisibleRect::unit());
+				content[column][j].Drop((j-k)*VisibleRect::unit());
+				content[column][j].Empty();
 				++m_preDropPieces;
 			}
 			++k;
@@ -247,15 +233,20 @@ bool Comp(const CheckerPiece* a, const CheckerPiece* b)
 void CheckerBoard::startLink(const Grid element)
 {
 	removeList.clear();
-	mScore->resetMulti();
+	m_parent->mScore->resetMulti();
 
 	
 	checkRowPiece(element.y);
 	checkColumnPiece(element.x);
-	for(vector<CheckerPiece*>::iterator it=removeList.begin();it!=removeList.end();++it)
+	if(removeList.empty())
+		m_parent->endLink();
+	else
 	{
-		(*it)->Clear();
-		mScore->scoreUp();
+		for(vector<CheckerPiece*>::iterator it=removeList.begin();it!=removeList.end();++it)
+		{
+			(*it)->Clear();
+			m_parent->mScore->scoreUp();
+		}
 	}
 #ifdef DEBUGVIEW
 	DebugView();
@@ -278,138 +269,23 @@ void CheckerBoard::removePieces()
 		++i;
 	}
 	if(!removeList.empty())
-		mScore->raiseMulti();
-	for(vector<CheckerPiece*>::iterator it=removeList.begin();it!=removeList.end();++it)
 	{
-		(*it)->Clear();
-		mScore->scoreUp();
+		m_parent->mScore->raiseMulti();
+		for(vector<CheckerPiece*>::iterator it=removeList.begin();it!=removeList.end();++it)
+		{
+			(*it)->Clear();
+			m_parent->mScore->scoreUp();
+		}
 	}
+	else
+		m_parent->endLink();
 #ifdef DEBUGVIEW
 	DebugView();
 #endif
 }
 
-void CheckerBoard::DrawBoard()
-{
-	for ( int i=0;i!=8;++i)
-	{
-		for ( int j=0;j!=8;++j)
-		{
-			CCSprite* pSprite = CCSprite::create(s_pPathAnchor);
-			pSprite->setPosition(ccp(VisibleRect::unit()*i+VisibleRect::origin().x, VisibleRect::unit()*j+VisibleRect::origin().y));
-			this->addChild(pSprite, 1);
-		}
-	}
-	CCSprite* pSprite = CCSprite::create(s_pPathBG);
-
-    pSprite->setPosition(ccp(VisibleRect::center().x,  VisibleRect::center().y));
-
-    addChild(pSprite, 0);
-}
-
-CCSprite* CheckerBoard::DrawPiece(const Grid element,const int num,const int rock)
-{
-		int n=0;
-		if(rock!=0)
-			n=9-rock;
-		else
-			n=num-1;
-		CCSprite* pSprite = CCSprite::create(s_pPathPiece,CCRectMake(n*34,0,34,34));
-		pSprite->setPosition(ccp(VisibleRect::unit()*element.x+0.5*VisibleRect::unit()+VisibleRect::origin().x, VisibleRect::unit()*element.y+0.5*VisibleRect::unit() +VisibleRect::origin().y));
-		//pSprite->autorelease();
-		addChild(pSprite);
-		return pSprite;
-}
 
 
-int CheckerBoard::containsTouchLocation(CCTouch* touch)
-{
-	for ( int i=0;i!=7;++i)
-	{
-		CCRect rect=CCRectMake(VisibleRect::unit()*i+VisibleRect::origin().x, VisibleRect::origin().y, VisibleRect::unit(), VisibleRect::unit()*7);
-		if (rect.containsPoint(touch->getLocation()))
-		{
-			return i;
-		}
-	}
-	return -1;
-}
-
-bool CheckerBoard::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)
-{
-	m_column=containsTouchLocation(pTouch);
-	if (m_column>=0&&m_column<7)
-	{
-		m_nextNum=rand()%7+1;
-		m_nextIsRock=rand()%10>rockRate;
-		int rock=m_nextIsRock?2:0;
-		preview=DrawPiece(Grid(m_column,7),m_nextNum,rock);
-	}
-	else
-		preview=0;
-	return true;
-}
-
-void CheckerBoard::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent)
-{
-	int column=containsTouchLocation(pTouch);
-
-	if (column>=0&&column<7)
-	{
-		if (column!=m_column)
-		{
-			m_column=column;
-			if(preview)
-			{
-				preview->removeFromParent();
-				preview=0;
-			}
-			int rock=m_nextIsRock?2:0;
-			preview=DrawPiece(Grid(m_column,7),m_nextNum,rock);
-		}
-	}
-	else
-	{
-		m_column=-1;
-		if(preview)
-		{
-			preview->removeFromParent();
-			preview=0;
-		}
-	}
-
-}
-void CheckerBoard::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
-{
-	if (m_column>=0)
-		{
-		int row = previewDropPos(m_column);
-		if (row!=7)
-		{
-			CCActionInterval*  drop = CCMoveTo::create(0.5f, ccp( VisibleRect::origin().x+ VisibleRect::unit()*m_column+0.5* VisibleRect::unit(),  VisibleRect::origin().y+ VisibleRect::unit()*row+0.5* VisibleRect::unit()));
-			CCActionInterval* move_ease_out = CCEaseOut::create((CCActionInterval*)(drop->copy()->autorelease()) , 0.5f);
-			
-			preview->runAction( CCSequence::create(move_ease_out,CCCallFuncN::create(this, callfuncN_selector(CheckerBoard::onPreviewDrop)),NULL));
-		}
-	}
-}
-
-void CheckerBoard::onPreviewDrop(CCNode* node)
-{
-	CheckerBoard* parent=static_cast<CheckerBoard*>(node->getParent());
-	node->removeFromParent();
-	node=0;
-
-	CheckerPiece* cp=parent->addPiece(m_column,m_nextNum,m_nextIsRock);
-	if(cp)
-		parent->startLink(cp->GetGrid());
-}
-
-
-void CheckerBoard::registerWithTouchDispatcher(void)
-{
-	CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate(this,0, true);
-}
 #ifdef DEBUGVIEW
 void CheckerBoard::DebugView()
 {
@@ -417,7 +293,6 @@ void CheckerBoard::DebugView()
 	{
 		for(int j=0;j!=7;++j)
 		{
-			
 			int num=content[i][j].GetNum();
 			int rock=content[i][j].GetRock();
 			int type=content[i][j].GetType();
@@ -426,7 +301,7 @@ void CheckerBoard::DebugView()
 			CCLabelTTF* label = CCLabelTTF::create(string, "Marker Felt",9); 
 			label->setColor(ccc3(0,0,0));
 			label->setPosition(ccp(VisibleRect::unit()*i+0.5*VisibleRect::unit()+VisibleRect::origin().x, VisibleRect::unit()*j+0.5*VisibleRect::unit() +VisibleRect::origin().y));
-			addChild(label,100);
+			m_parent->addChild(label,100);
 			
 			if((7*i+j)<Debuglabels.size()&&Debuglabels[7*i+j])
 			{

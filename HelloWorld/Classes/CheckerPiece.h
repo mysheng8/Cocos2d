@@ -39,13 +39,15 @@ public:
 
 	CheckerPiece& operator=(const CheckerPiece& rhs);
 
-	void MoveVT(float dis);
-	void onDropSprite();
+	void Drop(float dis);
+	void Rise(float dis);
 	void Clear();
+	void onDropSprite();
 	void onRemoveSprite();
 	void AddContent(int num,bool isRock);
 	void BreakRock();
-	
+	void Empty(){m_type=PieceType(0);};
+
 	
 private:
 	PieceType m_type;

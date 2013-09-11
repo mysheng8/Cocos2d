@@ -27,7 +27,7 @@ void CheckerPiece::BreakRock()
 		m_type=PieceType(1);
 	}
 	m_sp->removeFromParent();
-	m_sp=m_parent->DrawPiece(m_grid,m_num,m_rock);
+	m_sp=m_parent->m_parent->DrawPiece(m_grid,m_num,m_rock);
 }
 
 CheckerPiece& CheckerPiece::operator=(const CheckerPiece& rhs)
@@ -41,9 +41,17 @@ CheckerPiece& CheckerPiece::operator=(const CheckerPiece& rhs)
 };
 void CheckerPiece::Clear()
 {
-	m_type=PieceType(0);
-	CCActionInterval*  fadeOut = CCFadeOut::create(1.0f);
-	m_sp->runAction(CCSequence::create(fadeOut,CCCallFunc::create(this, callfunc_selector(CheckerPiece::onRemoveSprite)),NULL));
+	Empty();
+	CCFiniteTimeAction*  empty = CCSequence::create(
+		CCScaleBy::create(0.01,1.5,1.5),
+        CCScaleBy::create(0.6,0.2,0.2),
+		CCCallFunc::create(this, callfunc_selector(CheckerPiece::onRemoveSprite)),
+        NULL);
+	CCAction*  action = CCSpawn::create(
+        CCFadeOut::create(1),
+        empty,
+        NULL);
+	m_sp->runAction(action);
 };
 
 void CheckerPiece::onRemoveSprite()
@@ -52,18 +60,24 @@ void CheckerPiece::onRemoveSprite()
 	m_parent->onRemovedPieces(m_grid);
 }
 
-void CheckerPiece::MoveVT(float dis)
+void CheckerPiece::Drop(float dis)
 {
-	m_type=PieceType(0);
-	CCActionInterval*  drop = CCMoveBy::create(0.001f*dis, ccp(0,-dis));
-	CCActionInterval* move_ease_out = CCEaseOut::create((CCActionInterval*)(drop->copy()->autorelease()) , 0.5f);
+	CCActionInterval*  move = CCMoveBy::create(0.001f, ccp(0,-dis));
+	CCActionInterval* move_ease_out = CCEaseOut::create((CCActionInterval*)(move->copy()->autorelease()) , 0.5f);
 	m_sp->runAction( CCSequence::create(move_ease_out,CCCallFunc::create(this, callfunc_selector(CheckerPiece::onDropSprite)),NULL));
 //	m_sp->runAction(move_ease_out);
-
-	
 }
+
+void CheckerPiece::Rise(float dis)
+{
+	CCActionInterval*  move = CCMoveBy::create(0.001f, ccp(0,dis));
+	m_sp->runAction( move);
+//	m_sp->runAction(move_ease_out);
+}
+
 void CheckerPiece::onDropSprite()
 {
 	//m_sp=NULL;
 	m_parent->onDropPieces();
 }
+

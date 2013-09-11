@@ -3,14 +3,16 @@
 #include "VisibleRect.h"
 #include "CheckerBoard.h"
 #include "MenuScene.h"
+#include "GameOver.h"
 
 USING_NS_CC;
 
 GameScene::GameScene()
 {
 	CCScene::init();
-	boardLayer = 0;
+	gameLayer = 0;
 	menuLayer=0;
+	overLayer=0;
 
 	CCMenuItemImage *pCloseItem = CCMenuItemImage::create(s_pPathCloseNormal, s_pPathCloseSelect, this, menu_selector(GameScene::menuCallback) );
     CCMenu* pMenu =CCMenu::create(pCloseItem, NULL);
@@ -29,6 +31,13 @@ void GameScene::onEnter()
 	}
 	menuLayer->setVisible(false);
 
+	if(!overLayer){
+		overLayer = new GameOver();
+		addChild(overLayer,1);
+		overLayer->release();
+	}
+	overLayer->setVisible(false);
+
 }
 
 void GameScene::menuCallback(CCObject* pSender)
@@ -38,15 +47,24 @@ void GameScene::menuCallback(CCObject* pSender)
 
 void GameScene::startGame()
 {
-	boardLayer = CheckerBoard::create();
-	addChild(boardLayer,0);
+	if(gameLayer)
+		gameLayer->removeFromParent();
+	gameLayer = CheckerGame::create();
+	addChild(gameLayer,0);
     CCDirector::sharedDirector()->replaceScene(this);
 
 }
 
+
+
 void GameScene::resumeGame()
 {
 	menuLayer->setVisible(false);
+}
+
+void GameScene::gameOver()
+{
+	overLayer->setVisible(true);
 }
 
 GameScene::~GameScene()
