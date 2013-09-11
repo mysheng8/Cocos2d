@@ -49,7 +49,7 @@ void CheckerPreview::EndPreview(int column)
 		int row = m_parent->m_content->getHeight(column);
 		if (row!=7)
 		{
-			CCActionInterval*  drop = CCMoveTo::create((7-row)/10.0f, ccp( VisibleRect::origin().x+ VisibleRect::unit()*m_column+0.5* VisibleRect::unit(),  VisibleRect::origin().y+ VisibleRect::unit()*row+0.5* VisibleRect::unit()));
+			CCActionInterval*  drop = CCMoveTo::create(sqrt((7-row)/20.0f), ccp( VisibleRect::origin().x+ VisibleRect::unit()*m_column+0.5* VisibleRect::unit(),  VisibleRect::origin().y+ VisibleRect::unit()*row+0.5* VisibleRect::unit()));
 			CCActionInterval* move_ease_out = CCEaseOut::create((CCActionInterval*)(drop->copy()->autorelease()) , 0.5f);
 			
 			m_sp->runAction( CCSequence::create(move_ease_out,CCCallFuncN::create(this, callfuncN_selector(CheckerPreview::onPreviewDrop)),NULL));

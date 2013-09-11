@@ -48,7 +48,6 @@ private:
 	float m_rockRate;
 	int m_threhold;
 	int m_level;
-	bool m_canStart;
 	bool m_resetNext;
 
 	int m_nextNum;// the number of next ball

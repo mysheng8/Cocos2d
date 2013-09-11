@@ -28,7 +28,6 @@ bool CheckerGame::initilizeGame()
 	m_nextNum			=	0;
 	m_nextIsRock		=	false;
 	m_column			=	-1;
-	m_canStart			=	true;
 	m_resetNext			=	true;
 	srand((unsigned)time(NULL)); 
 	m_preview = new CheckerPreview(this);
@@ -80,7 +79,6 @@ int CheckerGame::containsTouchLocation(CCTouch* touch)
 
 void CheckerGame::startLink(int column)
 {
-	this->setTouchEnabled(false);
 	CheckerPiece* cp = m_content->addPiece(column,m_nextNum,m_nextIsRock);
 	if(cp)
 		m_content->startLink(cp->GetGrid());
@@ -131,6 +129,7 @@ void CheckerGame::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
 	if (m_column>=0)
 		m_preview->EndPreview(m_column);
 	++m_level;
+	this->setTouchEnabled(false);
 }
 
 CCSprite* CheckerGame::DrawPiece(const Grid element,const int num,const int rock)
