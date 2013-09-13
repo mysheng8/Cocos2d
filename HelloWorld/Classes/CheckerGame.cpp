@@ -10,6 +10,17 @@
 
 USING_NS_CC;
 
+const ccColor4F colors[7]={
+		ccc4f(1,0,0,0.5f),
+		ccc4f(1,0.5f,0,0.5f),
+		ccc4f(1,1,0,0.5f),
+		ccc4f(0,1,0,0.5f),
+		ccc4f(0,1,1,0.5f),
+		ccc4f(0,0,1,0.5f),
+		ccc4f(1,0,1,0.5f)} ;
+
+
+
 bool CheckerGame::init()
 {
 	if ( !CCLayer::init() )
@@ -127,9 +138,12 @@ void CheckerGame::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent)
 void CheckerGame::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
 {
 	if (m_column>=0)
+	{
 		m_preview->EndPreview(m_column);
+		this->setTouchEnabled(false);
+	}
 	++m_level;
-	this->setTouchEnabled(false);
+	
 }
 
 CCSprite* CheckerGame::DrawPiece(const Grid element,const int num,const int rock)
@@ -142,7 +156,7 @@ CCSprite* CheckerGame::DrawPiece(const Grid element,const int num,const int rock
 		CCSprite* pSprite = CCSprite::create(s_pPathPiece,CCRectMake(n*34,0,34,34));
 		pSprite->setPosition(ccp(VisibleRect::unit()*element.x+0.5*VisibleRect::unit()+VisibleRect::origin().x, VisibleRect::unit()*element.y+0.5*VisibleRect::unit() +VisibleRect::origin().y));
 		//pSprite->autorelease();
-		addChild(pSprite);
+		addChild(pSprite,10);
 		return pSprite;
 }
 
@@ -167,19 +181,118 @@ void CheckerGame::DrawBoard()
 void CheckerGame::DrawGuide(const Grid start,const Grid end)
 {
 	CCDrawNode *draw = CCDrawNode::create();
-    addChild(draw, 10);
+	addChild(draw,2);
+	
 	int width=(end.x-start.x+1)*VisibleRect::unit();
 	int height=(end.y-start.y+1)*VisibleRect::unit();
 	CCPoint points[] = {CCPoint(VisibleRect::unit()*start.x+VisibleRect::origin().x, VisibleRect::unit()*start.y+VisibleRect::origin().y),
 						CCPoint(VisibleRect::unit()*(end.x+1)+VisibleRect::origin().x, VisibleRect::unit()*start.y+VisibleRect::origin().y), 
 						CCPoint(VisibleRect::unit()*(end.x+1)+VisibleRect::origin().x, VisibleRect::unit()*(end.y+1)+VisibleRect::origin().y),
 						CCPoint(VisibleRect::unit()*start.x+VisibleRect::origin().x, VisibleRect::unit()*(end.y+1)+VisibleRect::origin().y)};
-	draw->drawPolygon(points,4,ccc4f(1,1,1,0.3), 0, ccc4f(0,0,0,0));
+	draw->drawPolygon(points,4,ccc4f(1,1,1,0.5f), 0, ccc4f(0,0,0,0));
+	
 	CCFiniteTimeAction*  fadeOut = CCSequence::create(
-		CCFadeOut::create(0.5),
+		CCFadeOut::create(0.3),
 		CCCallFuncN::create(this, callfuncN_selector(CheckerGame::onDrawGuide)),
         NULL);
 	draw->runAction(fadeOut);
+}
+
+void CheckerGame::DrawLink(const Grid *elements, const int count,bool horizontal)
+{
+	CCDrawNode *draw = CCDrawNode::create();
+	addChild(draw, 2);
+	int k(0);
+	Grid target = initPoint(elements,count);
+	while(k!=count)
+	{
+		CCPoint pnt=CCPoint(VisibleRect::unit()*target.x+VisibleRect::origin().x, VisibleRect::unit()*target.y+VisibleRect::origin().y);
+		CCPoint *points = createPoly(elements[k],pnt);
+
+		draw->drawPolygon(points,4,colors[k], 0, colors[k]);
+		target=nextPoint(target,elements,count,horizontal);
+		++k;
+	}
+	CCFiniteTimeAction*  fadeOut = CCSequence::create(
+		CCFadeOut::create(0.3),
+		CCCallFuncN::create(this, callfuncN_selector(CheckerGame::onDrawGuide)),
+		NULL);
+	draw->runAction(fadeOut);
+}
+
+Grid CheckerGame::initPoint(const Grid *elements, const int count)
+{
+	int x= rand()%8;
+	int y= rand()%8;
+	while(containPoint(Grid(x,y),elements,count))
+	{
+		x= rand()%8;
+		y= rand()%8;
+	}
+	return Grid(x,y);
+}
+
+bool CheckerGame::containPoint(const Grid point,const Grid *elements, const int count)
+{
+	for(int i = 0; i!=count;++i)
+	{
+		if (elements[i].x==point.x)
+			return true;
+		if (elements[i].x+1==point.x)
+			return true;
+		if (elements[i].y+1==point.y)
+			return true;
+		if (elements[i].y==point.y)
+			return true;
+	}
+	return false;
+}
+
+CCPoint* CheckerGame::createPoly(const Grid element,const CCPoint pnt)
+{
+	CCPoint points[] = {
+			CCPoint(VisibleRect::unit()*element.x+VisibleRect::origin().x, VisibleRect::unit()*element.y+VisibleRect::origin().y),
+			CCPoint(VisibleRect::unit()*element.x+VisibleRect::origin().x, VisibleRect::unit()*(element.y+1)+VisibleRect::origin().y),
+			CCPoint(VisibleRect::unit()*(element.x+1)+VisibleRect::origin().x, VisibleRect::unit()*(element.y+1)+VisibleRect::origin().y),
+			CCPoint(VisibleRect::unit()*(element.x+1)+VisibleRect::origin().x, VisibleRect::unit()*element.y+VisibleRect::origin().y)};	
+	CCPoint *out;
+	out= new CCPoint[4];
+	float tan=(points[0].x-pnt.x)/(points[0].y-pnt.y);
+	unsigned int i(0),j(0);
+	while(i!=4)
+	{
+		float t=(points[i].x-pnt.x)/(points[i].y-pnt.y);
+		if (t<tan)
+		{
+			tan=(points[i].x-pnt.x)/(points[i].y-pnt.y);
+			j=i;
+		}
+		++i;
+	}
+	for(unsigned int k = 0;k!=3;++k)
+	{
+		out[k]=points[j%4];
+		++j;
+	}
+	out[3]=pnt;
+	return out;
+}
+
+Grid CheckerGame::nextPoint(const Grid current,const Grid *elements, const int count,bool horizontal)
+{
+	Grid next=current;
+	if(horizontal)
+		next.x=(next.x+1)%8;
+	else
+		next.y=(next.y+1)%8;
+	while(containPoint(next,elements,count))
+	{
+		if(horizontal)
+			next.x=(next.x+1)%8;
+		else
+			next.y=(next.y+1)%8;
+	}
+	return next;
 }
 
 void CheckerGame::onDrawGuide(CCNode* node)

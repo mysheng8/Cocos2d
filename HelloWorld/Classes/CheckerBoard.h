@@ -55,6 +55,8 @@ private:
 	void breakRock(const Grid element);
 
 	void guideView();
+	vector<Grid> removeGrid;
+	void DrawLink(bool horizontal);
 
 #ifdef DEBUGVIEW
 	void DebugView();

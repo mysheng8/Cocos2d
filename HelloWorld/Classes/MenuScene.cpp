@@ -10,7 +10,7 @@
 const std::string g_Menu[3] = {
     "New Game",
 	"Resume Game",
-    "Quit Game",
+    "Quit Game"
 };
 
 

@@ -57,6 +57,7 @@ CheckerPiece* CheckerBoard::addPiece(const int column,const int num,const bool i
 void CheckerBoard::checkColumnPiece(const int column)
 {
 	bool hasRemoved(false);
+
 	CheckerPiece* cp;
 	unsigned int j(0),n(0);
 	while(j!=7&&!content[column][j].IsEmpty())
@@ -68,7 +69,10 @@ void CheckerBoard::checkColumnPiece(const int column)
 		{
 			vector<CheckerPiece*>::size_type wc =count(removeList.begin(), removeList.end(), cp); 
 			if(!wc)
+			{
 				removeList.push_back(cp);
+				removeGrid.push_back(cp->GetGrid());
+			}
 			hasRemoved=true;
 		}
 		++n;
@@ -79,6 +83,7 @@ void CheckerBoard::checkColumnPiece(const int column)
 void CheckerBoard::checkRowPiece(const int row)
 {
 	bool hasRemoved(false);
+
 	CheckerPiece* cp;
 	unsigned int i(0),sum(0),n(0);
 	while(i!=7)
@@ -94,6 +99,7 @@ void CheckerBoard::checkRowPiece(const int row)
 					if(!wc)
 					{
 						removeList.push_back(cp);
+						removeGrid.push_back(cp->GetGrid());
 					}
 					hasRemoved=true;
 				}
@@ -119,9 +125,7 @@ void CheckerBoard::checkRowPiece(const int row)
 			if(!wc)
 			{
 				removeList.push_back(cp);
-				char string[20] = {0};
-				sprintf(string, "remove column:%d", n);
-				CCLog(string);
+				removeGrid.push_back(cp->GetGrid());
 			}
 			hasRemoved=true;
 		}
@@ -235,9 +239,16 @@ void CheckerBoard::startLink(const Grid element)
 	removeList.clear();
 	m_parent->mScore->resetMulti();
 
-	
+	removeGrid.clear();	
 	checkRowPiece(element.y);
+	if(!removeGrid.empty())
+		DrawLink(false);
+
+	removeGrid.clear();
 	checkColumnPiece(element.x);
+	if(!removeGrid.empty())
+		DrawLink(true);
+
 	if(removeList.empty())
 		m_parent->endLink();
 	else
@@ -258,16 +269,23 @@ void CheckerBoard::removePieces()
 	removeList.clear();
 	unsigned int i(0),j(0);
 
+	removeGrid.clear();
 	while(j!=7)
 	{
 		checkRowPiece(j);
 		++j;
 	}
+	if(!removeGrid.empty())
+		DrawLink(true);
+
+	removeGrid.clear();
 	while(i!=7)
 	{
 		checkColumnPiece(i);
 		++i;
 	}
+	if(!removeGrid.empty())
+		DrawLink(true);
 	if(!removeList.empty())
 	{
 		m_parent->mScore->raiseMulti();
@@ -284,6 +302,16 @@ void CheckerBoard::removePieces()
 #endif
 }
 
+void CheckerBoard::DrawLink(bool horizontal)
+{
+	const unsigned int n = removeGrid.size();
+	Grid *r_grid = new Grid[n];
+	for(unsigned int i = 0;i!=n;++i)
+	{
+		r_grid[i]=removeGrid[i];
+	}
+	m_parent->DrawLink(r_grid, n,horizontal);
+}
 
 
 #ifdef DEBUGVIEW

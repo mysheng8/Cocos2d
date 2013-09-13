@@ -41,6 +41,7 @@ public:
 	Score* mScore;
 	void gameOver();
 	void DrawGuide(const Grid start,const Grid end);
+	void DrawLink(const Grid *elements, const int count,bool horizontal);
 
 
 private:
@@ -59,6 +60,12 @@ private:
 	void resetNext();
 	void DrawBoard();
 	void onDrawGuide(CCNode* node);
+
+	Grid initPoint(const Grid *elements, const int count);
+	bool containPoint(const Grid point, const Grid *elements, const int count);
+	CCPoint* createPoly(const Grid element,const CCPoint pnt);
+	Grid nextPoint(const Grid current,const Grid *elements, const int count, bool horizontal);
+
 };
 
 
