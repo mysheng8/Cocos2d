@@ -17,6 +17,7 @@ public:
 	void reset();
 	void scoreUp();
 	void resetMulti(){m_multi = 1;};
+	int getMulti(){return m_multi;};
 
 
 private:

@@ -23,7 +23,7 @@ public:
 
 	void setRockRate(float rate){m_rockRate = rate;};
 	void setThrehold(int threhold){m_threhold=threhold;};
-
+	void restart();
 	bool initilizeGame();
 	void levelUp();
 	void startLink(int column);
@@ -49,14 +49,17 @@ private:
 	float m_rockRate;
 	int m_threhold;
 	int m_level;
+	int m_step;
 	bool m_resetNext;
+	CCLabelBMFont* m_levelLabel;
+	CCLabelBMFont* m_dropLabel;
 
 	int m_nextNum;// the number of next ball
 	bool m_nextIsRock;// if the next ball is a rock
 	int m_column;//current touch column
 
 	int containsTouchLocation(CCTouch* touch);
-
+	bool canStart();
 	void resetNext();
 	void DrawBoard();
 	void onDrawGuide(CCNode* node);

@@ -11,7 +11,7 @@ class CheckerGame;
 class CheckerPreview: public CCNode
 {
 public:
-	CheckerPreview(CheckerGame *parent):m_Num(-1),m_IsRock(false),m_column(-1){m_parent=parent;};
+	CheckerPreview(CheckerGame *parent);
 	void resetPreview(int num,bool isRock){m_Num=num;m_IsRock=isRock;};
 	void StartPreview(int column);
 	void EditPreview(int column);

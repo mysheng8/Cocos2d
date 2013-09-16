@@ -26,6 +26,8 @@ public:
 
 	void gameOver();
 
+	void restart();
+
 	CheckerGame *gameLayer;
 
 	MenuScene* menuLayer;

@@ -10,22 +10,9 @@ const std::string g_TitleMenu[2] = {
     "Quit Game",
 };
 
-CCScene* TitleScene::scene()
-{
-    // 'scene' is an autorelease object
-    CCScene *scene = CCScene::create();
-    
-	CCLayer * pLayer = new TitleScene();
-
-    scene->addChild(pLayer);
-
-	pLayer->release();
-
-    return scene;
-}
-
 TitleScene::TitleScene()
 {
+	CCScene::init();
 	m_pItemMenu = CCMenu::create();
 
     // add menu new game
@@ -61,7 +48,6 @@ void TitleScene::startGame(CCObject* pSender)
 {
 	CCDirector* pDirector = CCDirector::sharedDirector();
     GameScene *pScene = new GameScene();
-
     // run
 	pScene->startGame();
 	pScene->release();

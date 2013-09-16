@@ -5,15 +5,13 @@
 
 USING_NS_CC;
 
-class TitleScene : public CCLayer
+class TitleScene : public CCScene
 {
 public:
 	TitleScene();
     ~TitleScene();
 
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
-    static CCScene* TitleScene::scene();
-
 
     void closeCallback(CCObject * pSender);
 	void startGame(CCObject * pSender);
@@ -22,8 +20,6 @@ public:
 
 private:
 	CCMenu* m_pItemMenu;
-
-    
 
 };
 

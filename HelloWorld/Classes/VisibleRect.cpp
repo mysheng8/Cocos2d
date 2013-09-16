@@ -93,5 +93,5 @@ float VisibleRect::unit()
 CCPoint VisibleRect::origin()
 {
     lazyInit();
-    return ccp(s_visibleRect.origin.x+s_visibleRect.size.width/2-3.5*unit(), s_visibleRect.origin.y+s_visibleRect.size.height/2-4*unit());
+    return ccp(s_visibleRect.origin.x+s_visibleRect.size.width/2-3.5*unit(), s_visibleRect.origin.y+s_visibleRect.size.height/2-5*unit());
 }

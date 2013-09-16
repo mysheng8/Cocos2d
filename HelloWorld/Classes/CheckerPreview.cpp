@@ -1,6 +1,28 @@
 #include "CheckerPreview.h"
 #include "VisibleRect.h"
+#include "SimpleAudioEngine.h"
+
 USING_NS_CC;
+using namespace CocosDenshion;
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+
+#else
+const char s_pClick[] = "audio/click.wav";
+#endif
+
+
+CheckerPreview::CheckerPreview(CheckerGame *parent)
+{
+	m_Num		=	-1;
+	m_IsRock	=	false;
+	m_column	=	-1;
+	m_parent=parent;
+	SimpleAudioEngine::sharedEngine()->preloadEffect( s_pClick );
+
+}
+
+
 
 void CheckerPreview::StartPreview(int column)
 {
@@ -67,4 +89,5 @@ void CheckerPreview::onPreviewDrop(CCNode* node)
 	m_sp->removeFromParent();
 	m_sp=0;
 	m_parent->startLink(m_column);
+	SimpleAudioEngine::sharedEngine()->playEffect(s_pClick);
 }

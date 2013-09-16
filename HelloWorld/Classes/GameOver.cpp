@@ -49,6 +49,12 @@ GameOver::~GameOver()
 {
 }
 
+void GameOver::Rank(rank input)
+{
+
+
+}
+
 void GameOver::newCallback(CCObject* pSender)
 {
 	CCNode *pNode=getParent();

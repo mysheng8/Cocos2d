@@ -23,13 +23,14 @@ class CheckerBoard
 {
 public:
 	CheckerBoard(CheckerGame *parent);  
+	~CheckerBoard();
 
 	CheckerPiece* addPiece(const int column ,const int num,const bool isRock);
 
 	void onRemovedPieces(const Grid element);
 	void onDropPieces();
 
-	bool levelUp();
+	bool riseUp();
 
 	int getHeight(const int column);
 	void startLink(const Grid element);

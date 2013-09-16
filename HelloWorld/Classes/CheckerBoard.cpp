@@ -2,8 +2,48 @@
 #include "VisibleRect.h"
 #include "CheckerBoard.h"
 #include <algorithm>
+#include "SimpleAudioEngine.h"
 
 USING_NS_CC;
+using namespace CocosDenshion;
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+	const std::string effect[] = {
+		"audio/1.ogg",
+		"audio/2.ogg",
+		"audio/3.ogg",
+		"audio/4.ogg",
+		"audio/5.ogg",
+		"audio/6.ogg",
+		"audio/7.ogg"
+
+	};
+#else
+	const std::string effect[] = {
+		"audio/1.wav",
+		"audio/2.wav",
+		"audio/3.wav",
+		"audio/4.wav",
+		"audio/5.wav",
+		"audio/6.wav",
+		"audio/7.wav",
+		"audio/8.wav",
+		"audio/9.wav",
+		"audio/10.wav",
+		"audio/11.wav",
+		"audio/12.wav",
+		"audio/13.wav",
+		"audio/14.wav",
+		"audio/15.wav",
+		"audio/16.wav",
+		"audio/17.wav",
+		"audio/18.wav",
+		"audio/19.wav",
+	};
+
+	const char s_pRemove[] = "audio/remove.wav";
+#endif
+
+
 
 CheckerBoard::CheckerBoard(CheckerGame *parent)
 {
@@ -26,14 +66,23 @@ CheckerBoard::CheckerBoard(CheckerGame *parent)
 	m_dropedPieces		=	0;
 	m_preDropPieces		=	0;
 
-
-
-
-
+	for(int j=0;j!=18;++j)
+		SimpleAudioEngine::sharedEngine()->preloadEffect( effect[j].c_str() );
+	SimpleAudioEngine::sharedEngine()->setEffectsVolume(0.5);
 #ifdef DEBUGVIEW
 	DebugView();
 #endif
 }
+
+
+
+CheckerBoard::~CheckerBoard()
+{
+	SimpleAudioEngine::sharedEngine()->end();
+}
+
+
+
 int CheckerBoard::getHeight(const int column)
 {
 	unsigned int i(0);
@@ -41,6 +90,11 @@ int CheckerBoard::getHeight(const int column)
 		++i;
 	return i;
 }
+
+
+
+
+
 
 CheckerPiece* CheckerBoard::addPiece(const int column,const int num,const bool isRock)
 {
@@ -170,7 +224,7 @@ void CheckerBoard::breakRock(const Grid element)
 		
 }
 
-bool CheckerBoard::levelUp()
+bool CheckerBoard::riseUp()
 {
 	for(unsigned int i=0;i!=7;++i)
 	{
@@ -234,20 +288,15 @@ bool Comp(const CheckerPiece* a, const CheckerPiece* b)
 	return a > b ;
 }
 
+
+
 void CheckerBoard::startLink(const Grid element)
 {
 	removeList.clear();
 	m_parent->mScore->resetMulti();
 
-	removeGrid.clear();	
 	checkRowPiece(element.y);
-	if(!removeGrid.empty())
-		DrawLink(false);
-
-	removeGrid.clear();
 	checkColumnPiece(element.x);
-	if(!removeGrid.empty())
-		DrawLink(true);
 
 	if(removeList.empty())
 		m_parent->endLink();
@@ -258,6 +307,7 @@ void CheckerBoard::startLink(const Grid element)
 			(*it)->Clear();
 			m_parent->mScore->scoreUp();
 		}
+		SimpleAudioEngine::sharedEngine()->playEffect(s_pRemove);
 	}
 #ifdef DEBUGVIEW
 	DebugView();
@@ -293,7 +343,10 @@ void CheckerBoard::removePieces()
 		{
 			(*it)->Clear();
 			m_parent->mScore->scoreUp();
+			SimpleAudioEngine::sharedEngine()->playEffect(effect[(*it)->GetNum()-1].c_str());
 		}
+		int e_id=m_parent->mScore->getMulti()*2;
+		SimpleAudioEngine::sharedEngine()->playEffect(effect[e_id].c_str());
 	}
 	else
 		m_parent->endLink();

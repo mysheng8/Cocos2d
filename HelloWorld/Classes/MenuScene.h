@@ -5,7 +5,18 @@
 
 USING_NS_CC;
 
-class MenuScene : public CCLayer
+class PopoutMenu: public CCLayer
+{
+public:
+	PopoutMenu();
+	~PopoutMenu();
+	void  jumpIn();
+	void jumpOut();
+
+};
+
+
+class MenuScene : public PopoutMenu
 {
 public:
 	MenuScene(); 
@@ -16,11 +27,30 @@ public:
 	void resumeCallback(CCObject * pSender);
 	void newCallback(CCObject * pSender);
 
-
+	void optionCallback(CCObject * pSender);
+	void backCallback(CCObject * pSender);
+	void setSoundCallback(CCObject * pSender);
+	void setMusicCallback(CCObject * pSender);
 
 private:
-	CCMenu* m_pItemMenu;
-   
+	CCMenu* m_pMainMenu;
+	CCMenu* m_pSubMenu;
+
+	int m_sound;
+	int m_music;
+
+};
+
+class RankScene: public PopoutMenu
+{
+public:
+	RankScene();
+	~RankScene();
+
+	void rank(int inScore);
+
+	void inputName();
+
 
 };
 

@@ -7,18 +7,27 @@
 #include "GameScene.h"
 #include <algorithm>
 
-
 USING_NS_CC;
 
-const ccColor4F colors[7]={
+const ccColor4F colors[]={
 		ccc4f(1,0,0,0.5f),
 		ccc4f(1,0.5f,0,0.5f),
 		ccc4f(1,1,0,0.5f),
 		ccc4f(0,1,0,0.5f),
 		ccc4f(0,1,1,0.5f),
 		ccc4f(0,0,1,0.5f),
-		ccc4f(1,0,1,0.5f)} ;
+		ccc4f(1,0,1,0.5f)
+};
 
+const float levels[]={	0.0f,	0.25f,	0.5f,
+						1.5f,	1.7f,	1.9f,
+						2.35f,	2.5f,	2.65f,
+						3.0f,	3.1f,	3.2f,
+						3.45f,	3.5f,	3.55f,
+						3.85f,	3.9f,	3.95f,
+						4.6f,	4.7f,	4.8f,
+						10.0f,
+};
 
 
 bool CheckerGame::init()
@@ -27,6 +36,13 @@ bool CheckerGame::init()
     {
         return false;
     }
+	this->setTouchEnabled(true);
+	return initilizeGame();
+}
+
+void CheckerGame::restart()
+{
+	this->removeAllChildren();
 	initilizeGame();
 	this->setTouchEnabled(true);
 }
@@ -34,8 +50,9 @@ bool CheckerGame::init()
 bool CheckerGame::initilizeGame()
 {
 	m_threhold			=	20;
-	m_rockRate			=	6.0f;
+	m_rockRate			=	0.0f;
 	m_level				=	0;
+	m_step				=	0;
 	m_nextNum			=	0;
 	m_nextIsRock		=	false;
 	m_column			=	-1;
@@ -49,9 +66,18 @@ bool CheckerGame::initilizeGame()
 
 	mScore = Score::create();
 	mScore->setPosition(ccp( 0, 0));
-	addChild(mScore,2);
+	addChild(mScore,12);
 
-
+	for(int i=0;i!=15;++i)
+	{
+		int num=rand()%7+1;
+		int col=rand()%7;
+		while(m_content->getHeight(col)>5)
+			col=rand()%7;
+		int rock=rand()%2;
+		m_content->addPiece(col,num,rock);
+	}
+	/*
 	m_content->addPiece(0,1,false);
 	m_content->addPiece(0,7,true);
 	m_content->addPiece(1,2,false);
@@ -60,16 +86,24 @@ bool CheckerGame::initilizeGame()
 	m_content->addPiece(4,5,false);
 	m_content->addPiece(5,6,false);
 	m_content->addPiece(6,7,true);
+	*/
 
+	m_levelLabel = CCLabelBMFont::create("Level1", s_pPathScoreFont);
+	m_levelLabel->setPosition(ccp( VisibleRect::left().x +140, VisibleRect::top().y - 40));
+	addChild(m_levelLabel,2);
 
-
+	m_dropLabel = CCLabelBMFont::create("next level in 25 drops", s_pPathScoreFont);
+	m_dropLabel->setPosition(ccp( VisibleRect::right().x -140, VisibleRect::bottom().y + 40));
+	addChild(m_dropLabel,2);
+	m_dropLabel->setScale(0.5f);
+	
 	return true;
 }
 
 void CheckerGame::resetNext()
 {
 	m_nextNum=rand()%7+1;
-	m_nextIsRock=rand()%10>m_rockRate;
+	m_nextIsRock=float(rand()%10)<m_rockRate;
 	m_resetNext=false;
 }
 
@@ -86,7 +120,15 @@ int CheckerGame::containsTouchLocation(CCTouch* touch)
 	return -1;
 }
 
-
+bool CheckerGame::canStart()
+{
+	for(unsigned int i =0;i!=7;++i)
+	{
+		if (m_content->getHeight(i)!=7)
+			return true;
+	}
+	return false;
+}
 
 void CheckerGame::startLink(int column)
 {
@@ -103,11 +145,21 @@ void CheckerGame::endLink()
 
 void CheckerGame::levelUp()
 {
-	if(m_level%m_threhold==(m_threhold-1))
+	if(m_step==(m_threhold-1))
 	{
-		if(!m_content->levelUp())
+		if(!m_content->riseUp())
 			gameOver();
+		++m_level;
+		if(m_level!=22)
+			m_rockRate=levels[m_level];
+
+		char string[12] = {0};
+		sprintf(string, "Level%d", m_level);
+		m_levelLabel->setString(string);
+		m_step=0;
 	}
+	
+
 }
 void CheckerGame::gameOver()
 {
@@ -120,6 +172,8 @@ void CheckerGame::gameOver()
 
 bool CheckerGame::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)
 {
+	if(!canStart())
+		gameOver();
 	levelUp();
 	m_column=containsTouchLocation(pTouch);
 	if(m_resetNext)
@@ -141,8 +195,12 @@ void CheckerGame::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
 	{
 		m_preview->EndPreview(m_column);
 		this->setTouchEnabled(false);
+		++m_step;
+		char string[25] = {0};
+		sprintf(string, "next level in %d drops", (m_threhold-m_step));
+		m_dropLabel->setString(string);
 	}
-	++m_level;
+	
 	
 }
 
@@ -153,7 +211,8 @@ CCSprite* CheckerGame::DrawPiece(const Grid element,const int num,const int rock
 			n=9-rock;
 		else
 			n=num-1;
-		CCSprite* pSprite = CCSprite::create(s_pPathPiece,CCRectMake(n*34,0,34,34));
+		CCSprite* pSprite = CCSprite::create(s_pPathPiece,CCRectMake(n*40,0,40,40));
+		pSprite->setScale(0.99f);
 		pSprite->setPosition(ccp(VisibleRect::unit()*element.x+0.5*VisibleRect::unit()+VisibleRect::origin().x, VisibleRect::unit()*element.y+0.5*VisibleRect::unit() +VisibleRect::origin().y));
 		//pSprite->autorelease();
 		addChild(pSprite,10);

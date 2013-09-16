@@ -16,7 +16,7 @@ GameScene::GameScene()
 
 	CCMenuItemImage *pCloseItem = CCMenuItemImage::create(s_pPathCloseNormal, s_pPathCloseSelect, this, menu_selector(GameScene::menuCallback) );
     CCMenu* pMenu =CCMenu::create(pCloseItem, NULL);
-	pCloseItem->setPosition(ccp( VisibleRect::right().x - 50, VisibleRect::bottom().y + 50));
+	pCloseItem->setPosition(ccp( VisibleRect::left().x + 50, VisibleRect::top().y - 40));
     pMenu->setPosition( CCPointZero );
 	addChild(pMenu, 1);
 }
@@ -29,7 +29,7 @@ void GameScene::onEnter()
 		addChild(menuLayer,1);
 		menuLayer->release();
 	}
-	menuLayer->setVisible(false);
+
 
 	if(!overLayer){
 		overLayer = new GameOver();
@@ -42,7 +42,7 @@ void GameScene::onEnter()
 
 void GameScene::menuCallback(CCObject* pSender)
 {
-	menuLayer->setVisible(true);
+	menuLayer->jumpIn();
 }
 
 void GameScene::startGame()
@@ -54,12 +54,16 @@ void GameScene::startGame()
     CCDirector::sharedDirector()->replaceScene(this);
 
 }
-
+void GameScene::restart()
+{
+	if(gameLayer)
+		gameLayer->restart();
+}
 
 
 void GameScene::resumeGame()
 {
-	menuLayer->setVisible(false);
+	menuLayer->jumpOut();
 }
 
 void GameScene::gameOver()
