@@ -41,6 +41,7 @@ using namespace CocosDenshion;
 	};
 
 	const char s_pRemove[] = "audio/remove.wav";
+	const char s_pBreak[] = "audio/break.wav";
 #endif
 
 
@@ -68,7 +69,8 @@ CheckerBoard::CheckerBoard(CheckerGame *parent)
 
 	for(int j=0;j!=18;++j)
 		SimpleAudioEngine::sharedEngine()->preloadEffect( effect[j].c_str() );
-	SimpleAudioEngine::sharedEngine()->setEffectsVolume(0.5);
+	SimpleAudioEngine::sharedEngine()->preloadEffect(s_pRemove);
+	SimpleAudioEngine::sharedEngine()->preloadEffect(s_pBreak);
 #ifdef DEBUGVIEW
 	DebugView();
 #endif
@@ -212,16 +214,29 @@ void CheckerBoard::onRemovedPieces(const Grid element)
 
 void CheckerBoard::breakRock(const Grid element)
 {
-
+	bool play(false);
 	if(element.x!=6&&content[element.x+1][element.y].IsRock())
+	{
 		content[element.x+1][element.y].BreakRock();
+		play=true;
+	}
 	if(element.x!=0&&content[element.x-1][element.y].IsRock())
+	{
 		content[element.x-1][element.y].BreakRock();
+		play=true;
+	}
 	if(element.y!=6&&content[element.x][element.y+1].IsRock())
+	{
 		content[element.x][element.y+1].BreakRock();
+		play=true;
+	}
 	if(element.y!=0&&content[element.x][element.y-1].IsRock())
+	{
 		content[element.x][element.y-1].BreakRock();
-		
+		play=true;
+	}
+	if(play)
+		SimpleAudioEngine::sharedEngine()->playEffect(s_pBreak);
 }
 
 bool CheckerBoard::riseUp()

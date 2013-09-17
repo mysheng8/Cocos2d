@@ -16,7 +16,7 @@ const std::string g_PauseMenu[] = {
 	"Resume",
 	"Restart",
 	"Option",
-    "Back To Menu"
+    "Main Menu"
 };
 
 const float volume[]={1.0f,0.75f,0.5f,0.25f,0.0f};
@@ -103,11 +103,7 @@ MenuScene::MenuScene()
 
 	
 
-	// add menu resume game
-	CCLabelBMFont* resumelabel = CCLabelBMFont::create(g_PauseMenu[0].c_str(), s_pPathMenuFont);     
-    CCMenuItemLabel* pResumeItem = CCMenuItemLabel::create(resumelabel, this, menu_selector(MenuScene::resumeCallback));
-    m_pMainMenu->addChild(pResumeItem, 2);
-    pResumeItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 2* LINE_SPACE) ));
+
 
 
 
@@ -116,22 +112,27 @@ MenuScene::MenuScene()
 	CCLabelBMFont* newlabel = CCLabelBMFont::create(g_PauseMenu[1].c_str(), s_pPathMenuFont);     
     CCMenuItemLabel* pNewItem = CCMenuItemLabel::create(newlabel, this, menu_selector(MenuScene::restartCallback));
     m_pMainMenu->addChild(pNewItem, 2);
-    pNewItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 1* LINE_SPACE) ));
+    pNewItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 2* LINE_SPACE) ));
+
+	// add menu resume game
+	CCLabelBMFont* resumelabel = CCLabelBMFont::create(g_PauseMenu[0].c_str(), s_pPathMenuFont);     
+    CCMenuItemLabel* pResumeItem = CCMenuItemLabel::create(resumelabel, this, menu_selector(MenuScene::resumeCallback));
+    m_pMainMenu->addChild(pResumeItem, 2);
+    pResumeItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 3* LINE_SPACE) ));
 
 
 	// add option
 	CCLabelBMFont* oplabel = CCLabelBMFont::create(g_PauseMenu[2].c_str(), s_pPathMenuFont);     
     CCMenuItemLabel* pOptionItem = CCMenuItemLabel::create(oplabel, this, menu_selector(MenuScene::optionCallback));
     m_pMainMenu->addChild(pOptionItem, 2);
-    pOptionItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 3 * LINE_SPACE) ));
+    pOptionItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 4 * LINE_SPACE) ));
 
-	
 
 	// add menu quit
 	CCLabelBMFont* quitlabel = CCLabelBMFont::create(g_PauseMenu[3].c_str(), s_pPathMenuFont);     
     CCMenuItemLabel* pQuitItem = CCMenuItemLabel::create(quitlabel, this, menu_selector(MenuScene::quitCallback));
     m_pMainMenu->addChild(pQuitItem, 2);
-    pQuitItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 4 * LINE_SPACE) ));
+    pQuitItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 5 * LINE_SPACE) ));
 
 
 
@@ -248,7 +249,7 @@ GameOverLayer::GameOverLayer(GameScene *parent)
 
 	if(pScene)
 	{
-		char string[12] = {0};
+		char string[18] = {0};
 		sprintf(string, "Score: %d",pScene->getScore());
 		CCLabelBMFont* score = CCLabelBMFont::create(string, s_pPathScoreFont); 
 		score->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 2* LINE_SPACE) ));

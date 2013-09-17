@@ -90,8 +90,8 @@ void Score::addScore(const int score)
 	char string[12] = {0};
     sprintf(string, "%d", score);
 	CCFiniteTimeAction*  scale = CCSequence::create(
-        CCScaleBy::create(0.01f,2.0f,2.0f),
-        CCScaleBy::create(0.5f,0.5f,0.5f),
+        CCScaleTo::create(0.01f,2.0f,2.0f),
+        CCScaleTo::create(0.5f,1.0f,1.0f),
         NULL);
 	CCAction*  action = CCSpawn::create(
         CCJumpBy::create(0.2f,ccp(0,0),40,1),

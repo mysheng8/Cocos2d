@@ -43,7 +43,8 @@ void CheckerPiece::Clear()
 {
 	Empty();
 	CCFiniteTimeAction*  empty = CCSequence::create(
-		CCScaleBy::create(0.01,1.5,1.5),
+		CCScaleBy::create(0.02,2.0,2.0),
+		CCScaleBy::create(0.03,0.7,0.7),
         CCScaleBy::create(0.6,0.2,0.2),
 		CCCallFunc::create(this, callfunc_selector(CheckerPiece::onRemoveSprite)),
         NULL);

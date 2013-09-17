@@ -22,10 +22,11 @@ GameScene::GameScene()
 
 void GameScene::menuCallback(CCObject* pSender)
 {
-	if(menuLayer==0)
-		menuLayer = new MenuScene();
-		addChild(menuLayer,1);
-		menuLayer->release();
+	if(menuLayer)
+		removeChild(menuLayer);
+	menuLayer = new MenuScene();
+	addChild(menuLayer,1);
+	menuLayer->release();
 	menuLayer->jumpIn();
 }
 

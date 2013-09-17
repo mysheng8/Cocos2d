@@ -56,11 +56,11 @@ bool CheckerGame::initilizeGame()
 	m_nextNum			=	0;
 	m_nextIsRock		=	false;
 	m_column			=	-1;
-	m_resetNext			=	true;
 	srand((unsigned)time(NULL)); 
 	m_preview = new CheckerPreview(this);
 	m_content = new CheckerBoard(this);
-
+	resetNext();
+	m_preview->resetPreview(m_nextNum,m_nextIsRock);
 	
 	DrawBoard();
 
@@ -107,7 +107,6 @@ void CheckerGame::resetNext()
 {
 	m_nextNum=rand()%7+1;
 	m_nextIsRock=float(rand()%10)<m_rockRate;
-	m_resetNext=false;
 }
 
 int CheckerGame::containsTouchLocation(CCTouch* touch)
@@ -120,7 +119,14 @@ int CheckerGame::containsTouchLocation(CCTouch* touch)
 			return i;
 		}
 	}
-	return -1;
+	if(touch->getLocation().y<VisibleRect::origin().y+VisibleRect::unit()*7&&touch->getLocation().y>VisibleRect::origin().y)
+	{
+		if(touch->getLocation().x<VisibleRect::origin().x)
+			return 0;
+		if(touch->getLocation().x>(VisibleRect::origin().x+VisibleRect::unit()*7))
+			return 6;
+	}
+	return 0;
 }
 
 bool CheckerGame::canStart()
@@ -139,12 +145,14 @@ void CheckerGame::startLink(int column)
 	CheckerPiece* cp = m_content->addPiece(column,m_nextNum,m_nextIsRock);
 	if(cp)
 		m_content->startLink(cp->GetGrid());
-	m_resetNext=true;
+
 }
 
 void CheckerGame::endLink()
 {
 	this->setTouchEnabled(true);
+	resetNext();
+	m_preview->resetPreview(m_nextNum,m_nextIsRock);
 }
 
 void CheckerGame::levelUp()
@@ -182,9 +190,6 @@ bool CheckerGame::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)
 		gameOver();
 	levelUp();
 	m_column=containsTouchLocation(pTouch);
-	if(m_resetNext)
-		resetNext();
-	m_preview->resetPreview(m_nextNum,m_nextIsRock);
 	m_preview->StartPreview(m_column);
 	return true;
 }
