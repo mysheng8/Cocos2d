@@ -15,8 +15,8 @@ public:
 
     void closeCallback(CCObject * pSender);
 	void startGame(CCObject * pSender);
-
-
+	void rankCallback(CCObject * pSender);
+	
 
 private:
 	CCMenu* m_pItemMenu;

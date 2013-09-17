@@ -2,19 +2,26 @@
 #define __MENU_SCENE_H__
 
 #include "cocos2d.h"
+#include "GameScene.h"
+#include <stdio.h>
+#include <string>
 
 USING_NS_CC;
 
+using namespace std;
 class PopoutMenu: public CCLayer
 {
 public:
 	PopoutMenu();
 	~PopoutMenu();
-	void  jumpIn();
-	void jumpOut();
+	virtual void  jumpIn();
+	virtual void jumpOut();
+
+	virtual void restartCallback(CCObject * pSender);
+	virtual void resumeCallback(CCObject * pSender);
+	virtual void quitCallback(CCObject * pSender);
 
 };
-
 
 class MenuScene : public PopoutMenu
 {
@@ -23,9 +30,6 @@ public:
 	~MenuScene();
 
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
-    void quitCallback(CCObject * pSender);
-	void resumeCallback(CCObject * pSender);
-	void newCallback(CCObject * pSender);
 
 	void optionCallback(CCObject * pSender);
 	void backCallback(CCObject * pSender);
@@ -41,18 +45,73 @@ private:
 
 };
 
-class RankScene: public PopoutMenu
+class GameScene;
+
+class GameOverLayer:public PopoutMenu
 {
 public:
-	RankScene();
-	~RankScene();
+	GameOverLayer(GameScene *parent = 0); 
+	~GameOverLayer();
 
-	void rank(int inScore);
+    // there's no 'id' in cpp, so we recommend returning the class instance pointer
+    void submitCallback(CCObject * pSender);
+	void setSubmitEnable(bool canSubmit);
 
-	void inputName();
-
-
+private:
+	CCMenu* m_pItemMenu;
+	CCMenuItemLabel *pSubmitItem;
+	GameScene *pScene;
 };
 
+class InputLayer:public PopoutMenu, public CCIMEDelegate
+{
+public:
+	InputLayer();
 
+    virtual void onClickTrackNode(bool bClicked);
+
+	virtual void registerWithTouchDispatcher();
+    virtual void keyboardWillShow(CCIMEKeyboardNotificationInfo& info);
+
+
+    virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
+    virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
+
+	void backCallback(CCObject * pSender);
+	void nextCallback(CCObject * pSender);
+
+protected:
+    CCNode * m_pTrackNode;
+    CCPoint  m_beginPos;
+};
+
+struct Rank
+{
+public:
+	string name;
+	int score;
+	Rank(const string inName = " ",  const int inScore = 0):name(inName),score(inScore){};
+};
+
+class RankLayer: public PopoutMenu
+{
+public:
+	RankLayer();
+	~RankLayer();
+
+	virtual void onEnter();
+
+	void backCallback(CCObject * pSender);
+	void nextCallback(CCObject * pSender);
+	void quitCallback(CCObject * pSender);
+	void addButtons(bool isGameOver);
+	void rank(const Rank input);
+
+	void rank();
+
+
+private:
+	list<Rank> *scoreList;
+
+};
 #endif // __TITLE_SCENE_H__

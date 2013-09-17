@@ -15,7 +15,9 @@ public:
 	int getScore(){return m_score;};
 	void raiseMulti();
 	void reset();
-	void scoreUp();
+	void score();
+	void levelUp();
+	void tinyUp();
 	void resetMulti(){m_multi = 1;};
 	int getMulti(){return m_multi;};
 
@@ -23,12 +25,13 @@ public:
 private:
 	int m_score;
 	int m_multi;
-	int m_base;
+	int m_level;
 	CCLabelBMFont* m_scoreL;
 	CCLabelBMFont*	m_multiL;
 	void onRise();
 	void onDisappear(CCNode* node);
-
+	void addScore(const int score);
+	void riseBonus(const char* str,const float delay = 1.0f);
 
 };
 

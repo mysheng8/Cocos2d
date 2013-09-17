@@ -32,10 +32,11 @@ const ccColor3B bcolors[] = {		ccc3(185,11,60),
 		ccc3(205,69,171)};
 
 
+const int g_levelScore[] =	{100,150,200,300,500,1000,1500,2000,3000,5000,10000,15000,20000,30000,50000,100000,150000,200000,300000,500000,1000000};
 
 
-
-
+#define BASESCORE 20;
+#define DROPSCORE 5;
 
 
 bool Score::init()
@@ -55,16 +56,39 @@ bool Score::init()
 	m_multiL->setVisible(false);
 	m_score = 0;
 	m_multi = 1;
-	m_base  = 10; 
-
+	m_level	= 0;
 	return true;
 }
 
-void Score::scoreUp()
+void Score::score()
 {
-	m_score+=m_multi*m_base;
+	m_score+=m_multi*BASESCORE;
+	addScore(m_score);
+	riseBonus(g_Bonus[(m_multi-1)%15].c_str());
+}
+
+void Score::tinyUp()
+{
+	m_score+=DROPSCORE;
+	addScore(m_score);
+}
+
+
+void Score::levelUp()
+{
+	m_score+=g_levelScore[m_level];
+	addScore(m_score);
+
+	char string[25] = {0};
+    sprintf(string, "Level Up!\n+%d", g_levelScore[m_level]);
+	riseBonus(string,2.0f);
+	++m_level;
+}
+
+void Score::addScore(const int score)
+{
 	char string[12] = {0};
-    sprintf(string, "%d", m_score);
+    sprintf(string, "%d", score);
 	CCFiniteTimeAction*  scale = CCSequence::create(
         CCScaleBy::create(0.01f,2.0f,2.0f),
         CCScaleBy::create(0.5f,0.5f,0.5f),
@@ -76,14 +100,17 @@ void Score::scoreUp()
 	//action->autorelease();
 	m_scoreL->runAction(action);
 	m_scoreL->setString(string);
-	CCLabelBMFont*	bonus = CCLabelBMFont::create(g_Bonus[(m_multi-1)%15].c_str(),s_pPathScoreFont);
+}
+void Score::riseBonus(const char* str,const float delay)
+{
+	CCLabelBMFont*	bonus = CCLabelBMFont::create(str,s_pPathScoreFont);
 	bonus->setPosition(ccp( VisibleRect::center().x, VisibleRect::center().y-10));
 	bonus->setScale(1.3f);
 	bonus->setColor(bcolors[m_multi%6]);
 	addChild(bonus,1);
 	CCFiniteTimeAction*  rise = CCSequence::create(
 		CCJumpBy::create(0.3f,ccp(0,0),70,1),
-		CCFadeOut::create(1),
+		CCFadeOut::create(delay),
 		CCCallFuncN::create(this, callfuncN_selector(Score::onDisappear)),
         NULL);
 	bonus->runAction(rise);

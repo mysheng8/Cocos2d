@@ -3,7 +3,6 @@
 #include "VisibleRect.h"
 #include "CheckerBoard.h"
 #include "MenuScene.h"
-#include "GameOver.h"
 
 USING_NS_CC;
 
@@ -11,8 +10,8 @@ GameScene::GameScene()
 {
 	CCScene::init();
 	gameLayer = 0;
-	menuLayer=0;
-	overLayer=0;
+	menuLayer = 0;
+	prevLayer = 0;
 
 	CCMenuItemImage *pCloseItem = CCMenuItemImage::create(s_pPathCloseNormal, s_pPathCloseSelect, this, menu_selector(GameScene::menuCallback) );
     CCMenu* pMenu =CCMenu::create(pCloseItem, NULL);
@@ -21,27 +20,12 @@ GameScene::GameScene()
 	addChild(pMenu, 1);
 }
 
-void GameScene::onEnter()
+void GameScene::menuCallback(CCObject* pSender)
 {
-	CCScene::onEnter();
-	if(!menuLayer){
+	if(menuLayer==0)
 		menuLayer = new MenuScene();
 		addChild(menuLayer,1);
 		menuLayer->release();
-	}
-
-
-	if(!overLayer){
-		overLayer = new GameOver();
-		addChild(overLayer,1);
-		overLayer->release();
-	}
-	overLayer->setVisible(false);
-
-}
-
-void GameScene::menuCallback(CCObject* pSender)
-{
 	menuLayer->jumpIn();
 }
 
@@ -56,6 +40,8 @@ void GameScene::startGame()
 }
 void GameScene::restart()
 {
+	if(menuLayer)
+		menuLayer->jumpOut();
 	if(gameLayer)
 		gameLayer->restart();
 }
@@ -68,9 +54,33 @@ void GameScene::resumeGame()
 
 void GameScene::gameOver()
 {
-	overLayer->setVisible(true);
+	removeChild(menuLayer);
+	gameLayer->setTouchEnabled(false);
+	menuLayer = new GameOverLayer(this);
+	addChild(menuLayer,1);
+	menuLayer->jumpIn();
+}
+
+void GameScene::switchMenu(PopoutMenu *next)
+{
+	if(prevLayer&&prevLayer!=next)
+		prevLayer->cleanup();
+	prevLayer=menuLayer;
+	menuLayer->jumpOut();
+	removeChild(menuLayer,false);
+
+
+
+	menuLayer = next;
+	addChild(menuLayer,1);
+	menuLayer->jumpIn();
 }
 
 GameScene::~GameScene()
 {
+}
+
+int GameScene::getScore()
+{
+	return gameLayer->mScore->getScore();
 }

@@ -305,7 +305,7 @@ void CheckerBoard::startLink(const Grid element)
 		for(vector<CheckerPiece*>::iterator it=removeList.begin();it!=removeList.end();++it)
 		{
 			(*it)->Clear();
-			m_parent->mScore->scoreUp();
+			m_parent->mScore->score();
 		}
 		SimpleAudioEngine::sharedEngine()->playEffect(s_pRemove);
 	}
@@ -342,7 +342,7 @@ void CheckerBoard::removePieces()
 		for(vector<CheckerPiece*>::iterator it=removeList.begin();it!=removeList.end();++it)
 		{
 			(*it)->Clear();
-			m_parent->mScore->scoreUp();
+			m_parent->mScore->score();
 			SimpleAudioEngine::sharedEngine()->playEffect(effect[(*it)->GetNum()-1].c_str());
 		}
 		int e_id=m_parent->mScore->getMulti()*2;

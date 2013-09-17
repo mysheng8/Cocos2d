@@ -68,7 +68,7 @@ bool CheckerGame::initilizeGame()
 	mScore->setPosition(ccp( 0, 0));
 	addChild(mScore,12);
 
-	for(int i=0;i!=15;++i)
+	for(int i=0;i!=25;++i)
 	{
 		int num=rand()%7+1;
 		int col=rand()%7;
@@ -92,7 +92,10 @@ bool CheckerGame::initilizeGame()
 	m_levelLabel->setPosition(ccp( VisibleRect::left().x +140, VisibleRect::top().y - 40));
 	addChild(m_levelLabel,2);
 
-	m_dropLabel = CCLabelBMFont::create("next level in 25 drops", s_pPathScoreFont);
+
+	char string[24] = {0};
+	sprintf(string, "next level in %d drops", m_threhold);
+	m_dropLabel = CCLabelBMFont::create(string, s_pPathScoreFont);
 	m_dropLabel->setPosition(ccp( VisibleRect::right().x -140, VisibleRect::bottom().y + 40));
 	addChild(m_dropLabel,2);
 	m_dropLabel->setScale(0.5f);
@@ -132,6 +135,7 @@ bool CheckerGame::canStart()
 
 void CheckerGame::startLink(int column)
 {
+	mScore->tinyUp();
 	CheckerPiece* cp = m_content->addPiece(column,m_nextNum,m_nextIsRock);
 	if(cp)
 		m_content->startLink(cp->GetGrid());
@@ -157,6 +161,8 @@ void CheckerGame::levelUp()
 		sprintf(string, "Level%d", m_level);
 		m_levelLabel->setString(string);
 		m_step=0;
+
+		mScore->levelUp();
 	}
 	
 
@@ -194,7 +200,8 @@ void CheckerGame::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
 	if (m_column>=0)
 	{
 		m_preview->EndPreview(m_column);
-		this->setTouchEnabled(false);
+		if(m_content->getHeight(m_column)!=7)
+			this->setTouchEnabled(false);
 		++m_step;
 		char string[25] = {0};
 		sprintf(string, "next level in %d drops", (m_threhold-m_step));
