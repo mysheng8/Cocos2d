@@ -64,4 +64,4 @@ private:
 
 
 
-#endif
+#endif	// __CHECKERPIECE_H__

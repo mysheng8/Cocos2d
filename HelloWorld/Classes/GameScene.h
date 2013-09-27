@@ -1,9 +1,9 @@
-#ifndef __GAME_SCENE_H__
-#define __GAME_SCENE_H__
+#ifndef __GAMESCENE_H__
+#define __GAMESCENE_H__
 
 #include "cocos2d.h"
 #include "CheckerBoard.h"
-#include "MenuScene.h"
+#include "MenuLayers.h"
 
 
 USING_NS_CC;
@@ -37,4 +37,4 @@ public:
 	PopoutMenu* prevLayer;
 };
 
-#endif // __GAME_SCENE_H__
+#endif // __GAMESCENE_H__

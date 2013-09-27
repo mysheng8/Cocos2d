@@ -110,6 +110,16 @@ CheckerPiece* CheckerBoard::addPiece(const int column,const int num,const bool i
 	return &content[column][row];
 }
 
+CheckerPiece* CheckerBoard::getCheckerPiece(const Grid element)
+{
+	return &content[element.x][element.y];
+}
+
+CheckerPiece* CheckerBoard::getCheckerPiece(const int column,const int row)
+{
+	return &content[column][row];
+}
+
 void CheckerBoard::checkColumnPiece(const int column)
 {
 	bool hasRemoved(false);
@@ -358,6 +368,7 @@ void CheckerBoard::removePieces()
 		{
 			(*it)->Clear();
 			m_parent->mScore->score();
+			m_parent->m_Energy->ChargeEnergy(m_parent->mScore->getMulti());
 			SimpleAudioEngine::sharedEngine()->playEffect(effect[(*it)->GetNum()-1].c_str());
 		}
 		int e_id=m_parent->mScore->getMulti()*2;

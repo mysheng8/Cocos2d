@@ -1,5 +1,5 @@
-#ifndef __MENU_SCENE_H__
-#define __MENU_SCENE_H__
+#ifndef __MENULAYERS_H__
+#define __MENULAYERS_H__
 
 #include "cocos2d.h"
 #include "GameScene.h"
@@ -23,11 +23,11 @@ public:
 
 };
 
-class MenuScene : public PopoutMenu
+class MenuLayer : public PopoutMenu
 {
 public:
-	MenuScene(); 
-	~MenuScene();
+	MenuLayer(); 
+	~MenuLayer();
 
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
 
@@ -114,4 +114,4 @@ private:
 	list<Rank> *scoreList;
 
 };
-#endif // __TITLE_SCENE_H__
+#endif // __MENULAYERS_H__

@@ -28,4 +28,4 @@ private:
 	void movePreview(int column);
 };
 
-#endif
+#endif //__CHECKERPREVIEW_H__

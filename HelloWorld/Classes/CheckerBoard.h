@@ -25,17 +25,17 @@ public:
 	CheckerBoard(CheckerGame *parent);  
 	~CheckerBoard();
 
+	CheckerGame *m_parent;
+
 	CheckerPiece* addPiece(const int column ,const int num,const bool isRock);
-
-	void onRemovedPieces(const Grid element);
-	void onDropPieces();
-
+	CheckerPiece* getCheckerPiece(const Grid element); 
+	CheckerPiece* getCheckerPiece(const int column,const int row);
 	bool riseUp();
-
 	int getHeight(const int column);
 	void startLink(const Grid element);
-
-	CheckerGame *m_parent;
+	void onRemovedPieces(const Grid element);
+	void onDropPieces();
+	
 
 private:
 	
@@ -66,4 +66,4 @@ private:
 #endif
 };
 
-#endif
+#endif //__CHECKERBOARD_H__

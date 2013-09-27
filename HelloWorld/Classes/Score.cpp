@@ -43,15 +43,15 @@ bool Score::init()
 {
 	
 	CCLabelBMFont* label = CCLabelBMFont::create("Score", s_pPathScoreFont);
-	label->setPosition(ccp( VisibleRect::right().x - 70, VisibleRect::top().y - 40));
+	label->setPosition(ccp( VisibleRect::left().x + 70, VisibleRect::top().y - 40));
 	addChild(label,1);
 
 	m_scoreL = CCLabelBMFont::create("0",s_pPathScoreFont);
-	m_scoreL->setPosition(ccp( VisibleRect::right().x - 70, VisibleRect::top().y - 70));
+	m_scoreL->setPosition(ccp( VisibleRect::left().x + 70, VisibleRect::top().y - 70));
 	addChild(m_scoreL,1);
 
 	m_multiL = CCLabelBMFont::create("x1",s_pPathScoreFont);
-	m_multiL->setPosition(ccp( VisibleRect::right().x - 70, VisibleRect::top().y - 100));
+	m_multiL->setPosition(ccp( VisibleRect::left().x + 70, VisibleRect::top().y - 100));
 	addChild(m_multiL,1);
 	m_multiL->setVisible(false);
 	m_score = 0;

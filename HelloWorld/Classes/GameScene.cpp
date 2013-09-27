@@ -2,7 +2,7 @@
 #include "resource.h"
 #include "VisibleRect.h"
 #include "CheckerBoard.h"
-#include "MenuScene.h"
+#include "MenuLayers.h"
 
 USING_NS_CC;
 
@@ -15,7 +15,7 @@ GameScene::GameScene()
 
 	CCMenuItemImage *pCloseItem = CCMenuItemImage::create(s_pPathCloseNormal, s_pPathCloseSelect, this, menu_selector(GameScene::menuCallback) );
     CCMenu* pMenu =CCMenu::create(pCloseItem, NULL);
-	pCloseItem->setPosition(ccp( VisibleRect::left().x + 50, VisibleRect::top().y - 40));
+	pCloseItem->setPosition(ccp( VisibleRect::right().x -40, VisibleRect::top().y - 40));
     pMenu->setPosition( CCPointZero );
 	addChild(pMenu, 1);
 }
@@ -24,7 +24,7 @@ void GameScene::menuCallback(CCObject* pSender)
 {
 	if(menuLayer)
 		removeChild(menuLayer);
-	menuLayer = new MenuScene();
+	menuLayer = new MenuLayer();
 	addChild(menuLayer,1);
 	menuLayer->release();
 	menuLayer->jumpIn();

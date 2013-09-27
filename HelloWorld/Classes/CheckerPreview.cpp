@@ -43,17 +43,11 @@ void CheckerPreview::movePreview(int column)
 
 void CheckerPreview::StartPreview(int column)
 {
-	char str[12]={0};
-	sprintf(str,"%d",column);
-	CCLog(str);
 	movePreview(column);
 }
 
 void CheckerPreview::EditPreview(int column)
 {
-	char str[12]={0};
-	sprintf(str,"%d",column);
-	CCLog(str);
 	movePreview(column);
 }
 

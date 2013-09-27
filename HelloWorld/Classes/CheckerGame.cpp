@@ -68,6 +68,11 @@ bool CheckerGame::initilizeGame()
 	mScore->setPosition(ccp( 0, 0));
 	addChild(mScore,12);
 
+	m_Energy=Energy::create();
+	m_Energy->setPosition(ccp( 0, 0));
+	addChild(m_Energy,12);
+
+
 	for(int i=0;i!=25;++i)
 	{
 		int num=rand()%7+1;
@@ -89,14 +94,14 @@ bool CheckerGame::initilizeGame()
 	*/
 
 	m_levelLabel = CCLabelBMFont::create("Level1", s_pPathScoreFont);
-	m_levelLabel->setPosition(ccp( VisibleRect::left().x +140, VisibleRect::top().y - 40));
+	m_levelLabel->setPosition(ccp( VisibleRect::right().x -150, VisibleRect::top().y - 40));
 	addChild(m_levelLabel,2);
 
 
 	char string[24] = {0};
 	sprintf(string, "next level in %d drops", m_threhold);
 	m_dropLabel = CCLabelBMFont::create(string, s_pPathScoreFont);
-	m_dropLabel->setPosition(ccp( VisibleRect::right().x -140, VisibleRect::bottom().y + 40));
+	m_dropLabel->setPosition(ccp( VisibleRect::left().x +100, VisibleRect::bottom().y + 40));
 	addChild(m_dropLabel,2);
 	m_dropLabel->setScale(0.5f);
 	
@@ -252,7 +257,7 @@ void CheckerGame::DrawBoard()
 void CheckerGame::DrawGuide(const Grid start,const Grid end)
 {
 	CCDrawNode *draw = CCDrawNode::create();
-	addChild(draw,2);
+	addChild(draw,12);
 	
 	int width=(end.x-start.x+1)*VisibleRect::unit();
 	int height=(end.y-start.y+1)*VisibleRect::unit();

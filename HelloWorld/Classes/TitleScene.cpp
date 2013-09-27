@@ -2,7 +2,7 @@
 #include "resource.h"
 #include "VisibleRect.h"
 #include "GameScene.h"
-#include "MenuScene.h"
+#include "MenuLayers.h"
 
 #define LINE_SPACE          80
 

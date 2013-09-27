@@ -1,4 +1,4 @@
-#include "MenuScene.h"
+#include "MenuLayers.h"
 #include "resource.h"
 #include "VisibleRect.h"
 #include "GameScene.h"
@@ -94,7 +94,7 @@ void PopoutMenu::quitCallback(CCObject* pSender)
 	pScene->release();
 }
 
-MenuScene::MenuScene()
+MenuLayer::MenuLayer()
 {
 	m_sound=0;
 	m_music=0;
@@ -110,27 +110,27 @@ MenuScene::MenuScene()
     // add menu new game
 
 	CCLabelBMFont* newlabel = CCLabelBMFont::create(g_PauseMenu[1].c_str(), s_pPathMenuFont);     
-    CCMenuItemLabel* pNewItem = CCMenuItemLabel::create(newlabel, this, menu_selector(MenuScene::restartCallback));
+    CCMenuItemLabel* pNewItem = CCMenuItemLabel::create(newlabel, this, menu_selector(MenuLayer::restartCallback));
     m_pMainMenu->addChild(pNewItem, 2);
     pNewItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 2* LINE_SPACE) ));
 
 	// add menu resume game
 	CCLabelBMFont* resumelabel = CCLabelBMFont::create(g_PauseMenu[0].c_str(), s_pPathMenuFont);     
-    CCMenuItemLabel* pResumeItem = CCMenuItemLabel::create(resumelabel, this, menu_selector(MenuScene::resumeCallback));
+    CCMenuItemLabel* pResumeItem = CCMenuItemLabel::create(resumelabel, this, menu_selector(MenuLayer::resumeCallback));
     m_pMainMenu->addChild(pResumeItem, 2);
     pResumeItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 3* LINE_SPACE) ));
 
 
 	// add option
 	CCLabelBMFont* oplabel = CCLabelBMFont::create(g_PauseMenu[2].c_str(), s_pPathMenuFont);     
-    CCMenuItemLabel* pOptionItem = CCMenuItemLabel::create(oplabel, this, menu_selector(MenuScene::optionCallback));
+    CCMenuItemLabel* pOptionItem = CCMenuItemLabel::create(oplabel, this, menu_selector(MenuLayer::optionCallback));
     m_pMainMenu->addChild(pOptionItem, 2);
     pOptionItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 4 * LINE_SPACE) ));
 
 
 	// add menu quit
 	CCLabelBMFont* quitlabel = CCLabelBMFont::create(g_PauseMenu[3].c_str(), s_pPathMenuFont);     
-    CCMenuItemLabel* pQuitItem = CCMenuItemLabel::create(quitlabel, this, menu_selector(MenuScene::quitCallback));
+    CCMenuItemLabel* pQuitItem = CCMenuItemLabel::create(quitlabel, this, menu_selector(MenuLayer::quitCallback));
     m_pMainMenu->addChild(pQuitItem, 2);
     pQuitItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 5 * LINE_SPACE) ));
 
@@ -165,7 +165,7 @@ MenuScene::MenuScene()
 	CCMenuItemLabel* sound = CCMenuItemLabel::create(soundlabel);
     //sound->setEnabled(false);
     CCMenuItemToggle* soundVolume = CCMenuItemToggle::createWithTarget(this, 
-                                                                menu_selector(MenuScene::setSoundCallback), 
+                                                                menu_selector(MenuLayer::setSoundCallback), 
 																item1,
 																item2,
 																item3,
@@ -177,7 +177,7 @@ MenuScene::MenuScene()
 	CCMenuItemLabel* music = CCMenuItemLabel::create(musiclabel);
     //music->setEnabled(false);
     CCMenuItemToggle *musicVolume = CCMenuItemToggle::createWithTarget(this, 
-                                                                menu_selector(MenuScene::setMusicCallback),
+                                                                menu_selector(MenuLayer::setMusicCallback),
 																item6,
 																item7,
 																item8,
@@ -186,7 +186,7 @@ MenuScene::MenuScene()
                                                                 NULL );
     
 	CCLabelBMFont* backlabel = CCLabelBMFont::create("Back", s_pPathScoreFont);
-	CCMenuItemLabel* back = CCMenuItemLabel::create(backlabel, this, menu_selector(MenuScene::backCallback) );
+	CCMenuItemLabel* back = CCMenuItemLabel::create(backlabel, this, menu_selector(MenuLayer::backCallback) );
 	m_pSubMenu = CCMenu::create(
                   sound, soundVolume,
                   music, musicVolume,
@@ -206,7 +206,7 @@ MenuScene::MenuScene()
 	
 	    // add "HelloWorld" splash screen"
 }
-MenuScene::~MenuScene()
+MenuLayer::~MenuLayer()
 {
 	m_pSubMenu->release();
 	m_pMainMenu->release();
@@ -214,26 +214,26 @@ MenuScene::~MenuScene()
 
 
 
-void MenuScene::optionCallback(CCObject* pSender)
+void MenuLayer::optionCallback(CCObject* pSender)
 {
 	removeChild(m_pMainMenu);
 	addChild(m_pSubMenu);
 }
 
-void MenuScene::backCallback(CCObject* pSender)
+void MenuLayer::backCallback(CCObject* pSender)
 {
 	removeChild(m_pSubMenu);
 	addChild(m_pMainMenu);
 }
 
-void MenuScene::setSoundCallback(CCObject* pSender)
+void MenuLayer::setSoundCallback(CCObject* pSender)
 {
 	m_sound=(m_sound+1)%5;
 	SimpleAudioEngine::sharedEngine()->setEffectsVolume(volume[m_sound]);
 	SimpleAudioEngine::sharedEngine()->playEffect(s_pClick);
 }
 
-void MenuScene::setMusicCallback(CCObject* pSender)
+void MenuLayer::setMusicCallback(CCObject* pSender)
 {
 	m_music=(m_music+1)%5;
 	SimpleAudioEngine::sharedEngine()->setEffectsVolume(volume[m_music]);

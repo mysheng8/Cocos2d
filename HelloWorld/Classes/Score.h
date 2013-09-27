@@ -36,4 +36,4 @@ private:
 };
 
 
-#endif
+#endif //__SCORE_H__

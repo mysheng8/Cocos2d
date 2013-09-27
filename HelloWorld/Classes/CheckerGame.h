@@ -5,7 +5,8 @@
 #include "Score.h"
 #include "CheckerBoard.h"
 #include "CheckerPreview.h"
-
+#include "Energy.h"
+#include "Props.h"
 
 USING_NS_CC;
 
@@ -39,6 +40,8 @@ public:
 	CheckerBoard* m_content;
 
 	Score* mScore;
+	Energy* m_Energy;
+
 	void gameOver();
 	void DrawGuide(const Grid start,const Grid end);
 	void DrawLink(const Grid *elements, const int count,bool horizontal);
@@ -78,4 +81,4 @@ private:
 
 
 
-#endif
+#endif	//__CHECKERBOARD_H__
