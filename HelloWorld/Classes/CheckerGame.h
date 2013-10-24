@@ -13,6 +13,7 @@ USING_NS_CC;
 class CheckerPreview;
 class CheckerBoard;
 struct Grid;
+class PropLayer;
 
 
 class CheckerGame: public CCLayer
@@ -40,6 +41,7 @@ public:
 	CheckerBoard* m_content;
 	Score* mScore;
 	Energy* m_Energy;
+	PropLayer* m_PropLayer;
 
 	void gameOver();
 	void DrawGuide(const Grid start,const Grid end);

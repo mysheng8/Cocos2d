@@ -99,11 +99,11 @@ CCPoint VisibleRect::origin()
 CCPoint VisibleRect::propOrigin()
 {
     lazyInit();
-    return ccp(VisibleRect::left().x+50, VisibleRect::bottom().x-100);
+    return ccp(VisibleRect::left().x+200, VisibleRect::bottom().x-120);
 }
 
 CCPoint VisibleRect::propUnit()
 {
     lazyInit();
-    return ccp(50, 50);
+    return ccp(35, 35);
 }

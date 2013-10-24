@@ -33,18 +33,19 @@ public:
 	int GetNum(){return m_num;};
 	int GetRock(){return m_rock;};
 	int GetType(){return (int)m_type;}
+	void SetNum(const int num);
 
 	void SetSprite(CCSprite* sp){m_sp=sp;};
 	Grid GetGrid(){return m_grid;};
 
 	CheckerPiece& operator=(const CheckerPiece& rhs);
 
-	void Drop(float dis);
-	void Rise(float dis);
+	void Drop(const float dis);
+	void Rise(const float dis);
 	void Clear();
 	void onDropSprite();
 	void onRemoveSprite();
-	void AddContent(int num,bool isRock);
+	void AddContent(const int num,const bool isRock);
 	void BreakRock();
 	void Empty(){m_type=PieceType(0);};
 

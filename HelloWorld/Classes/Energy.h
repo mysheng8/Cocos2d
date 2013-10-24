@@ -17,6 +17,8 @@ public:
 	void Charge(const int multi);
 	void Release(const int value);
 	bool CanRelease(const int value);
+	int GetBase(){return m_base;};
+	void SetBase(const int base){m_base=base;};
 
 private:
 	int m_base;

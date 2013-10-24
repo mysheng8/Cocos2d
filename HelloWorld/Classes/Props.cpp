@@ -9,7 +9,7 @@ Prop::Prop(const CheckerGame* game,const int cost)
 {
 	m_game=game;
 	m_cost=cost;
-	m_num=5;
+	m_num=100;
 }
 
 void Prop::addNum(const int k)
@@ -36,8 +36,11 @@ PropSprite::PropSprite(const char *normalImage, const char *selectedImage, const
 }
 
 
-bool PropLayer::init()
+bool PropLayer::initWithParent(CheckerGame *game)
 {
+	if(!CCLayer::init())
+		return false;
+	m_game=game;
 	m_max=3;
 	m_Props=new Prop*[m_max];
 	m_pMenu=CCMenu::create();
@@ -45,7 +48,12 @@ bool PropLayer::init()
 	addChild(m_pMenu, 1);
 	return true;
 }
-
+PropLayer* PropLayer::create(CheckerGame *game)
+{
+	PropLayer *pl=new PropLayer();
+	pl->initWithParent(game);
+	return pl;
+}
 void PropLayer::AddProp(const int cur, Prop *prop)
 {
 	if(cur<m_max)
@@ -81,7 +89,7 @@ bool RockBreakProp::function()
 	return true;
 }
 
-bool RotationProp::function()
+bool UpperProp::function()
 {
 	if (!m_game)
 		return false;
@@ -90,11 +98,30 @@ bool RotationProp::function()
 		for(unsigned int j=0;j!=7;++j)
 		{
 			CheckerPiece* cp = m_game->m_content->getCheckerPiece(i,j);
-			if(cp->IsRock())
+			if(cp->IsNum())
 			{
-				cp->BreakRock();
+				int n=cp->GetNum();
+				if (n<7)
+					cp->SetNum(n+1);
 			}
 		}
 	}
+	return true;
+}
+
+bool AddScoreProp::function()
+{
+	if (!m_game)
+		return false;
+	m_game->mScore->PropUp(2000);
+	return true;
+}
+
+bool EnergyUpProp::function()
+{
+	if (!m_game)
+		return false;
+	int base=m_game->m_Energy->GetBase();
+	m_game->m_Energy->SetBase(1.2*base);
 	return true;
 }

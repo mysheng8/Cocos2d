@@ -3,7 +3,16 @@
 
 USING_NS_CC;
 
-void CheckerPiece::AddContent(int num,bool isRock)
+void CheckerPiece::SetNum(const int num)
+{
+	m_num=num;
+	m_rock=0;
+	m_sp->removeFromParent();
+	m_sp=m_parent->m_parent->DrawPiece(m_grid,m_num,m_rock);
+}
+
+
+void CheckerPiece::AddContent(const int num,const bool isRock)
 {
 	m_num=num;
 	if(isRock)
@@ -61,7 +70,7 @@ void CheckerPiece::onRemoveSprite()
 	m_parent->onRemovedPieces(m_grid);
 }
 
-void CheckerPiece::Drop(float dis)
+void CheckerPiece::Drop(const float dis)
 {
 	CCActionInterval*  move = CCMoveBy::create(0.001f, ccp(0,-dis));
 	CCActionInterval* move_ease_out = CCEaseOut::create((CCActionInterval*)(move->copy()->autorelease()) , 0.5f);
@@ -69,7 +78,7 @@ void CheckerPiece::Drop(float dis)
 //	m_sp->runAction(move_ease_out);
 }
 
-void CheckerPiece::Rise(float dis)
+void CheckerPiece::Rise(const float dis)
 {
 	CCActionInterval*  move = CCMoveBy::create(0.001f, ccp(0,dis));
 	m_sp->runAction( move);

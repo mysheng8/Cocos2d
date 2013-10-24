@@ -66,13 +66,27 @@ bool CheckerGame::initilizeGame()
 
 	mScore = Score::create();
 	mScore->setPosition(ccp( 0, 0));
-	addChild(mScore,12);
+	addChild(mScore,10);
 
 	m_Energy=Energy::create();
 	m_Energy->setPosition(ccp( 0, 0));
-	addChild(m_Energy,12);
+	addChild(m_Energy,10);
+
+	m_PropLayer = PropLayer::create(this);
+	m_PropLayer->setPosition(ccp( 0, 0));
+	addChild(m_PropLayer,10);
+	Prop *p1=new RockBreakProp(this,1);
+	m_PropLayer->AddProp(0,p1);
+	m_PropLayer->DisplayProp(s_pPathCloseNormal,s_pPathCloseSelect,s_pPathCloseNormal,0,p1);
+	Prop *p2=new UpperProp(this,1);
+	m_PropLayer->AddProp(1,p2);
+	m_PropLayer->DisplayProp(s_pPathCloseNormal,s_pPathCloseSelect,s_pPathCloseNormal,1,p2);
+	Prop *p3=new AddScoreProp(this,1);
+	m_PropLayer->AddProp(2,p3);
+	m_PropLayer->DisplayProp(s_pPathCloseNormal,s_pPathCloseSelect,s_pPathCloseNormal,2,p3);
 
 
+	//initilize content
 	for(int i=0;i!=25;++i)
 	{
 		int num=rand()%7+1;

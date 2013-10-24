@@ -85,6 +85,16 @@ void Score::levelUp()
 	++m_level;
 }
 
+void Score::PropUp(const int score)
+{
+	addScore(score);
+
+	char string[25] = {0};
+    sprintf(string, "+%d", score);
+	riseBonus(string,2.0f);
+}
+
+
 void Score::addScore(const int score)
 {
 	char string[12] = {0};

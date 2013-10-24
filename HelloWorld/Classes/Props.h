@@ -36,31 +36,52 @@ private:
 class PropLayer:public CCLayer
 {
 public:
-	Prop** m_Props;
+	static PropLayer* create(CheckerGame *game);
+	bool initWithParent(CheckerGame *game);
+
+	void AddProp(const int cur, Prop *prop);
+	void DisplayProp(const char *normalImage, const char *selectedImage, const char *disabledImage,const int cur,Prop *prop);
+
+
 private:
 	CheckerGame *m_game;
 	unsigned int m_max;
 	CCMenu* m_pMenu;
+	Prop** m_Props;
+	
 
-	virtual bool init();
-
-	CREATE_FUNC(PropLayer);
-
-	void AddProp(const int cur, Prop *prop);
-	void DisplayProp(const char *normalImage, const char *selectedImage, const char *disabledImage,const int cur,Prop *prop);
 };
 
 class RockBreakProp: public Prop
 {
+public:
+	RockBreakProp(const CheckerGame* game,const int cost):Prop(game,cost){};
 private:
 	virtual bool function();
 };
 
-class RotationProp: public Prop
+class UpperProp: public Prop
 {
+public:
+	UpperProp(const CheckerGame* game,const int cost):Prop(game,cost){};
 private:
 	virtual bool function();
 };
 
+class AddScoreProp: public Prop
+{
+public:
+	AddScoreProp(const CheckerGame* game,const int cost):Prop(game,cost){};
+private:
+	virtual bool function();
+};
+
+class EnergyUpProp: public Prop
+{
+public:
+	EnergyUpProp(const CheckerGame* game,const int cost):Prop(game,cost){};
+private:
+	virtual bool function();
+};
 
 #endif //__PROPS_H__

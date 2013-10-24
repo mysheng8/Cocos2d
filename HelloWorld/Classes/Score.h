@@ -20,7 +20,7 @@ public:
 	void tinyUp();
 	void resetMulti(){m_multi = 1;};
 	int getMulti(){return m_multi;};
-
+	void PropUp(const int score);
 
 private:
 	int m_score;
