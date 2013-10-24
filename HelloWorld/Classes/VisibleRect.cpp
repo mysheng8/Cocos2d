@@ -95,3 +95,15 @@ CCPoint VisibleRect::origin()
     lazyInit();
     return ccp(s_visibleRect.origin.x+s_visibleRect.size.width/2-3.5*unit(), s_visibleRect.origin.y+s_visibleRect.size.height/2-5*unit());
 }
+
+CCPoint VisibleRect::propOrigin()
+{
+    lazyInit();
+    return ccp(VisibleRect::left().x+50, VisibleRect::bottom().x-100);
+}
+
+CCPoint VisibleRect::propUnit()
+{
+    lazyInit();
+    return ccp(50, 50);
+}

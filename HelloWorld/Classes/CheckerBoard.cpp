@@ -368,7 +368,7 @@ void CheckerBoard::removePieces()
 		{
 			(*it)->Clear();
 			m_parent->mScore->score();
-			m_parent->m_Energy->ChargeEnergy(m_parent->mScore->getMulti());
+			m_parent->m_Energy->Charge(m_parent->mScore->getMulti());
 			SimpleAudioEngine::sharedEngine()->playEffect(effect[(*it)->GetNum()-1].c_str());
 		}
 		int e_id=m_parent->mScore->getMulti()*2;

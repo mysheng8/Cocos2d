@@ -41,7 +41,7 @@ bool Energy::init()
 	m_shape->setScale(0);
 }
 
-void Energy::ChargeEnergy(int multi)
+void Energy::Charge(const int multi)
 {
 	m_value+=multi*m_base;
 	if (m_value > 100)
@@ -54,10 +54,15 @@ void Energy::ChargeEnergy(int multi)
 	CCLog(string);
 }
 
-void Energy::ReleaseEnergy(int value)
+void Energy::Release(const int value)
 {
 	m_value-=value;
 	CCScaleTo *scale = CCScaleTo::create(0.5f,1,m_value/100.0f);
 	CCActionInterval*  scale_ease_in = CCEaseElasticOut::create((CCActionInterval*)(scale->copy()->autorelease()) , 0.5f);
 	m_shape->runAction(scale);
+}
+
+bool Energy::CanRelease(const int value)
+{
+	return m_value>value;
 }

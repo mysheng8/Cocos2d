@@ -38,7 +38,6 @@ public:
 	CCSprite* DrawPiece(const Grid element,const int num,const int rock);
 
 	CheckerBoard* m_content;
-
 	Score* mScore;
 	Energy* m_Energy;
 

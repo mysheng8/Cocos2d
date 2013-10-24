@@ -13,9 +13,10 @@ public:
 	CREATE_FUNC(Energy);
 
 	int GetValue(){return m_value;};
-	void SetValue(int value){m_value=value;};
-	void ChargeEnergy(int multi);
-	void ReleaseEnergy(int value);
+	void SetValue(const int value){m_value=value;};
+	void Charge(const int multi);
+	void Release(const int value);
+	bool CanRelease(const int value);
 
 private:
 	int m_base;

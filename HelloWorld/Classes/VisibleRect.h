@@ -23,6 +23,8 @@ public:
 	static float height();
 	static float unit();
 	static CCPoint origin();
+	static CCPoint propOrigin();
+	static CCPoint propUnit();
 private:
     static void lazyInit();
     static CCRect s_visibleRect;
