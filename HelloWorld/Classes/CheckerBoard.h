@@ -35,6 +35,7 @@ public:
 	void startLink(const Grid element);
 	void onRemovedPieces(const Grid element);
 	void onDropPieces();
+	bool Decline();
 	
 
 private:

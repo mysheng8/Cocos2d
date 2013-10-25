@@ -49,7 +49,6 @@ public:
 	void BreakRock();
 	void Empty(){m_type=PieceType(0);};
 
-	
 private:
 	PieceType m_type;
 	int m_num;
@@ -57,8 +56,6 @@ private:
 	CCSprite* m_sp;
 	CheckerBoard* m_parent;
 	Grid m_grid;
-
-
 };
 
 

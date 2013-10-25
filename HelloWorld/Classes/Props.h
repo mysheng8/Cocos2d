@@ -84,4 +84,21 @@ private:
 	virtual bool function();
 };
 
+class LevelDownProp: public Prop
+{
+public:
+	LevelDownProp(const CheckerGame* game,const int cost):Prop(game,cost){};
+private:
+	virtual bool function();
+};
+
+class KillProp: public Prop
+{
+public:
+	KillProp(const CheckerGame* game,const int cost):Prop(game,cost){};
+private:
+	virtual bool function();
+};
+
+
 #endif //__PROPS_H__

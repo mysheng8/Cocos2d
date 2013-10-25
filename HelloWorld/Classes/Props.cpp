@@ -125,3 +125,19 @@ bool EnergyUpProp::function()
 	m_game->m_Energy->SetBase(1.2*base);
 	return true;
 }
+
+bool LevelDownProp::function()
+{
+	if (!m_game)
+		return false;
+	m_game->m_content->Decline();
+	return true;
+}
+
+bool KillProp::function()
+{
+	if (!m_game)
+		return false;
+	m_game->m_content->Decline();
+	return true;
+}

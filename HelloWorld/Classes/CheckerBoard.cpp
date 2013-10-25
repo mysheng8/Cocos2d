@@ -263,7 +263,6 @@ bool CheckerBoard::riseUp()
 				content[i][j]=content[i][j-1];
 				content[i][j].Rise(VisibleRect::unit());
 			}
-			int t2=content[i][j].GetNum();
 			--j;
 		}
 		int num=rand()%7+1;
@@ -273,6 +272,30 @@ bool CheckerBoard::riseUp()
 	}
 	return true;
 }
+
+bool CheckerBoard::Decline()
+{
+	for(unsigned int i=0;i!=7;++i)
+	{
+		int j = 0;
+		if(content[i][j].IsEmpty())
+			continue;
+		content[i][j].Empty();
+		content[i][j].m_sp->removeFromParent();
+		while(j!=7)
+		{
+			if(!content[i][j+1].IsEmpty())
+			{
+				content[i][j]=content[i][j+1];
+				content[i][j].Drop(VisibleRect::unit());
+				content[i][j+1].Empty();
+			}
+			++j;
+		}
+	}
+	return true;
+}
+
 
 void CheckerBoard::onDropPieces()
 {

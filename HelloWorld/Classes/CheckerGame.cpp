@@ -61,7 +61,7 @@ bool CheckerGame::initilizeGame()
 	m_content = new CheckerBoard(this);
 	resetNext();
 	m_preview->resetPreview(m_nextNum,m_nextIsRock);
-	
+	m_killmode=false;
 	DrawBoard();
 
 	mScore = Score::create();
@@ -81,7 +81,7 @@ bool CheckerGame::initilizeGame()
 	Prop *p2=new UpperProp(this,1);
 	m_PropLayer->AddProp(1,p2);
 	m_PropLayer->DisplayProp(s_pPathCloseNormal,s_pPathCloseSelect,s_pPathCloseNormal,1,p2);
-	Prop *p3=new AddScoreProp(this,1);
+	Prop *p3=new LevelDownProp(this,1);
 	m_PropLayer->AddProp(2,p3);
 	m_PropLayer->DisplayProp(s_pPathCloseNormal,s_pPathCloseSelect,s_pPathCloseNormal,2,p3);
 
@@ -191,16 +191,14 @@ void CheckerGame::levelUp()
 
 		mScore->levelUp();
 	}
-	
-
 }
+
 void CheckerGame::gameOver()
 {
 	CCNode *pNode=getParent();
     GameScene *pScene = static_cast<GameScene*>(pNode);
     // game over
 	pScene->gameOver();
-
 }
 
 bool CheckerGame::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)
@@ -237,17 +235,17 @@ void CheckerGame::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
 
 CCSprite* CheckerGame::DrawPiece(const Grid element,const int num,const int rock)
 {
-		int n=0;
-		if(rock!=0)
-			n=9-rock;
-		else
-			n=num-1;
-		CCSprite* pSprite = CCSprite::create(s_pPathPiece,CCRectMake(n*40,0,40,40));
-		pSprite->setScale(0.99f);
-		pSprite->setPosition(ccp(VisibleRect::unit()*element.x+0.5*VisibleRect::unit()+VisibleRect::origin().x, VisibleRect::unit()*element.y+0.5*VisibleRect::unit() +VisibleRect::origin().y));
-		//pSprite->autorelease();
-		addChild(pSprite,10);
-		return pSprite;
+	int n=0;
+	if(rock!=0)
+		n=9-rock;
+	else
+		n=num-1;
+	CCSprite* pSprite = CCSprite::create(s_pPathPiece,CCRectMake(n*40,0,40,40));
+	pSprite->setScale(0.99f);
+	pSprite->setPosition(ccp(VisibleRect::unit()*element.x+0.5*VisibleRect::unit()+VisibleRect::origin().x, VisibleRect::unit()*element.y+0.5*VisibleRect::unit() +VisibleRect::origin().y));
+	//pSprite->autorelease();
+	addChild(pSprite,10);
+	return pSprite;
 }
 
 void CheckerGame::DrawBoard()
