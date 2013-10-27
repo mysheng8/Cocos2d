@@ -45,9 +45,11 @@ public:
 	void Clear();
 	void onDropSprite();
 	void onRemoveSprite();
+	void onKillSprite();
 	void AddContent(const int num,const bool isRock);
 	void BreakRock();
 	void Empty(){m_type=PieceType(0);};
+	void Kill();
 
 private:
 	PieceType m_type;

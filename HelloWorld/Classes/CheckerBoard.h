@@ -35,8 +35,8 @@ public:
 	void startLink(const Grid element);
 	void onRemovedPieces(const Grid element);
 	void onDropPieces();
+	void onKillPiece(const Grid element);
 	bool Decline();
-	
 
 private:
 	
@@ -51,10 +51,9 @@ private:
 	//check each checkerpiece number if it's equal to length of line.
 	void checkColumnPiece(const int column);
 	void checkRowPiece(const int row);
-	
-	void removePieces();
 	void arrangePieceColumn(const int column);
 	void breakRock(const Grid element);
+	void removePieces();
 
 	void guideView();
 	vector<Grid> removeGrid;

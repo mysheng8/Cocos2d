@@ -16,11 +16,11 @@ private:
 	unsigned int m_cost;
 	unsigned int m_num;
 public:
-	Prop(const CheckerGame* game,const int cost);
+	Prop(CheckerGame* game,const int cost);
 	void addNum(const int k);
 	void DoIt();
 protected:
-	const CheckerGame *m_game;
+	CheckerGame *m_game;
 	virtual bool function() = 0;
 };
 
@@ -55,7 +55,7 @@ private:
 class RockBreakProp: public Prop
 {
 public:
-	RockBreakProp(const CheckerGame* game,const int cost):Prop(game,cost){};
+	RockBreakProp(CheckerGame* game,const int cost):Prop(game,cost){};
 private:
 	virtual bool function();
 };
@@ -63,7 +63,7 @@ private:
 class UpperProp: public Prop
 {
 public:
-	UpperProp(const CheckerGame* game,const int cost):Prop(game,cost){};
+	UpperProp(CheckerGame* game,const int cost):Prop(game,cost){};
 private:
 	virtual bool function();
 };
@@ -71,7 +71,7 @@ private:
 class AddScoreProp: public Prop
 {
 public:
-	AddScoreProp(const CheckerGame* game,const int cost):Prop(game,cost){};
+	AddScoreProp(CheckerGame* game,const int cost):Prop(game,cost){};
 private:
 	virtual bool function();
 };
@@ -79,7 +79,7 @@ private:
 class EnergyUpProp: public Prop
 {
 public:
-	EnergyUpProp(const CheckerGame* game,const int cost):Prop(game,cost){};
+	EnergyUpProp(CheckerGame* game,const int cost):Prop(game,cost){};
 private:
 	virtual bool function();
 };
@@ -87,7 +87,7 @@ private:
 class LevelDownProp: public Prop
 {
 public:
-	LevelDownProp(const CheckerGame* game,const int cost):Prop(game,cost){};
+	LevelDownProp(CheckerGame* game,const int cost):Prop(game,cost){};
 private:
 	virtual bool function();
 };
@@ -95,7 +95,7 @@ private:
 class KillProp: public Prop
 {
 public:
-	KillProp(const CheckerGame* game,const int cost):Prop(game,cost){};
+	KillProp(CheckerGame* game,const int cost):Prop(game,cost){};
 private:
 	virtual bool function();
 };

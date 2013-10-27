@@ -76,14 +76,10 @@ CheckerBoard::CheckerBoard(CheckerGame *parent)
 #endif
 }
 
-
-
 CheckerBoard::~CheckerBoard()
 {
 	SimpleAudioEngine::sharedEngine()->end();
 }
-
-
 
 int CheckerBoard::getHeight(const int column)
 {
@@ -92,11 +88,6 @@ int CheckerBoard::getHeight(const int column)
 		++i;
 	return i;
 }
-
-
-
-
-
 
 CheckerPiece* CheckerBoard::addPiece(const int column,const int num,const bool isRock)
 {
@@ -222,6 +213,15 @@ void CheckerBoard::onRemovedPieces(const Grid element)
 	}
 }
 
+void CheckerBoard::onKillPiece(const Grid element)
+{
+	m_preDropPieces=0;
+	arrangePieceColumn(element.x);
+	if (m_preDropPieces==0)
+		removePieces();
+
+}
+
 void CheckerBoard::breakRock(const Grid element)
 {
 	bool play(false);
@@ -287,7 +287,7 @@ bool CheckerBoard::Decline()
 			if(!content[i][j+1].IsEmpty())
 			{
 				content[i][j]=content[i][j+1];
-				content[i][j].Drop(VisibleRect::unit());
+				content[i][j].Rise(-VisibleRect::unit());
 				content[i][j+1].Empty();
 			}
 			++j;

@@ -71,4 +71,5 @@ void CheckerPreview::onPreviewDrop(CCNode* node)
 	m_sp->removeFromParent();
 	m_parent->startLink(m_column);
 	SimpleAudioEngine::sharedEngine()->playEffect(s_pClick);
+	m_sp=0;
 }

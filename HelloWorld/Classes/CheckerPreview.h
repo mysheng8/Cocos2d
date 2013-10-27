@@ -16,7 +16,7 @@ public:
 	void StartPreview(int column);
 	void EditPreview(int column);
 	void EndPreview(int column);
-
+	bool hasPreview(){return m_sp!=0;}
 	
 private:
 	CheckerGame *m_parent;

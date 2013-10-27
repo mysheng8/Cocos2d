@@ -30,7 +30,7 @@ public:
 	void levelUp();
 	void startLink(int column);
 	void endLink();
-	bool toggleKillMode(){m_killmode=!m_killmode;return m_killmode;};
+	void toggleKillMode(){m_killmode=!m_killmode;};
 	virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
     virtual void ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent);
     virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
@@ -47,7 +47,7 @@ public:
 	void gameOver();
 	void DrawGuide(const Grid start,const Grid end);
 	void DrawLink(const Grid *elements, const int count,bool horizontal);
-
+	bool CanUseProp(){return m_canProp;};
 private:
 	CheckerPreview *m_preview;
 	float m_rockRate;
@@ -55,15 +55,17 @@ private:
 	int m_level;
 	int m_step;
 	bool m_resetNext;
+	bool m_canProp;
+	bool m_killmode;
 	CCLabelBMFont* m_levelLabel;
 	CCLabelBMFont* m_dropLabel;
-	bool m_killmode;
 
 	int m_nextNum;// the number of next ball
 	bool m_nextIsRock;// if the next ball is a rock
 	int m_column;//current touch column
-
-	int containsTouchLocation(CCTouch* touch);
+	int m_row;
+	int containsTouchColumnLocation(CCTouch* touch);
+	int containsTouchRowLocation(CCTouch* touch);
 	bool canStart();
 	void resetNext();
 	void DrawBoard();

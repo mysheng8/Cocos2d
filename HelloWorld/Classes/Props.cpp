@@ -5,7 +5,7 @@
 
 USING_NS_CC;
 
-Prop::Prop(const CheckerGame* game,const int cost)
+Prop::Prop( CheckerGame* game,const int cost)
 {
 	m_game=game;
 	m_cost=cost;
@@ -19,7 +19,7 @@ void Prop::addNum(const int k)
 
 void Prop::DoIt()
 {
-	if(m_game->m_Energy->CanRelease(m_cost)&&m_num>0)
+	if(m_game->m_Energy->CanRelease(m_cost)&&m_num>0&&m_game->CanUseProp())
 	{
 		if (function())
 		{
@@ -138,6 +138,6 @@ bool KillProp::function()
 {
 	if (!m_game)
 		return false;
-	m_game->m_content->Decline();
+	m_game->toggleKillMode();
 	return true;
 }
