@@ -100,5 +100,15 @@ private:
 	virtual bool function();
 };
 
+class PrimeProp: public Prop
+{
+public:
+	PrimeProp(CheckerGame* game,const int cost):Prop(game,cost){};
+	bool static IsPrime(const int num);
+private:
+	virtual bool function();
+	
+};
+
 
 #endif //__PROPS_H__

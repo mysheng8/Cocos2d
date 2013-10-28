@@ -37,6 +37,7 @@ public:
 	void onDropPieces();
 	void onKillPiece(const Grid element);
 	bool Decline();
+	void KillPieces(vector<Grid>::iterator begin, vector<Grid>::iterator end);
 
 private:
 	

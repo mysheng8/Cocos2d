@@ -2,6 +2,9 @@
 #include "CheckerPiece.h"
 #include "resource.h"
 #include "VisibleRect.h"
+#include <stdio.h>
+#include <stack>
+using namespace std;
 
 USING_NS_CC;
 
@@ -139,5 +142,57 @@ bool KillProp::function()
 	if (!m_game)
 		return false;
 	m_game->toggleKillMode();
+	return true;
+}
+
+bool PrimeProp::function()
+{
+	if (!m_game)
+		return false;
+	typedef pair<int,int> KV;
+	stack<KV> nums;
+	vector<Grid> list;
+	for(unsigned int i=0;i!=7;++i)
+	{
+		for(unsigned int j=0;j!=7;++j)
+		{
+			CheckerPiece *cp=m_game->m_content->getCheckerPiece(i,j);
+			if(cp->IsNum())
+				nums.push(KV(cp->GetNum(),j));
+			else
+			{
+				if(nums.empty())
+					continue;
+				int k=0;
+				int	sum=0;
+				while(!nums.empty())
+				{
+					sum+=((int)pow(10.,k))*nums.top().first;
+					list.push_back(Grid(i,nums.top().second));
+					nums.pop();
+					++k;
+				}
+				if(IsPrime(sum))
+				{
+					char string[15] = {0};
+					sprintf(string, "%d is prime", sum);
+					CCLog(string);
+					
+					m_game->m_content->KillPieces(list.begin(),list.end());
+					list.clear();
+				}
+			}
+		}
+	}
+	return true;
+}
+
+bool PrimeProp::IsPrime(const int num)
+{
+	int q=floor(sqrt((float)num));
+	for(unsigned int i=2;i<=q;++i)
+	{
+		if(num%i==0)return false;
+	}
 	return true;
 }

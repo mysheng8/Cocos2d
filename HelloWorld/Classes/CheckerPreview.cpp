@@ -17,7 +17,8 @@ CheckerPreview::CheckerPreview(CheckerGame *parent)
 	m_Num		=	-1;
 	m_IsRock	=	false;
 	m_column	=	0;
-	m_parent=parent;
+	needReset	=	false;
+	m_parent	=	parent;
 	SimpleAudioEngine::sharedEngine()->preloadEffect( s_pClick );
 }
 
@@ -27,6 +28,7 @@ void CheckerPreview::resetPreview(int num,bool isRock)
 	m_IsRock=isRock;
 	int rock=m_IsRock?2:0;
 	m_sp=m_parent->DrawPiece(Grid(m_column,7),m_Num,rock);
+	needReset	=	false;
 }
 
 void CheckerPreview::movePreview(int column)
@@ -62,6 +64,7 @@ void CheckerPreview::EndPreview(int column)
 			CCActionInterval*  drop = CCMoveTo::create(sqrt((7-row)/20.0f), ccp( VisibleRect::origin().x+ VisibleRect::unit()*m_column+0.5* VisibleRect::unit(),  VisibleRect::origin().y+ VisibleRect::unit()*row+0.5* VisibleRect::unit()));
 			CCActionInterval* move_ease_out = CCEaseOut::create((CCActionInterval*)(drop->copy()->autorelease()) , 0.5f);
 			m_sp->runAction( CCSequence::create(move_ease_out,CCCallFuncN::create(this, callfuncN_selector(CheckerPreview::onPreviewDrop)),NULL));
+			needReset	=	true;
 		}
 	}
 }
@@ -71,5 +74,4 @@ void CheckerPreview::onPreviewDrop(CCNode* node)
 	m_sp->removeFromParent();
 	m_parent->startLink(m_column);
 	SimpleAudioEngine::sharedEngine()->playEffect(s_pClick);
-	m_sp=0;
 }

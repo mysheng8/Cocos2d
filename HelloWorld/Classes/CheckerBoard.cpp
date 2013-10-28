@@ -404,6 +404,26 @@ void CheckerBoard::removePieces()
 #endif
 }
 
+
+void CheckerBoard::KillPieces(vector<Grid>::iterator begin, vector<Grid>::iterator end)
+{
+	for(vector<Grid>::iterator it=begin;it!=end;++it)
+	{
+		CheckerPiece *cp=getCheckerPiece(*it);
+		if(!cp->IsEmpty())
+			removeList.push_back(cp);
+	}
+	if(!removeList.empty())
+	{
+		for(vector<CheckerPiece*>::iterator it=removeList.begin();it!=removeList.end();++it)
+		{
+			(*it)->Clear();
+			SimpleAudioEngine::sharedEngine()->playEffect(effect[(*it)->GetNum()-1].c_str());
+		}
+	}
+
+}
+
 void CheckerBoard::DrawLink(bool horizontal)
 {
 	const unsigned int n = removeGrid.size();

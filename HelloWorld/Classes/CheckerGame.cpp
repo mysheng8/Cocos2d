@@ -79,7 +79,7 @@ bool CheckerGame::initilizeGame()
 	Prop *p1=new RockBreakProp(this,1);
 	m_PropLayer->AddProp(0,p1);
 	m_PropLayer->DisplayProp(s_pPathCloseNormal,s_pPathCloseSelect,s_pPathCloseNormal,0,p1);
-	Prop *p2=new UpperProp(this,1);
+	Prop *p2=new PrimeProp(this,1);
 	m_PropLayer->AddProp(1,p2);
 	m_PropLayer->DisplayProp(s_pPathCloseNormal,s_pPathCloseSelect,s_pPathCloseNormal,1,p2);
 	Prop *p3=new KillProp(this,1);
@@ -186,8 +186,9 @@ void CheckerGame::startLink(int column)
 void CheckerGame::endLink()
 {
 	this->setTouchEnabled(true);
-	if(!m_preview->hasPreview())
+	if(m_preview->NeedReset())
 	{
+		CCLog("reset Preview");
 		resetNext();
 		m_preview->resetPreview(m_nextNum,m_nextIsRock);
 	}

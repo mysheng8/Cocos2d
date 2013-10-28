@@ -16,7 +16,7 @@ public:
 	void StartPreview(int column);
 	void EditPreview(int column);
 	void EndPreview(int column);
-	bool hasPreview(){return m_sp!=0;}
+	bool NeedReset(){return needReset;}
 	
 private:
 	CheckerGame *m_parent;
@@ -24,6 +24,7 @@ private:
 	int m_Num;
 	bool m_IsRock;
 	int m_column;
+	bool needReset;
 	void onPreviewDrop(CCNode* node);
 	void movePreview(int column);
 };
