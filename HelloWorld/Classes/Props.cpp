@@ -156,7 +156,7 @@ bool PrimeProp::function()
 	{
 		for(unsigned int j=0;j!=7;++j)
 		{
-			CheckerPiece *cp=m_game->m_content->getCheckerPiece(i,j);
+			CheckerPiece *cp=m_game->m_content->getCheckerPiece(j,i);
 			if(cp->IsNum())
 				nums.push(KV(cp->GetNum(),j));
 			else
@@ -168,21 +168,47 @@ bool PrimeProp::function()
 				while(!nums.empty())
 				{
 					sum+=((int)pow(10.,k))*nums.top().first;
-					list.push_back(Grid(i,nums.top().second));
+					list.push_back(Grid(nums.top().second,i));
 					nums.pop();
 					++k;
 				}
+				char string1[15] = {0};
+				sprintf(string1, "justify %d", sum);
+				CCLog(string1);
 				if(IsPrime(sum))
 				{
-					char string[15] = {0};
-					sprintf(string, "%d is prime", sum);
-					CCLog(string);
+					char string2[15] = {0};
+					sprintf(string2, "%d is prime", sum);
+					CCLog(string2);
 					
 					m_game->m_content->KillPieces(list.begin(),list.end());
-					list.clear();
 				}
+				list.clear();
 			}
 		}
+		if(nums.empty())
+			continue;
+		int k=0;
+		int	sum=0;
+		while(!nums.empty())
+		{
+			sum+=((int)pow(10.,k))*nums.top().first;
+			list.push_back(Grid(nums.top().second,i));
+			nums.pop();
+			++k;
+		}
+		char string1[20] = {0};
+		sprintf(string1, "justify %d", sum);
+		CCLog(string1);
+		if(IsPrime(sum))
+		{
+			char string2[20] = {0};
+			sprintf(string2, "%d is prime", sum);
+			CCLog(string2);
+					
+			m_game->m_content->KillPieces(list.begin(),list.end());
+		}
+		list.clear();
 	}
 	return true;
 }
@@ -194,5 +220,20 @@ bool PrimeProp::IsPrime(const int num)
 	{
 		if(num%i==0)return false;
 	}
+	return true;
+}
+
+bool BombProp::function()
+{
+	if (!m_game)
+		return false;
+	m_game->m_preview->BombMode();
+	return true;
+}
+
+bool RandomProp::function()
+{
+	if (!m_game)
+		return false;
 	return true;
 }

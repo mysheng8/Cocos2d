@@ -35,7 +35,6 @@ public:
 	void startLink(const Grid element);
 	void onRemovedPieces(const Grid element);
 	void onDropPieces();
-	void onKillPiece(const Grid element);
 	bool Decline();
 	void KillPieces(vector<Grid>::iterator begin, vector<Grid>::iterator end);
 

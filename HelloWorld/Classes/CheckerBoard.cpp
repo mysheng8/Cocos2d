@@ -213,15 +213,6 @@ void CheckerBoard::onRemovedPieces(const Grid element)
 	}
 }
 
-void CheckerBoard::onKillPiece(const Grid element)
-{
-	m_preDropPieces=0;
-	arrangePieceColumn(element.x);
-	if (m_preDropPieces==0)
-		removePieces();
-
-}
-
 void CheckerBoard::breakRock(const Grid element)
 {
 	bool play(false);
@@ -336,8 +327,6 @@ bool Comp(const CheckerPiece* a, const CheckerPiece* b)
 	return a > b ;
 }
 
-
-
 void CheckerBoard::startLink(const Grid element)
 {
 	removeList.clear();
@@ -403,7 +392,6 @@ void CheckerBoard::removePieces()
 	DebugView();
 #endif
 }
-
 
 void CheckerBoard::KillPieces(vector<Grid>::iterator begin, vector<Grid>::iterator end)
 {

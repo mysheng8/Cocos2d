@@ -110,5 +110,20 @@ private:
 	
 };
 
+class BombProp: public Prop
+{
+public:
+	BombProp(CheckerGame* game,const int cost):Prop(game,cost){};
+private:
+	virtual bool function();
+};
+
+class RandomProp: public Prop
+{
+public:
+	RandomProp(CheckerGame* game,const int cost):Prop(game,cost){};
+private:
+	virtual bool function();
+};
 
 #endif //__PROPS_H__

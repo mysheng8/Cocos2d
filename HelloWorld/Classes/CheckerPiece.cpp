@@ -64,28 +64,6 @@ void CheckerPiece::Clear()
 	m_sp->runAction(action);
 };
 
-void CheckerPiece::Kill()
-{
-	Empty();
-	CCFiniteTimeAction*  empty = CCSequence::create(
-		CCScaleBy::create(0.02,2.0,2.0),
-		CCScaleBy::create(0.03,0.7,0.7),
-        CCScaleBy::create(0.6,0.2,0.2),
-		CCCallFunc::create(this, callfunc_selector(CheckerPiece::onKillSprite)),
-        NULL);
-	CCAction*  action = CCSpawn::create(
-        CCFadeOut::create(1),
-        empty,
-        NULL);
-	m_sp->runAction(action);
-};
-
-void CheckerPiece::onKillSprite()
-{
-	m_sp->removeFromParent();
-	m_parent->onKillPiece(m_grid);
-}
-
 void CheckerPiece::onRemoveSprite()
 {
 	m_sp->removeFromParent();

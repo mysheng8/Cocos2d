@@ -31,6 +31,7 @@ public:
 	void startLink(int column);
 	void endLink();
 	void toggleKillMode(){m_killmode=!m_killmode;};
+	
 	virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
     virtual void ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent);
     virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
@@ -43,13 +44,15 @@ public:
 	Score* mScore;
 	Energy* m_Energy;
 	PropLayer* m_PropLayer;
-
+	CheckerPreview *m_preview;
 	void gameOver();
 	void DrawGuide(const Grid start,const Grid end);
 	void DrawLink(const Grid *elements, const int count,bool horizontal);
 	bool CanUseProp(){return m_canProp;};
+	void explose(int column);
+
 private:
-	CheckerPreview *m_preview;
+	
 	float m_rockRate;
 	int m_threhold;
 	int m_level;
