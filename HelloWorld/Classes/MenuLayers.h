@@ -5,6 +5,7 @@
 #include "GameScene.h"
 #include <stdio.h>
 #include <string>
+#include <map>
 
 USING_NS_CC;
 
@@ -114,4 +115,23 @@ private:
 	list<Rank> *scoreList;
 
 };
+
+class PropsMenuLayer: public PopoutMenu
+{
+
+public:
+	PropsMenuLayer();
+	~PropsMenuLayer();
+
+	void selectCallback(CCObject * pSender);
+	void startGameCallback(CCObject * pSender);
+private:
+	unsigned int m_max;
+	CCMenu *pMenu;
+	vector<string> list;
+	map<CCMenuItemSprite*,string> sp_Map;
+	void AddButton(const char* imageProp,const string propName,const int row, const int column);  
+};
+
+
 #endif // __MENULAYERS_H__

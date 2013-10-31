@@ -12,6 +12,7 @@ using namespace CocosDenshion;
 
 #define LINE_SPACE          80
 #define RANK_SPACE          30
+#define PROP_SPACE			40
 const std::string g_PauseMenu[] = {
 	"Resume",
 	"Restart",
@@ -612,6 +613,73 @@ void RankLayer::backCallback(CCObject * pSender)
 }
 
 void RankLayer::quitCallback(CCObject * pSender)
+{
+	jumpOut();
+}
+
+PropsMenuLayer::PropsMenuLayer()
+{
+	pMenu=CCMenu::create();
+	addChild(pMenu);
+	pMenu->setPosition( ccp(0,0) );
+	AddButton(s_pPathProp01,"BombProp",0,0);
+	AddButton(s_pPathProp01,"BombProp",1,0);
+	AddButton(s_pPathProp01,"BombProp",2,0);
+	AddButton(s_pPathProp01,"BombProp",0,1);
+	AddButton(s_pPathProp01,"BombProp",1,1);
+	AddButton(s_pPathProp01,"BombProp",2,1);
+	AddButton(s_pPathProp01,"BombProp",0,2);
+	AddButton(s_pPathProp01,"BombProp",1,2);
+	AddButton(s_pPathProp01,"BombProp",2,2);
+	m_max=3;
+	char string[25] = {0};
+	sprintf(string, "Select A Item");
+	CCLabelBMFont* item = CCLabelBMFont::create(string, s_pPathScoreFont); 
+	item->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 1* LINE_SPACE) ));
+	addChild(item, 1);
+
+	CCLabelBMFont* submitlabel = CCLabelBMFont::create("Done", s_pPathScoreFont);     
+	CCMenuItemLabel* pSubmitItem = CCMenuItemLabel::create(submitlabel, this, menu_selector(PropsMenuLayer::startGameCallback));
+	pMenu->addChild(pSubmitItem, 2);
+	pSubmitItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::bottom().y + LINE_SPACE) ));
+}
+
+PropsMenuLayer::~PropsMenuLayer()
+{
+	list.clear();
+	sp_Map.clear();
+}
+
+void PropsMenuLayer::AddButton(const char* imageProp,const string propName,const int row, const int column)
+{
+    CCSprite *spriteNormal   = CCSprite::create(imageProp,  CCRectMake(PROP_SPACE*2,0,PROP_SPACE,PROP_SPACE));
+    CCSprite *spriteSelected = CCSprite::create(imageProp,  CCRectMake(PROP_SPACE*1,0,PROP_SPACE,PROP_SPACE));
+    CCSprite *spriteDisabled = CCSprite::create(imageProp,  CCRectMake(PROP_SPACE*0,0,PROP_SPACE,PROP_SPACE));
+
+	CCMenuItemSprite* item = CCMenuItemSprite::create(spriteNormal, spriteSelected, spriteDisabled, this, menu_selector(PropsMenuLayer::selectCallback));
+	sp_Map.insert(make_pair<CCMenuItemSprite*,string>(item,propName));
+	pMenu->addChild(item);
+	item->setPosition(VisibleRect::center().x+(row-1)*(PROP_SPACE+20),VisibleRect::center().y+(column-1)*(PROP_SPACE+20));
+}
+
+void PropsMenuLayer::selectCallback(CCObject * pSender)
+{
+	map<CCMenuItemSprite*,string>::iterator   it1;
+	map<CCMenuItemSprite*,string>::iterator   it2;
+	for(it1=sp_Map.begin();it1!=sp_Map.end();++it1)
+	{
+		if(it1->first==pSender)
+		{
+			list.push_back(it1->second);
+			CCLog(it1->second.c_str());
+			if(list.size()==m_max)
+				for(it2=sp_Map.begin();it2!=sp_Map.end();++it2)
+					it2->first->setEnabled(false);
+		}
+	} 
+}
+
+void PropsMenuLayer::startGameCallback(CCObject * pSender)
 {
 	jumpOut();
 }

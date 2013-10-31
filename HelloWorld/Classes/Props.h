@@ -41,7 +41,7 @@ public:
 
 	void AddProp(const int cur, Prop *prop);
 	void DisplayProp(const char *normalImage, const char *selectedImage, const char *disabledImage,const int cur,Prop *prop);
-
+	int GetPropNum(){return m_max;};
 
 private:
 	CheckerGame *m_game;

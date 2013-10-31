@@ -12,6 +12,7 @@ GameScene::GameScene()
 	gameLayer = 0;
 	menuLayer = 0;
 	prevLayer = 0;
+	propLayer = 0;
 
 	CCMenuItemImage *pCloseItem = CCMenuItemImage::create(s_pPathCloseNormal, s_pPathCloseSelect, this, menu_selector(GameScene::menuCallback) );
     CCMenu* pMenu =CCMenu::create(pCloseItem, NULL);
@@ -32,11 +33,19 @@ void GameScene::menuCallback(CCObject* pSender)
 
 void GameScene::startGame()
 {
+
+	
 	if(gameLayer)
 		gameLayer->removeFromParent();
 	gameLayer = CheckerGame::create();
 	addChild(gameLayer,0);
     CCDirector::sharedDirector()->replaceScene(this);
+	if(propLayer)
+		removeChild(propLayer);
+	propLayer = new PropsMenuLayer();
+	addChild(propLayer,1);
+	propLayer->release();
+	propLayer->jumpIn();
 
 }
 void GameScene::restart()

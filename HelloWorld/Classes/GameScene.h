@@ -35,6 +35,8 @@ public:
 	PopoutMenu* menuLayer;
 
 	PopoutMenu* prevLayer;
+
+	PopoutMenu* propLayer;
 };
 
 #endif // __GAMESCENE_H__

@@ -15,7 +15,7 @@ static const char s_pPathMenuFont[]				= "fonts/futura-48.fnt";
 static const char s_pPathScoreFont[]			= "fonts/konqa32.fnt";
 static const char s_pPathInputFont[]			= "fonts/Abduction.ttf";
 static const char s_pPathExternalScore[]		= "out/pRank.txt";
-
+static const char s_pPathProp01[]				= "Prop01.png";
 
 
 
