@@ -43,6 +43,7 @@ public:
 	void DisplayProp(const char *normalImage, const char *selectedImage, const char *disabledImage,const int cur,Prop *prop);
 	int GetPropNum(){return m_max;};
 
+
 private:
 	CheckerGame *m_game;
 	unsigned int m_max;

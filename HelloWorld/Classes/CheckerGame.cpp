@@ -443,3 +443,11 @@ void CheckerGame::registerWithTouchDispatcher(void)
 {
 	CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate(this,0, true);
 }
+
+void CheckerGame::InitProps(vector<string>::iterator begin,vector<string>::iterator end)
+{
+	for(vector<string>::iterator it=begin;it!=end;++it)
+	{
+		
+	}
+}

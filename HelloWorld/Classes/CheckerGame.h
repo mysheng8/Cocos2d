@@ -7,7 +7,9 @@
 #include "CheckerPreview.h"
 #include "Energy.h"
 #include "Props.h"
+#include<string>
 
+using namespace std;
 USING_NS_CC;
 
 class CheckerPreview;
@@ -50,6 +52,7 @@ public:
 	void DrawLink(const Grid *elements, const int count,bool horizontal);
 	bool CanUseProp(){return m_canProp;};
 	void explose(int column);
+	void InitProps(vector<string>::iterator begin,vector<string>::iterator end);
 
 private:
 	
@@ -78,6 +81,7 @@ private:
 	bool containPoint(const Grid point, const Grid *elements, const int count);
 	CCPoint* createPoly(const Grid element,const CCPoint pnt);
 	Grid nextPoint(const Grid current,const Grid *elements, const int count, bool horizontal);
+
 
 };
 
