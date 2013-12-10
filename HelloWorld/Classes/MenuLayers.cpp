@@ -664,19 +664,27 @@ void PropsMenuLayer::AddButton(const char* imageProp,const string propName,const
 
 void PropsMenuLayer::selectCallback(CCObject * pSender)
 {
-	map<CCMenuItemSprite*,string>::iterator   it1;
-	map<CCMenuItemSprite*,string>::iterator   it2;
-	for(it1=sp_Map.begin();it1!=sp_Map.end();++it1)
+	map<CCMenuItemSprite*,string>::iterator   it;
+	unsigned int num = 0;
+	//add into map
+	for(it=sp_Map.begin();it!=sp_Map.end();++it)
 	{
-		if(it1->first==pSender)
+		if(num==m_max)
+			break;
+		if(it->first==pSender)
 		{
-			list.push_back(it1->second);
-			CCLog(it1->second.c_str());
-			if(list.size()==m_max)
-				for(it2=sp_Map.begin();it2!=sp_Map.end();++it2)
-					it2->first->setEnabled(false);
+			list.push_back(it->second);
+			CCLog(it->second.c_str());
+			++num;
 		}
-	} 
+	}
+	//set buttons false
+	if(num==m_max)
+	{
+		for(it=sp_Map.begin();it!=sp_Map.end();++it)
+			it->first->setEnabled(false);
+	}
+
 }
 
 void PropsMenuLayer::startGameCallback(CCObject * pSender)

@@ -8,7 +8,29 @@ using namespace std;
 
 USING_NS_CC;
 
-Prop::Prop( CheckerGame* game,const int cost)
+void* PropFactory::GetPropByName(string propName)
+{
+	map<string,createProp>::const_iterator iter;
+
+	iter=m_propMap.find(propName);
+	if(iter==m_propMap.end())
+		return NULL;
+	else
+		return iter->second();
+}
+
+void PropFactory::registProp(string name,createProp method)
+{
+	m_propMap.insert(pair<string,createProp>(name,method));
+}
+
+PropFactory& PropFactory::sharedClassFactory()
+{
+	static PropFactory _sharedClassFactory;
+	return _sharedClassFactory;
+}
+
+void Prop::init( CheckerGame* game,const int cost)
 {
 	m_game=game;
 	m_cost=cost;
@@ -91,6 +113,7 @@ bool RockBreakProp::function()
 	}
 	return true;
 }
+
 
 bool UpperProp::function()
 {
