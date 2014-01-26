@@ -6,13 +6,14 @@
 #include "TitleScene.h"
 #include<stdio.h>
 #include<fstream>
+#include<algorithm>
 using namespace CocosDenshion;
 
 
 
 #define LINE_SPACE          80
 #define RANK_SPACE          30
-#define PROP_SPACE			40
+
 const std::string g_PauseMenu[] = {
 	"Resume",
 	"Restart",
@@ -251,7 +252,8 @@ GameOverLayer::GameOverLayer(GameScene *parent)
 	if(pScene)
 	{
 		char string[18] = {0};
-		sprintf(string, "Score: %d",pScene->getScore());
+		GameData *data=static_cast<GameData*>(GameSettingData::sharedSettingData().GetData("GameData"));
+		sprintf(string, "Score: %d",data->m_score->m_total);
 		CCLabelBMFont* score = CCLabelBMFont::create(string, s_pPathScoreFont); 
 		score->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 2* LINE_SPACE) ));
 		addChild(score, 1);
@@ -462,7 +464,8 @@ void InputLayer::nextCallback(CCObject * pSender)
 		return;
 	if(name.size()>16)
 		name.resize(16);
-	next->rank(Rank(name,pScene->getScore()));
+	GameData *data=static_cast<GameData*>(GameSettingData::sharedSettingData().GetData("GameData"));
+	next->rank(Rank(name,data->m_score->m_total));
 	next->addButtons(true);
 	pScene->switchMenu(next);
 
@@ -622,18 +625,19 @@ PropsMenuLayer::PropsMenuLayer()
 	pMenu=CCMenu::create();
 	addChild(pMenu);
 	pMenu->setPosition( ccp(0,0) );
-	AddButton(s_pPathProp01,"BombProp",0,0);
-	AddButton(s_pPathProp01,"BombProp",1,0);
-	AddButton(s_pPathProp01,"BombProp",2,0);
-	AddButton(s_pPathProp01,"BombProp",0,1);
-	AddButton(s_pPathProp01,"BombProp",1,1);
-	AddButton(s_pPathProp01,"BombProp",2,1);
-	AddButton(s_pPathProp01,"BombProp",0,2);
-	AddButton(s_pPathProp01,"BombProp",1,2);
-	AddButton(s_pPathProp01,"BombProp",2,2);
+	AddButton("RockBreakProp",0,0);
+	AddButton("UpperProp",1,0);
+	AddButton("AddScoreProp",2,0);
+	AddButton("EnergyUpProp",0,1);
+	AddButton("LevelDownProp",1,1);
+	AddButton("KillProp",2,1);
+	AddButton("PrimeProp",0,2);
+	AddButton("BombProp",1,2);
+	AddButton("RandomProp",2,2);
 	m_max=3;
+	m_sel=0;
 	char string[25] = {0};
-	sprintf(string, "Select A Item");
+	sprintf(string, "Select Items");
 	CCLabelBMFont* item = CCLabelBMFont::create(string, s_pPathScoreFont); 
 	item->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 1* LINE_SPACE) ));
 	addChild(item, 1);
@@ -650,44 +654,65 @@ PropsMenuLayer::~PropsMenuLayer()
 	sp_Map.clear();
 }
 
-void PropsMenuLayer::AddButton(const char* imageProp,const string propName,const int row, const int column)
+void PropsMenuLayer::AddButton(const string propName,const int row, const int column)
 {
-    CCSprite *spriteNormal   = CCSprite::create(imageProp,  CCRectMake(PROP_SPACE*2,0,PROP_SPACE,PROP_SPACE));
-    CCSprite *spriteSelected = CCSprite::create(imageProp,  CCRectMake(PROP_SPACE*1,0,PROP_SPACE,PROP_SPACE));
-    CCSprite *spriteDisabled = CCSprite::create(imageProp,  CCRectMake(PROP_SPACE*0,0,PROP_SPACE,PROP_SPACE));
-
-	CCMenuItemSprite* item = CCMenuItemSprite::create(spriteNormal, spriteSelected, spriteDisabled, this, menu_selector(PropsMenuLayer::selectCallback));
-	sp_Map.insert(make_pair<CCMenuItemSprite*,string>(item,propName));
+	Prop *p=static_cast<Prop*>(PropFactory::sharedClassFactory().GetPropByName(propName));
+	CCSprite *spriteNormal   = CCSprite::create(p->GetPropImage(),  CCRectMake(PROP_SPACE*2,0,PROP_SPACE,PROP_SPACE));
+	CCSprite *spriteSelected = CCSprite::create(p->GetPropImage(),  CCRectMake(PROP_SPACE*1,0,PROP_SPACE,PROP_SPACE));
+	CCSprite *spriteDisabled1 = CCSprite::create(p->GetPropImage(),  CCRectMake(PROP_SPACE*0,0,PROP_SPACE,PROP_SPACE));
+	CCSprite *spriteDisabled2 = CCSprite::create(p->GetPropImage(),  CCRectMake(PROP_SPACE*0,0,PROP_SPACE,PROP_SPACE));
+	CCMenuItemToggle *item = CCMenuItemToggle::createWithTarget(this, 
+                                                                menu_selector(PropsMenuLayer::selectCallback), 
+                                                                CCMenuItemSprite::create( spriteNormal,spriteNormal ,spriteDisabled1),
+																CCMenuItemSprite::create( spriteSelected,spriteSelected,spriteDisabled2),
+                                                                NULL );
+	//CCMenuItemSprite* item = CCMenuItemSprite::create(spriteNormal, spriteSelected, spriteDisabled, this, menu_selector(PropsMenuLayer::selectCallback));
+	sp_Map.insert(make_pair<CCMenuItemToggle*,string>(item,propName));
 	pMenu->addChild(item);
-	item->setPosition(VisibleRect::center().x+(row-1)*(PROP_SPACE+20),VisibleRect::center().y+(column-1)*(PROP_SPACE+20));
+	item->setPosition(VisibleRect::center().x+(row-1)*(PROP_SPACE+20),VisibleRect::center().y+(1-column)*(PROP_SPACE+20));
 }
 
 void PropsMenuLayer::selectCallback(CCObject * pSender)
 {
-	map<CCMenuItemSprite*,string>::iterator   it;
-	unsigned int num = 0;
+	map<CCMenuItemToggle*,string>::iterator   it;
+	
 	//add into map
 	for(it=sp_Map.begin();it!=sp_Map.end();++it)
 	{
-		if(num==m_max)
-			break;
 		if(it->first==pSender)
 		{
-			list.push_back(it->second);
-			CCLog(it->second.c_str());
-			++num;
+			vector<string>::iterator it2=find(list.begin(),list.end(),it->second);
+			if(it2!=list.end())
+			{
+				list.erase(it2);
+			}
+			else
+			{
+				list.push_back(it->second);
+				CCLog(it->second.c_str());
+			}
 		}
 	}
-	//set buttons false
-	if(num==m_max)
+	if(list.size()<m_max)
 	{
 		for(it=sp_Map.begin();it!=sp_Map.end();++it)
-			it->first->setEnabled(false);
+			it->first->setEnabled(true);
+	}
+	else
+	{
+		for(it=sp_Map.begin();it!=sp_Map.end();++it)
+		{
+			if(find(list.begin(),list.end(),it->second)==list.end())
+				it->first->setEnabled(false);
+		}
 	}
 
 }
 
+
 void PropsMenuLayer::startGameCallback(CCObject * pSender)
 {
+	GameScene::sharedGameScene().gameLayer->InitProps(list.begin(),list.end());
+	GameScene::sharedGameScene().gameLayer->setTouchEnabled(true);
 	jumpOut();
 }

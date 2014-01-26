@@ -16,8 +16,10 @@ enum PieceType
 {
 EMPTY=0,
 NUM=1,
-ROCK=2
+ROCK=2,
+BOMB=3
 };
+
 class CheckerBoard;
 
 class CheckerPiece: public CCNode
@@ -30,6 +32,7 @@ public:
 	bool IsEmpty(){return m_type==PieceType(0);};
 	bool IsRock(){return m_type==PieceType(2);};
 	bool IsNum(){return m_type==PieceType(1);};
+	bool IsBomb(){return m_type==PieceType(3);};
 	int GetNum(){return m_num;};
 	int GetRock(){return m_rock;};
 	int GetType(){return (int)m_type;}
@@ -45,7 +48,8 @@ public:
 	void Clear();
 	void onDropSprite();
 	void onRemoveSprite();
-	void AddContent(const int num,const bool isRock);
+	void onExplose();
+	void AddContent(const int num,const bool isRock,const bool isBomb);
 	void BreakRock();
 	void Empty(){m_type=PieceType(0);};
 

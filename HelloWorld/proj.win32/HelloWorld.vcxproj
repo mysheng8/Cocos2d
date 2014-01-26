@@ -129,13 +129,15 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
   <ItemGroup>
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
     <ClCompile Include="..\Classes\CheckerBoard.cpp" />
-    <ClCompile Include="..\Classes\CheckerGame.cpp" />
+    <ClCompile Include="..\Classes\GameLayer.cpp" />
     <ClCompile Include="..\Classes\CheckerPiece.cpp" />
     <ClCompile Include="..\Classes\CheckerPreview.cpp" />
     <ClCompile Include="..\Classes\Energy.cpp" />
     <ClCompile Include="..\Classes\GameScene.cpp" />
+    <ClCompile Include="..\Classes\GameSettingData.cpp" />
+    <ClCompile Include="..\Classes\Jackpot.cpp" />
     <ClCompile Include="..\Classes\MenuLayers.cpp" />
-    <ClCompile Include="..\Classes\PropFactory.cpp" />
+    <ClCompile Include="..\Classes\PropLayer.cpp" />
     <ClCompile Include="..\Classes\Props.cpp" />
     <ClCompile Include="..\Classes\Score.cpp" />
     <ClCompile Include="..\Classes\TitleScene.cpp" />
@@ -145,13 +147,16 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
   <ItemGroup>
     <ClInclude Include="..\Classes\AppDelegate.h" />
     <ClInclude Include="..\Classes\CheckerBoard.h" />
-    <ClInclude Include="..\Classes\CheckerGame.h" />
+    <ClInclude Include="..\Classes\GameLayer.h" />
     <ClInclude Include="..\Classes\CheckerPiece.h" />
     <ClInclude Include="..\Classes\CheckerPreview.h" />
     <ClInclude Include="..\Classes\Energy.h" />
     <ClInclude Include="..\Classes\GameScene.h" />
+    <ClInclude Include="..\Classes\GameSettingData.h" />
+    <ClInclude Include="..\Classes\Jackpot.h" />
+    <ClInclude Include="..\Classes\JackpotLayer.h" />
     <ClInclude Include="..\Classes\MenuLayers.h" />
-    <ClInclude Include="..\Classes\PropFactory.h" />
+    <ClInclude Include="..\Classes\PropLayer.h" />
     <ClInclude Include="..\Classes\Props.h" />
     <ClInclude Include="..\Classes\resource.h" />
     <ClInclude Include="..\Classes\Score.h" />

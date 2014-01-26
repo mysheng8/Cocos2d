@@ -8,21 +8,28 @@ void CheckerPiece::SetNum(const int num)
 	m_num=num;
 	m_rock=0;
 	m_sp->removeFromParent();
-	m_sp=m_parent->m_parent->DrawPiece(m_grid,m_num,m_rock);
+	m_sp=m_parent->m_parent->DrawPiece(m_grid,m_num,m_rock,false);
 }
 
 
-void CheckerPiece::AddContent(const int num,const bool isRock)
+void CheckerPiece::AddContent(const int num,const bool isRock, const bool isBomb)
 {
 	m_num=num;
-	if(isRock)
+	if(isBomb)
 	{
-		m_rock=2;
-		m_type=PieceType(2);
+		m_type=PieceType(3);
 	}
 	else
 	{
-		m_type=PieceType(1);
+		if(isRock)
+		{
+			m_rock=2;
+			m_type=PieceType(2);
+		}
+		else
+		{
+			m_type=PieceType(1);
+		}
 	}
 
 }
@@ -36,7 +43,7 @@ void CheckerPiece::BreakRock()
 		m_type=PieceType(1);
 	}
 	m_sp->removeFromParent();
-	m_sp=m_parent->m_parent->DrawPiece(m_grid,m_num,m_rock);
+	m_sp=m_parent->m_parent->DrawPiece(m_grid,m_num,m_rock,false);
 }
 
 CheckerPiece& CheckerPiece::operator=(const CheckerPiece& rhs)
@@ -50,24 +57,45 @@ CheckerPiece& CheckerPiece::operator=(const CheckerPiece& rhs)
 };
 void CheckerPiece::Clear()
 {
-	Empty();
-	CCFiniteTimeAction*  empty = CCSequence::create(
-		CCScaleBy::create(0.02,2.0,2.0),
-		CCScaleBy::create(0.03,0.7,0.7),
-        CCScaleBy::create(0.6,0.2,0.2),
-		CCCallFunc::create(this, callfunc_selector(CheckerPiece::onRemoveSprite)),
-        NULL);
-	CCAction*  action = CCSpawn::create(
-        CCFadeOut::create(1),
-        empty,
-        NULL);
-	m_sp->runAction(action);
+	if(IsBomb())
+	{
+		Empty();
+		CCFiniteTimeAction*  action = CCSequence::create(
+			CCTintTo::create(0.5, 255, 0, 0),
+			CCFadeOut::create(0.2),
+			CCCallFunc::create(this, callfunc_selector(CheckerPiece::onExplose)),
+			NULL);
+
+		m_sp->runAction(action);
+	}
+	else
+	{
+		Empty();
+		CCFiniteTimeAction*  empty = CCSequence::create(
+			CCScaleBy::create(0.02,2.0,2.0),
+			CCScaleBy::create(0.03,0.7,0.7),
+			CCScaleBy::create(0.6,0.2,0.2),
+			CCCallFunc::create(this, callfunc_selector(CheckerPiece::onRemoveSprite)),
+			NULL);
+		CCAction*  action = CCSpawn::create(
+			CCFadeOut::create(1),
+			empty,
+			NULL);
+		m_sp->runAction(action);
+	}
 };
+
+void CheckerPiece::onExplose()
+{
+	m_sp->removeFromParent();
+	m_parent->Explosion(m_grid);
+}
 
 void CheckerPiece::onRemoveSprite()
 {
 	m_sp->removeFromParent();
 	m_parent->onRemovedPieces(m_grid);
+
 }
 
 void CheckerPiece::Drop(const float dis)

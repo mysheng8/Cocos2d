@@ -127,10 +127,11 @@ public:
 	void startGameCallback(CCObject * pSender);
 private:
 	unsigned int m_max;
+	unsigned int m_sel;
 	CCMenu *pMenu;
 	vector<string> list;
-	map<CCMenuItemSprite*,string> sp_Map;
-	void AddButton(const char* imageProp,const string propName,const int row, const int column);  
+	map<CCMenuItemToggle*,string> sp_Map;
+	void AddButton(const string propName,const int row, const int column);  
 };
 
 

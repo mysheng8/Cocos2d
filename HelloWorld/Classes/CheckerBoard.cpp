@@ -46,7 +46,7 @@ using namespace CocosDenshion;
 
 
 
-CheckerBoard::CheckerBoard(CheckerGame *parent)
+CheckerBoard::CheckerBoard(GameLayer *parent)
 {
 	m_parent	=	parent;
 
@@ -89,14 +89,14 @@ int CheckerBoard::getHeight(const int column)
 	return i;
 }
 
-CheckerPiece* CheckerBoard::addPiece(const int column,const int num,const bool isRock)
+CheckerPiece* CheckerBoard::addPiece(const int column,const int num,const bool isRock, const bool isBomb)
 {
 	int row = getHeight(column);
 	if (row==7)
 		return 0;
-	content[column][row].AddContent(num,isRock);
+	content[column][row].AddContent(num,isRock,isBomb);
 	int rock=isRock?2:0;
-	CCSprite *sp=m_parent->DrawPiece(Grid(column,row),num,rock);
+	CCSprite *sp=m_parent->DrawPiece(Grid(column,row),num,rock,isBomb);
 	content[column][row].SetSprite(sp);
 	return &content[column][row];
 }
@@ -194,6 +194,8 @@ void CheckerBoard::checkRowPiece(const int row)
 
 void CheckerBoard::onRemovedPieces(const Grid element)
 {
+	if(element.x==m_parent->m_jackpotCol&&element.x==m_parent->m_jackpotRow)
+		m_parent->ApplyJackpot();
 	breakRock(element);
 
 	//re-arrange pieces after all the checked pieces removed.
@@ -257,8 +259,8 @@ bool CheckerBoard::riseUp()
 			--j;
 		}
 		int num=rand()%7+1;
-		content[i][0].AddContent(num,true);
-		CCSprite *sp=m_parent->DrawPiece(Grid(i,0),num,2);
+		content[i][0].AddContent(num,true,false);
+		CCSprite *sp=m_parent->DrawPiece(Grid(i,0),num,2,false);
 		content[i][0].SetSprite(sp);
 	}
 	return true;
@@ -327,24 +329,31 @@ bool Comp(const CheckerPiece* a, const CheckerPiece* b)
 	return a > b ;
 }
 
-void CheckerBoard::startLink(const Grid element)
+void CheckerBoard::startLink(const Grid element,const bool isBomb)
 {
-	removeList.clear();
-	m_parent->mScore->resetMulti();
-
-	checkRowPiece(element.y);
-	checkColumnPiece(element.x);
-
-	if(removeList.empty())
-		m_parent->endLink();
+	if(isBomb)
+	{
+		content[element.x][element.y].Clear();
+	}
 	else
 	{
-		for(vector<CheckerPiece*>::iterator it=removeList.begin();it!=removeList.end();++it)
+		removeList.clear();
+		m_parent->ResetMulti();
+
+		checkRowPiece(element.y);
+		checkColumnPiece(element.x);
+
+		if(removeList.empty())
+			m_parent->endLink();
+		else
 		{
-			(*it)->Clear();
-			m_parent->mScore->score();
+			for(vector<CheckerPiece*>::iterator it=removeList.begin();it!=removeList.end();++it)
+			{
+				(*it)->Clear();
+				m_parent->ScoreUp();
+			}
+			SimpleAudioEngine::sharedEngine()->playEffect(s_pRemove);
 		}
-		SimpleAudioEngine::sharedEngine()->playEffect(s_pRemove);
 	}
 #ifdef DEBUGVIEW
 	DebugView();
@@ -375,15 +384,15 @@ void CheckerBoard::removePieces()
 		DrawLink(true);
 	if(!removeList.empty())
 	{
-		m_parent->mScore->raiseMulti();
+		m_parent->ScoreRiseMulti();
 		for(vector<CheckerPiece*>::iterator it=removeList.begin();it!=removeList.end();++it)
 		{
 			(*it)->Clear();
-			m_parent->mScore->score();
-			m_parent->m_Energy->Charge(m_parent->mScore->getMulti());
+			m_parent->ScoreUp();
+			m_parent->EnergyCharge();
 			SimpleAudioEngine::sharedEngine()->playEffect(effect[(*it)->GetNum()-1].c_str());
 		}
-		int e_id=m_parent->mScore->getMulti()*2;
+		int e_id=m_parent->GetMulti()*2;
 		SimpleAudioEngine::sharedEngine()->playEffect(effect[e_id].c_str());
 	}
 	else
@@ -412,6 +421,23 @@ void CheckerBoard::KillPieces(vector<Grid>::iterator begin, vector<Grid>::iterat
 
 }
 
+void CheckerBoard::Explosion(const Grid element)
+{
+	unsigned int left=(element.x-1<0)?0:(element.x-1);
+	unsigned int right=(element.x+1>6)?6:(element.x+1);
+	unsigned int bottom=(element.y-1<0)?0:(element.y-1);
+	unsigned int top=(element.y+1>6)?6:(element.y+1);
+	vector<Grid> list;
+	for(unsigned int i=left;i!=right+1;++i)
+	{
+		for(unsigned int j=bottom;j!=top+1;++j)
+		{
+			list.push_back(Grid(i,j));
+		}
+	}
+	KillPieces(list.begin(),list.end());
+}
+
 void CheckerBoard::DrawLink(bool horizontal)
 {
 	const unsigned int n = removeGrid.size();
@@ -423,6 +449,15 @@ void CheckerBoard::DrawLink(bool horizontal)
 	m_parent->DrawLink(r_grid, n,horizontal);
 }
 
+CheckerPiece* CheckerBoard::InsertPiece(const Grid element, const int num, const bool isRock, const bool isBomb)
+{
+	CheckerPiece *piece = &content[element.x][element.y];
+	piece->AddContent(num,isRock,isBomb);
+	int rock = isRock?2:0;
+	CCSprite *sp=m_parent->DrawPiece(element,num,rock,isBomb);
+	piece->SetSprite(sp);
+	return piece;
+}
 
 #ifdef DEBUGVIEW
 void CheckerBoard::DebugView()

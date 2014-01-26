@@ -55,10 +55,8 @@ TitleScene::~TitleScene()
 void TitleScene::startGame(CCObject* pSender)
 {
 	CCDirector* pDirector = CCDirector::sharedDirector();
-    GameScene *pScene = new GameScene();
     // run
-	pScene->startGame();
-	pScene->release();
+	GameScene::sharedGameScene().startGame();
 }
 
 void TitleScene::rankCallback(CCObject* pSender)

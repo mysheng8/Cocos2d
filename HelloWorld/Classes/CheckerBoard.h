@@ -3,7 +3,8 @@
 
 #include "cocos2d.h"
 #include "CheckerPiece.h"
-#include "CheckerGame.h"
+#include "GameLayer.h"
+#include "GameSettingData.h"
 #include <stdio.h>
 #include <vector>
 
@@ -15,28 +16,30 @@ using std::vector;
 USING_NS_CC;
 
 class CheckerPiece;
-class CheckerGame;
+class GameLayer;
 struct Grid;
 
 
 class CheckerBoard
 {
 public:
-	CheckerBoard(CheckerGame *parent);  
+	CheckerBoard(GameLayer *parent);  
 	~CheckerBoard();
 
-	CheckerGame *m_parent;
+	GameLayer *m_parent;
 
-	CheckerPiece* addPiece(const int column ,const int num,const bool isRock);
+	CheckerPiece* addPiece(const int column ,const int num,const bool isRock, const bool isBomb);
 	CheckerPiece* getCheckerPiece(const Grid element); 
 	CheckerPiece* getCheckerPiece(const int column,const int row);
+	CheckerPiece* InsertPiece(const Grid element, const int num, const bool isRock, const bool isBomb);
 	bool riseUp();
 	int getHeight(const int column);
-	void startLink(const Grid element);
+	void startLink(const Grid element,const bool isBomb);
 	void onRemovedPieces(const Grid element);
 	void onDropPieces();
 	bool Decline();
 	void KillPieces(vector<Grid>::iterator begin, vector<Grid>::iterator end);
+	void Explosion(const Grid element);
 
 private:
 	

@@ -1,4 +1,5 @@
 #include"Score.h"
+#include"GameSettingData.h"
 #include"resource.h"
 #include"VisibleRect.h"
 #include <stdio.h>
@@ -32,15 +33,9 @@ const ccColor3B bcolors[] = {		ccc3(185,11,60),
 		ccc3(205,69,171)};
 
 
-const int g_levelScore[] =	{100,150,200,300,500,1000,1500,2000,3000,5000,10000,15000,20000,30000,50000,100000,150000,200000,300000,500000,1000000};
-
-
-#define BASESCORE 20;
-#define DROPSCORE 5;
-
-
 bool Score::init()
 {
+	sdata=static_cast<GameData*>(GameSettingData::sharedSettingData().GetData("GameData"))->m_score;
 	
 	CCLabelBMFont* label = CCLabelBMFont::create("Score", s_pPathScoreFont);
 	label->setPosition(ccp( VisibleRect::left().x + 70, VisibleRect::top().y - 40));
@@ -54,51 +49,44 @@ bool Score::init()
 	m_multiL->setPosition(ccp( VisibleRect::left().x + 70, VisibleRect::top().y - 100));
 	addChild(m_multiL,1);
 	m_multiL->setVisible(false);
-	m_score = 0;
-	m_multi = 1;
-	m_level	= 0;
 	return true;
 }
 
 void Score::score()
 {
-	m_score+=m_multi*BASESCORE;
-	addScore(m_score);
-	riseBonus(g_Bonus[(m_multi-1)%15].c_str());
+	addScoreUI();
+	riseBonusUI(g_Bonus[(sdata->m_multi-1)%15].c_str());
 }
 
 void Score::tinyUp()
 {
-	m_score+=DROPSCORE;
-	addScore(m_score);
+	addScoreUI();
 }
 
 
 void Score::levelUp()
 {
-	m_score+=g_levelScore[m_level];
-	addScore(m_score);
-
+	LevelData *ldata=(static_cast<GameData*>(GameSettingData::sharedSettingData().GetData("GameData")))->m_level;
+	addScoreUI();
 	char string[25] = {0};
-    sprintf(string, "Level Up!\n+%d", g_levelScore[m_level]);
-	riseBonus(string,2.0f);
-	++m_level;
+    sprintf(string, "Level Up!\n+%d", ldata->m_levelScore);
+	riseBonusUI(string,2.0f);
 }
 
-void Score::PropUp(const int score)
+void Score::PropUp()
 {
-	addScore(score);
+	addScoreUI();
 
 	char string[25] = {0};
-    sprintf(string, "+%d", score);
-	riseBonus(string,2.0f);
+    sprintf(string, "+%d", sdata->m_propScore);
+	riseBonusUI(string,2.0f);
 }
 
 
-void Score::addScore(const int score)
+void Score::addScoreUI()
 {
 	char string[12] = {0};
-    sprintf(string, "%d", score);
+    sprintf(string, "%d", sdata->m_total);
 	CCFiniteTimeAction*  scale = CCSequence::create(
         CCScaleTo::create(0.01f,2.0f,2.0f),
         CCScaleTo::create(0.5f,1.0f,1.0f),
@@ -111,12 +99,12 @@ void Score::addScore(const int score)
 	m_scoreL->runAction(action);
 	m_scoreL->setString(string);
 }
-void Score::riseBonus(const char* str,const float delay)
+void Score::riseBonusUI(const char* str,const float delay)
 {
 	CCLabelBMFont*	bonus = CCLabelBMFont::create(str,s_pPathScoreFont);
 	bonus->setPosition(ccp( VisibleRect::center().x, VisibleRect::center().y-10));
 	bonus->setScale(1.3f);
-	bonus->setColor(bcolors[m_multi%6]);
+	bonus->setColor(bcolors[(sdata->m_multi)%6]);
 	addChild(bonus,1);
 	CCFiniteTimeAction*  rise = CCSequence::create(
 		CCJumpBy::create(0.3f,ccp(0,0),70,1),
@@ -126,19 +114,10 @@ void Score::riseBonus(const char* str,const float delay)
 	bonus->runAction(rise);
 }
 
-void Score::reset()
-{
-	m_score = 0;
-	m_multi = 1;
-	m_scoreL->setString("0");
-
-}
-
 void Score::raiseMulti()
 {
-	++m_multi;
 	char string[5] = {0};
-    sprintf(string, "x%d", m_multi);
+    sprintf(string, "x%d", sdata->m_multi);
 	m_multiL->setVisible(true);
 	CCFiniteTimeAction*  scale = CCSequence::create(
         CCScaleBy::create(0.01f,4.0f,4.0f),
@@ -148,7 +127,7 @@ void Score::raiseMulti()
         NULL);
 	m_multiL->runAction(scale);
 	m_multiL->setString(string);
-	m_multiL->setColor(bcolors[m_multi%6]);
+	m_multiL->setColor(bcolors[(sdata->m_multi)%6]);
 };
 
 void Score::onRise()

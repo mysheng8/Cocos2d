@@ -3,30 +3,31 @@
 
 #include "cocos2d.h"
 #include "CheckerBoard.h"
-#include "CheckerGame.h"
+#include "GameLayer.h"
 
 USING_NS_CC;
-class CheckerGame;
+class GameLayer;
 
 class CheckerPreview: public CCNode
 {
 public:
-	CheckerPreview(CheckerGame *parent);
-	void resetPreview(int num,bool isRock);
+	CheckerPreview(GameLayer *parent);
+	void resetPreview();
 	void StartPreview(int column);
 	void EditPreview(int column);
 	void EndPreview(int column);
 	bool NeedReset(){return needReset;}
 	void BombMode();
+	void RandomMode();
 	
 private:
+	GameData *data;
 	CCSprite* DrawBomb();
-	CheckerGame *m_parent;
+	GameLayer *m_parent;
 	CCSprite* m_sp;
-	int m_Num;
-	bool m_IsRock;
 	int m_column;
 	bool isBomb;
+	bool isRandom;
 	bool needReset;
 	void onPreviewDrop(CCNode* node);
 	void movePreview(int column);
