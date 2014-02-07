@@ -23,6 +23,12 @@ private:
 
 	vector<JackpotData*> j_list;
 
+	void onRestart();
+
+	void onSwitch();
+
+	void onQuit();
+
 public:
 	~GameScene();
 	
@@ -38,13 +44,17 @@ public:
 
 	void restart();
 
-	void switchMenu(PopoutMenu *next);
+	void switchMenu();
+
+	void quitGame();
 
 	GameLayer* gameLayer;
 
 	PopoutMenu* menuLayer;
 
 	PopoutMenu* prevLayer;
+
+	PopoutMenu* nextLayer;
 
 	PopoutMenu* propLayer;
 

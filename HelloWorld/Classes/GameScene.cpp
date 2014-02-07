@@ -3,6 +3,7 @@
 #include "VisibleRect.h"
 #include "CheckerBoard.h"
 #include "MenuLayers.h"
+#include "TitleScene.h"
 
 USING_NS_CC;
 
@@ -41,14 +42,10 @@ void GameScene::menuCallback(CCObject* pSender)
 void GameScene::startGame()
 {
 	initGameData();
-
-	if(gameLayer)
-		gameLayer->removeFromParent();
 	gameLayer = GameLayer::create();
 	addChild(gameLayer,0);
+
     CCDirector::sharedDirector()->replaceScene(this);
-	if(propLayer)
-		removeChild(propLayer);
 	propLayer = new PropsMenuLayer();
 	addChild(propLayer,1);
 	propLayer->release();
@@ -57,13 +54,18 @@ void GameScene::startGame()
 }
 void GameScene::restart()
 {
+	if(menuLayer)
+		menuLayer->jumpOut(CCCallFunc::create(this, callfunc_selector(GameScene::onRestart)));
+}
+
+void GameScene::onRestart()
+{
 	//reset game data
 	GameSettingData::sharedSettingData().Release();
+	j_list.clear();
+	vector<JackpotData*>().swap(j_list);
 	initGameData();
 
-
-	if(menuLayer)
-		menuLayer->jumpOut();
 	if(gameLayer)
 		gameLayer->restart();
 	if(propLayer)
@@ -89,15 +91,31 @@ void GameScene::gameOver()
 	menuLayer->jumpIn();
 }
 
-void GameScene::switchMenu(PopoutMenu *next)
+void GameScene::quitGame()
 {
-	if(prevLayer&&prevLayer!=next)
+	menuLayer->jumpOut(CCCallFunc::create(this, callfunc_selector(GameScene::onQuit)));
+}
+
+void GameScene::onQuit()
+{
+	CCScene *nextScene =new TitleScene();
+    // run
+    CCDirector::sharedDirector()->replaceScene(nextScene);
+	nextScene->release();
+}
+
+void GameScene::switchMenu()
+{
+	if(prevLayer&&prevLayer!=nextLayer)
 		prevLayer->cleanup();
 	prevLayer=menuLayer;
-	menuLayer->jumpOut();
-	removeChild(menuLayer,false);
+	menuLayer->jumpOut(CCCallFunc::create(this, callfunc_selector(GameScene::onSwitch)));
+}
 
-	menuLayer = next;
+void GameScene::onSwitch()
+{
+	removeChild(menuLayer,false);
+	menuLayer = nextLayer;
 	addChild(menuLayer,1);
 	menuLayer->jumpIn();
 }
@@ -106,6 +124,7 @@ GameScene::~GameScene()
 {
 	GameSettingData::sharedSettingData().Release();
 	j_list.clear();
+	vector<JackpotData*>().swap(j_list);
 }
 
 void GameScene::initGameData()

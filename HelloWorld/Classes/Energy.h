@@ -14,9 +14,9 @@ public:
 	CREATE_FUNC(Energy);
 
 	void Change();
+	void LowEnergy();
 
 private:
-	EnergyData *data;
 	bool m_vertical;
 	CCNode *m_shape;
 };

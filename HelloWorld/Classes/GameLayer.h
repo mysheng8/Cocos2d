@@ -16,6 +16,8 @@
 using namespace std;
 USING_NS_CC;
 
+#define JACKPOT
+
 class CheckerPreview;
 class CheckerBoard;
 class CheckerPiece;
@@ -54,6 +56,7 @@ public:
 	CCSprite* DrawPiece(const Grid element,const int num,const int rock,const bool isBomb);
 	void DrawGuide(const Grid start,const Grid end);
 	void DrawLink(const Grid *elements, const int count,bool horizontal);
+	CCSprite* DrawJackpot(const Grid grid);// draw jackpot
 	
 	//Prop function
 	void InitProps(vector<string>::iterator begin,vector<string>::iterator end);
@@ -62,6 +65,7 @@ public:
 	//Energy function
 	void EnergyUp();
 	void EnergyCharge();
+	void LowEnergy();
 
 	//Score function
 	void ScoreUp();
@@ -70,15 +74,17 @@ public:
 	void ResetMulti();
 	int GetMulti();
 	int GetScore();
+
+	//jackpot function
 	void DelayLevel(const unsigned int num);
 	void InsertRock(const Grid grid);
 	void InsertBomb(const Grid grid);
-	void ApplyJackpot();
+	void riseBufferUI(const char* str);
+	void onDisappear(CCNode* node);
 	//global object
 	CheckerBoard* GetContent();
 	CheckerPiece* GetCheckerPiece(unsigned int column, unsigned int row);
-	int m_jackpotCol;
-	int m_jackpotRow;
+
 private:
 	GameData *data;
 	CheckerBoard* m_content;
@@ -93,7 +99,6 @@ private:
 	bool m_killmode;
 	CCLabelBMFont* m_levelLabel;
 	CCLabelBMFont* m_dropLabel;
-	CCSprite *jackpot_sp;
 
 //	int m_nextNum;// the number of next ball
 //	bool m_nextIsRock;// if the next ball is a rock
@@ -109,14 +114,10 @@ private:
 
 	bool canStart();
 	void checkBuffer();
-	void setJackpot();
 	
 	void resetNext();
 	void DrawBoard();
 	void onDrawGuide(CCNode* node);
-	void DrawJackpot();
-
-	bool initJackpot();
 
 	Grid initPoint(const Grid *elements, const int count);
 	bool containPoint(const Grid point, const Grid *elements, const int count);

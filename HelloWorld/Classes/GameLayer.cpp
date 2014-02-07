@@ -45,7 +45,7 @@ bool GameLayer::initilizeGame()
 	m_column			=	-1;
 	m_canProp			=	true;
 	m_killmode			=	false;
-	srand((unsigned)time(NULL)); 
+	
 	m_preview = new CheckerPreview(this);
 	m_content = new CheckerBoard(this);
 	resetNext();
@@ -87,10 +87,6 @@ bool GameLayer::initilizeGame()
 	addChild(m_dropLabel,2);
 	m_dropLabel->setScale(0.5f);
 
-	m_jackpotCol=-1;
-	m_jackpotRow=-1;
-
-	
 	return true;
 }
 
@@ -160,6 +156,27 @@ void GameLayer::checkBuffer()
 		--data->m_buf->m_period;
 }
 
+void GameLayer::riseBufferUI(const char* str)
+{
+	CCLabelBMFont*	bufUI = CCLabelBMFont::create(str,s_pPathScoreFont);
+	bufUI->setPosition(ccp( VisibleRect::center().x, VisibleRect::center().y+10));
+	bufUI->setScale(1.3f);
+	//bonus->setColor(bcolors[(sdata->m_multi)%6]);
+	addChild(bufUI,1);
+	CCFiniteTimeAction*  rise = CCSequence::create(
+		CCJumpBy::create(0.3f,ccp(0,0),70,1),
+		CCFadeOut::create(1),
+		CCCallFuncN::create(this, callfuncN_selector(GameLayer::onDisappear)),
+        NULL);
+	bufUI->runAction(rise);
+}
+
+void GameLayer::onDisappear(CCNode* node)
+{
+	node->removeFromParent();
+}
+
+
 void GameLayer::startLink(int column,const bool isBomb)
 {
 	data->m_score->m_total+=data->m_score->m_dropScore;
@@ -175,13 +192,15 @@ void GameLayer::endLink()
 	this->setTouchEnabled(true);
 	if(m_preview->NeedReset())
 	{
-		CCLog("reset Preview");
+		//CCLog("reset Preview");
 		resetNext();
 		m_preview->resetPreview();
 	}
 	m_canProp=true;
 	checkBuffer();
-	setJackpot();
+#ifdef JACKPOT
+	m_content->setJackpot();
+#endif
 }
 
 void GameLayer::levelUp()
@@ -504,6 +523,11 @@ void GameLayer::EnergyCharge()
 	}
 }
 
+void GameLayer::LowEnergy()
+{
+	m_Energy->LowEnergy();
+}
+
 void GameLayer::ScoreUp()
 {
 	data->m_score->m_total+=data->m_score->m_killScore;
@@ -567,22 +591,9 @@ CheckerPiece* GameLayer::GetCheckerPiece(unsigned int column, unsigned int row)
 	return m_content->getCheckerPiece(column,row);
 }
 
-bool GameLayer::initJackpot()
+CCSprite* GameLayer::DrawJackpot(const Grid grid)
 {
-	m_jackpotCol=rand()%7;
-	int num=m_content->getHeight(m_jackpotCol);
-	if(num!=0)
-	{
-		m_jackpotRow=rand()%num;
-		return true;
-	}
-	else
-		return false;
-}
-
-void GameLayer::DrawJackpot()
-{
-	jackpot_sp=CCSprite::createWithSpriteFrame(CCSpriteFrame::create(s_pPathJackpot,CCRectMake(0,0,40,40)));
+	CCSprite *sp=CCSprite::createWithSpriteFrame(CCSpriteFrame::create(s_pPathJackpot,CCRectMake(0,0,40,40)));
 	CCArray *animFrame=CCArray::create();
 	for(unsigned int i = 0;i!=8;++i)
 	{
@@ -590,51 +601,9 @@ void GameLayer::DrawJackpot()
 		animFrame->addObject(spf);
 	}
 	CCAnimation *anim=CCAnimation::createWithSpriteFrames(animFrame,0.05f);
-	jackpot_sp->runAction(CCRepeatForever::create(CCAnimate::create(anim)));
-	jackpot_sp->setPosition(ccp(VisibleRect::unit()*m_jackpotCol+0.5*VisibleRect::unit()+VisibleRect::origin().x, VisibleRect::unit()*m_jackpotRow+0.5*VisibleRect::unit() +VisibleRect::origin().y));
-	addChild(jackpot_sp,10);
+	sp->runAction(CCRepeatForever::create(CCAnimate::create(anim)));
+	sp->setPosition(ccp(VisibleRect::unit()*grid.x+0.5*VisibleRect::unit()+VisibleRect::origin().x, VisibleRect::unit()*grid.y+0.5*VisibleRect::unit() +VisibleRect::origin().y));
+	addChild(sp,10);
+	return sp;
 }
 
-void GameLayer::setJackpot()
-{
-	JackpotRuntimeData *jdata=data->m_jackpotRuntime;
-
-	if(!jdata->hasJackpot)
-	{
-		if(jdata->m_appear==0)
-		{
-			if(initJackpot())
-			{
-				DrawJackpot();
-				jdata->m_appear=jdata->m_minAppear;
-				jdata->hasJackpot=true;
-			}
-		}
-		else
-			--jdata->m_appear;
-	
-	}
-	else
-	{
-		if(jdata->m_disappear==0)
-		{
-			jackpot_sp->removeFromParent();
-			jdata->m_disappear=jdata->m_minDisappear;
-			jdata->hasJackpot=false;
-		}
-		else
-			--jdata->m_disappear;	
-	
-	}
-}
-
-void GameLayer::ApplyJackpot()
-{
-	if(data->m_jackpotRuntime->hasJackpot)
-	{
-		Jackpot *j=static_cast<Jackpot*>(JackpotFactory::sharedClassFactory().GetJackpotByName(data->m_jackpotRuntime->m_jackpot->m_name));
-		j->setGrid(new Grid(m_jackpotCol,m_jackpotRow));
-		j->function();
-		GameScene::sharedGameScene().randomJackpot();
-	}
-}

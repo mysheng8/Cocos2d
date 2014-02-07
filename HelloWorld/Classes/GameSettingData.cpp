@@ -40,9 +40,12 @@ void GameSettingData::DelData(string name)
 
 void GameSettingData::Release()
 {
-	for(map<string,EntityData*>::const_iterator iter=m_settings.begin();iter!=m_settings.end();++iter)
+	if (m_settings.size()!=0)
 	{
-		delete(iter->second);
+		for(map<string,EntityData*>::const_iterator iter=m_settings.begin();iter!=m_settings.end();++iter)
+		{
+			delete(iter->second);
+		}
+		m_settings.clear();
 	}
-	m_settings.clear();
 }

@@ -3,7 +3,6 @@
 #include "VisibleRect.h"
 #include "GameScene.h"
 #include "SimpleAudioEngine.h"
-#include "TitleScene.h"
 #include<stdio.h>
 #include<fstream>
 #include<algorithm>
@@ -18,8 +17,10 @@ const std::string g_PauseMenu[] = {
 	"Resume",
 	"Restart",
 	"Option",
-    "Main Menu"
+    "Quit"
 };
+
+const std::string g_quit="Do you want to\nexit game?";
 
 const float volume[]={1.0f,0.75f,0.5f,0.25f,0.0f};
 const char s_pClick[] = "audio/click.wav";
@@ -62,11 +63,16 @@ void PopoutMenu::jumpIn()
 	runAction(move_ease_in);
 }
 
-void PopoutMenu::jumpOut()
+void PopoutMenu::jumpOut(CCCallFunc *action)
 {
 	CCActionInterval*  drop = CCMoveBy::create(0.3f, ccp( 0,  6*LINE_SPACE));
 	CCActionInterval* move_ease_in = CCEaseIn::create((CCActionInterval*)(drop->copy()->autorelease()) , 2.0f);
-	runAction(move_ease_in);
+	if(!action)
+		runAction(move_ease_in);
+	else
+	{
+		runAction(CCSequence::create(move_ease_in,action,NULL));
+	}
 }
 
 void PopoutMenu::restartCallback(CCObject* pSender)
@@ -89,12 +95,60 @@ void PopoutMenu::resumeCallback(CCObject* pSender)
 
 void PopoutMenu::quitCallback(CCObject* pSender)
 {
-    CCScene *pScene =new TitleScene();
-	
-    // run
-    CCDirector::sharedDirector()->replaceScene(pScene);
-	pScene->release();
+	CCNode *pNode=getParent();
+	GameScene *pScene = static_cast<GameScene*>(pNode);
+
+	pScene->nextLayer=new QuitLayer();
+	pScene->switchMenu();
+
 }
+
+QuitLayer::QuitLayer()
+{
+	SimpleAudioEngine::sharedEngine()->preloadEffect( s_pClick );
+	m_pMainMenu = CCMenu::create();
+
+	CCLabelBMFont* title = CCLabelBMFont::create(g_quit.c_str(), s_pPathScoreFont);  
+	title->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y -  LINE_SPACE) ));
+	addChild(title, 2);
+
+	CCLabelBMFont* oklabel = CCLabelBMFont::create("Yes", s_pPathMenuFont);  
+    CCMenuItemLabel* pOkItem = CCMenuItemLabel::create(oklabel, this, menu_selector(QuitLayer::quitCallback));
+    m_pMainMenu->addChild(pOkItem, 2);
+    pOkItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 3* LINE_SPACE) ));
+
+	CCLabelBMFont* nolabel = CCLabelBMFont::create("No", s_pPathMenuFont);  
+    CCMenuItemLabel* pNoItem = CCMenuItemLabel::create(nolabel, this, menu_selector(QuitLayer::backCallback));
+    m_pMainMenu->addChild(pNoItem, 2);
+    pNoItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 4* LINE_SPACE) ));
+	m_pMainMenu->setContentSize(CCSizeMake(VisibleRect::getVisibleRect().size.width, 2 * (LINE_SPACE)));
+	m_pMainMenu->setPosition(CCPointZero);
+    addChild(m_pMainMenu,1);
+}
+
+QuitLayer::~QuitLayer()
+{
+
+}
+
+
+void QuitLayer::backCallback(CCObject * pSender)
+{
+	CCNode *pNode=getParent();
+    GameScene *pScene = static_cast<GameScene*>(pNode);
+
+    // run
+	pScene->resumeGame();
+}
+
+void QuitLayer::quitCallback(CCObject * pSender)
+{
+	CCNode *pNode=getParent();
+    GameScene *pScene = static_cast<GameScene*>(pNode);
+	// run
+	pScene->quitGame();
+}
+
 
 MenuLayer::MenuLayer()
 {
@@ -102,11 +156,6 @@ MenuLayer::MenuLayer()
 	m_music=0;
 	SimpleAudioEngine::sharedEngine()->preloadEffect( s_pClick );
 	m_pMainMenu = CCMenu::create();
-
-	
-
-
-
 
 
     // add menu new game
@@ -297,8 +346,8 @@ void GameOverLayer::submitCallback(CCObject * pSender)
     GameScene *pScene = static_cast<GameScene*>(pNode);
 
 	//run
-	PopoutMenu *next=new InputLayer();
-	pScene->switchMenu(next);
+	pScene->nextLayer=new InputLayer();
+	pScene->switchMenu();
 
 }
 
@@ -467,7 +516,8 @@ void InputLayer::nextCallback(CCObject * pSender)
 	GameData *data=static_cast<GameData*>(GameSettingData::sharedSettingData().GetData("GameData"));
 	next->rank(Rank(name,data->m_score->m_total));
 	next->addButtons(true);
-	pScene->switchMenu(next);
+	pScene->nextLayer=next;
+	pScene->switchMenu();
 
 }
 
@@ -477,7 +527,8 @@ void InputLayer::backCallback(CCObject * pSender)
     GameScene *pScene = static_cast<GameScene*>(pNode);
 
 	//run
-	pScene->switchMenu(pScene->prevLayer);
+	pScene->nextLayer = pScene->prevLayer;
+	pScene->switchMenu();
 
 }
 
@@ -488,7 +539,8 @@ RankLayer::RankLayer()
 
 RankLayer::~RankLayer()
 {
-	delete scoreList;
+	scoreList->clear();
+	scoreList=0;
 }
 
 void RankLayer::onEnter()
@@ -548,7 +600,7 @@ void RankLayer::addButtons(bool isGameOver)
 
 bool comp(const Rank &lhs, const Rank &rhs)
 {
- return lhs.score > rhs.score;
+	return lhs.score > rhs.score;
 }
 
 void RankLayer::rank()
@@ -601,8 +653,8 @@ void RankLayer::nextCallback(CCObject * pSender)
 	GameOverLayer *next=new GameOverLayer();
 
 	next->setSubmitEnable(false);
-
-	pScene->switchMenu(next);
+	pScene->nextLayer=next;
+	pScene->switchMenu();
 }
 
 void RankLayer::backCallback(CCObject * pSender)
@@ -611,7 +663,8 @@ void RankLayer::backCallback(CCObject * pSender)
     GameScene *pScene = static_cast<GameScene*>(pNode);
 
 	//run
-	pScene->switchMenu(pScene->prevLayer);
+	pScene->nextLayer=pScene->prevLayer;
+	pScene->switchMenu();
 
 }
 
@@ -619,7 +672,7 @@ void RankLayer::quitCallback(CCObject * pSender)
 {
 	jumpOut();
 }
-
+ 
 PropsMenuLayer::PropsMenuLayer()
 {
 	pMenu=CCMenu::create();
@@ -651,7 +704,7 @@ PropsMenuLayer::PropsMenuLayer()
 PropsMenuLayer::~PropsMenuLayer()
 {
 	list.clear();
-	sp_Map.clear();
+	vector<string>().swap(list);
 }
 
 void PropsMenuLayer::AddButton(const string propName,const int row, const int column)

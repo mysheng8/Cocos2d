@@ -67,6 +67,8 @@ CheckerBoard::CheckerBoard(GameLayer *parent)
 	m_dropedPieces		=	0;
 	m_preDropPieces		=	0;
 
+	jackpot_p = 0;
+
 	for(int j=0;j!=18;++j)
 		SimpleAudioEngine::sharedEngine()->preloadEffect( effect[j].c_str() );
 	SimpleAudioEngine::sharedEngine()->preloadEffect(s_pRemove);
@@ -192,12 +194,8 @@ void CheckerBoard::checkRowPiece(const int row)
 		m_parent->DrawGuide(Grid(7-sum,row),Grid(6,row));
 }
 
-void CheckerBoard::onRemovedPieces(const Grid element)
+void CheckerBoard::onRemovedPieces()
 {
-	if(element.x==m_parent->m_jackpotCol&&element.x==m_parent->m_jackpotRow)
-		m_parent->ApplyJackpot();
-	breakRock(element);
-
 	//re-arrange pieces after all the checked pieces removed.
 	++m_removedPieces;	
 	if (m_removedPieces==removeList.size())
@@ -254,7 +252,10 @@ bool CheckerBoard::riseUp()
 			if(!content[i][j-1].IsEmpty())
 			{
 				content[i][j]=content[i][j-1];
-				content[i][j].Rise(VisibleRect::unit());
+				if(hasJackpot(&content[i][j-1]))
+					jackpot_p=&content[i][j];
+				content[i][j].Rise(1);
+
 			}
 			--j;
 		}
@@ -280,7 +281,7 @@ bool CheckerBoard::Decline()
 			if(!content[i][j+1].IsEmpty())
 			{
 				content[i][j]=content[i][j+1];
-				content[i][j].Rise(-VisibleRect::unit());
+				content[i][j].Rise(-1);
 				content[i][j+1].Empty();
 			}
 			++j;
@@ -312,7 +313,9 @@ void CheckerBoard::arrangePieceColumn(const int column)
 			if(j!=k)
 			{
 				content[column][k]=content[column][j];
-				content[column][j].Drop((j-k)*VisibleRect::unit());
+				if(hasJackpot(&content[column][j]))
+					jackpot_p=&content[column][k];
+				content[column][j].Drop((j-k));
 				content[column][j].Empty();
 				++m_preDropPieces;
 			}
@@ -324,6 +327,7 @@ void CheckerBoard::arrangePieceColumn(const int column)
 	DebugView();
 #endif
 }
+
 bool Comp(const CheckerPiece* a, const CheckerPiece* b)
 {
 	return a > b ;
@@ -333,7 +337,7 @@ void CheckerBoard::startLink(const Grid element,const bool isBomb)
 {
 	if(isBomb)
 	{
-		content[element.x][element.y].Clear();
+		content[element.x][element.y].Explose();
 	}
 	else
 	{
@@ -457,6 +461,77 @@ CheckerPiece* CheckerBoard::InsertPiece(const Grid element, const int num, const
 	CCSprite *sp=m_parent->DrawPiece(element,num,rock,isBomb);
 	piece->SetSprite(sp);
 	return piece;
+}
+
+void CheckerBoard::initJackpot()
+{
+	int num = 0;
+	int col = 0;
+	int row = 0;
+	while(num==0)
+	{
+		col=rand()%7;
+		num=getHeight(col);
+	}
+	row=rand()%num;
+	content[col][row].initJackpot();
+
+	jackpot_p=&content[col][row];
+}
+
+void CheckerBoard::setJackpot()
+{
+	GameData *data=static_cast<GameData*>(GameSettingData::sharedSettingData().GetData("GameData"));
+	JackpotRuntimeData *jdata=data->m_jackpotRuntime;
+
+	if(!jdata->hasJackpot)
+	{
+		if(jdata->m_appear==0)
+		{
+			initJackpot();
+			jdata->m_appear=jdata->m_minAppear;
+			jdata->hasJackpot=true;
+			
+		}
+		else
+			--jdata->m_appear;
+	
+	}
+	else
+	{
+		if(jdata->m_disappear==0)
+		{
+			clearJackpot();
+			jdata->m_disappear=jdata->m_minDisappear;
+			jdata->hasJackpot=false;
+		}
+		else
+			--jdata->m_disappear;	
+	
+	}
+}
+
+void CheckerBoard::ApplyJackpot()
+{
+	GameData *data=static_cast<GameData*>(GameSettingData::sharedSettingData().GetData("GameData"));
+	if(data->m_jackpotRuntime->hasJackpot)
+	{
+		Jackpot *j=static_cast<Jackpot*>(JackpotFactory::sharedClassFactory().GetJackpotByName(data->m_jackpotRuntime->m_jackpot->m_name));
+		j->setGrid(&(jackpot_p->GetGrid()));
+		j->function();
+		GameScene::sharedGameScene().randomJackpot();
+		//clear jackpot
+		clearJackpot();
+	}
+}
+
+void CheckerBoard::clearJackpot()
+{
+	if(jackpot_p)
+	{
+		jackpot_p->clearJackpot();
+		jackpot_p=0;
+	}
 }
 
 #ifdef DEBUGVIEW

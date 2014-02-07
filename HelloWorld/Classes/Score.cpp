@@ -35,8 +35,6 @@ const ccColor3B bcolors[] = {		ccc3(185,11,60),
 
 bool Score::init()
 {
-	sdata=static_cast<GameData*>(GameSettingData::sharedSettingData().GetData("GameData"))->m_score;
-	
 	CCLabelBMFont* label = CCLabelBMFont::create("Score", s_pPathScoreFont);
 	label->setPosition(ccp( VisibleRect::left().x + 70, VisibleRect::top().y - 40));
 	addChild(label,1);
@@ -54,6 +52,7 @@ bool Score::init()
 
 void Score::score()
 {
+	ScoreData *sdata=static_cast<GameData*>(GameSettingData::sharedSettingData().GetData("GameData"))->m_score;
 	addScoreUI();
 	riseBonusUI(g_Bonus[(sdata->m_multi-1)%15].c_str());
 }
@@ -76,7 +75,7 @@ void Score::levelUp()
 void Score::PropUp()
 {
 	addScoreUI();
-
+	ScoreData *sdata=static_cast<GameData*>(GameSettingData::sharedSettingData().GetData("GameData"))->m_score;
 	char string[25] = {0};
     sprintf(string, "+%d", sdata->m_propScore);
 	riseBonusUI(string,2.0f);
@@ -85,6 +84,7 @@ void Score::PropUp()
 
 void Score::addScoreUI()
 {
+	ScoreData *sdata=static_cast<GameData*>(GameSettingData::sharedSettingData().GetData("GameData"))->m_score;
 	char string[12] = {0};
     sprintf(string, "%d", sdata->m_total);
 	CCFiniteTimeAction*  scale = CCSequence::create(
@@ -101,6 +101,7 @@ void Score::addScoreUI()
 }
 void Score::riseBonusUI(const char* str,const float delay)
 {
+	ScoreData *sdata=static_cast<GameData*>(GameSettingData::sharedSettingData().GetData("GameData"))->m_score;
 	CCLabelBMFont*	bonus = CCLabelBMFont::create(str,s_pPathScoreFont);
 	bonus->setPosition(ccp( VisibleRect::center().x, VisibleRect::center().y-10));
 	bonus->setScale(1.3f);
@@ -116,6 +117,7 @@ void Score::riseBonusUI(const char* str,const float delay)
 
 void Score::raiseMulti()
 {
+	ScoreData *sdata=static_cast<GameData*>(GameSettingData::sharedSettingData().GetData("GameData"))->m_score;
 	char string[5] = {0};
     sprintf(string, "x%d", sdata->m_multi);
 	m_multiL->setVisible(true);

@@ -96,7 +96,7 @@ void CheckerPreview::EndPreview(int column)
 	{
 		CCRect ret=m_sp->getTextureRect();
 		int k=ret.origin.x/40;
-		CCLog("%d",k);
+		//CCLog("%d",k);
 		if(k!=7)
 		{
 			data->m_nextNum=k+1;

@@ -10,6 +10,14 @@ struct Grid
 	int x;
 	int y;
 	Grid(int in_x=0,int in_y=0):x(in_x),y(in_y){};
+	bool operator==(const Grid &rhs)
+	{
+		return x==rhs.x&&y==rhs.y;
+	};
+	bool operator!=(const Grid &rhs)
+	{
+		return x!=rhs.x&&y!=rhs.y;
+	};
 };
 
 enum PieceType
@@ -26,7 +34,7 @@ class CheckerPiece: public CCNode
 {
 	friend class CheckerBoard;
 public:
-	CheckerPiece():m_type(PieceType(0)),m_num(0),m_rock(0){};
+	CheckerPiece():m_type(PieceType(0)),m_num(0),m_rock(0),m_sp(0),jackpot_sp(0){};
 	~CheckerPiece(){};
 	void init(CheckerBoard* parent,Grid grid){m_parent=parent;m_grid=grid;};
 	bool IsEmpty(){return m_type==PieceType(0);};
@@ -43,16 +51,18 @@ public:
 
 	CheckerPiece& operator=(const CheckerPiece& rhs);
 
-	void Drop(const float dis);
-	void Rise(const float dis);
+	void Drop(const int dis);
+	void Rise(const int dis);
 	void Clear();
+	void Explose();
 	void onDropSprite();
 	void onRemoveSprite();
 	void onExplose();
 	void AddContent(const int num,const bool isRock,const bool isBomb);
 	void BreakRock();
 	void Empty(){m_type=PieceType(0);};
-
+	void initJackpot();
+	void clearJackpot();
 
 private:
 	PieceType m_type;
@@ -61,6 +71,7 @@ private:
 	CCSprite* m_sp;
 	CheckerBoard* m_parent;
 	Grid m_grid;
+	CCSprite *jackpot_sp;
 };
 
 

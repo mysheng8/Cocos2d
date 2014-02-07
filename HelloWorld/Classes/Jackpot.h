@@ -51,7 +51,7 @@ public:
 	DECLARE_JACKPOT(Jackpot)
 	Jackpot();
 	void setGrid(Grid *grid);
-	virtual bool function(){return true;};
+	virtual bool function();
 protected:
 	GameLayer	*m_game;
 	Grid		*m_grid;

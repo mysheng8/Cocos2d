@@ -10,13 +10,14 @@
 USING_NS_CC;
 
 using namespace std;
+
 class PopoutMenu: public CCLayer
 {
 public:
 	PopoutMenu();
-	~PopoutMenu();
+	virtual ~PopoutMenu();
 	virtual void  jumpIn();
-	virtual void jumpOut();
+	virtual void jumpOut(CCCallFunc *action = 0);
 
 	virtual void restartCallback(CCObject * pSender);
 	virtual void resumeCallback(CCObject * pSender);
@@ -24,9 +25,23 @@ public:
 
 };
 
+class QuitLayer : public PopoutMenu
+{
+public:
+	QuitLayer();
+	~QuitLayer();
+
+	void backCallback(CCObject * pSender);
+	void quitCallback(CCObject * pSender);
+
+private:
+	CCMenu* m_pMainMenu;
+};
+
 class MenuLayer : public PopoutMenu
 {
 public:
+
 	MenuLayer(); 
 	~MenuLayer();
 
@@ -86,7 +101,7 @@ protected:
     CCPoint  m_beginPos;
 };
 
-struct Rank
+class Rank
 {
 public:
 	string name;

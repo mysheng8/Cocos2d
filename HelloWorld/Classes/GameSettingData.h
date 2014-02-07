@@ -13,6 +13,16 @@ class EntityData
 public:
 	EntityData(string name){m_name=name;};
 	string m_name;
+	bool operator==(EntityData &rhs)
+	{
+		return m_name==rhs.m_name;
+	};
+	bool operator!=(EntityData &rhs)
+	{
+		return m_name!=rhs.m_name;
+	};
+
+	virtual ~EntityData(){};
 };
 
 class GameSettingData

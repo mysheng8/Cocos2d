@@ -20,7 +20,6 @@ public:
 	void PropUp();
 
 private:
-	ScoreData *sdata;
 	CCLabelBMFont* m_scoreL;
 	CCLabelBMFont*	m_multiL;
 	void onRise();

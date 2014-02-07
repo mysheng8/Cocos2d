@@ -46,13 +46,25 @@ Jackpot::Jackpot()
 	//m_game=0;
 }
 
+bool Jackpot::function()
+{
+	CCLog("%s",GetType());
+	return true;
+}
+
 IMPLEMENT_PROP(LongLiveJackpot)
 
 bool LongLiveJackpot::function()
 {
+	if(!Jackpot::function())
+		return false;
 	if (!m_game)
 		return false;
-	m_game->DelayLevel(5);
+	int num=rand()%10+1;
+	char str[25] = {0};
+	sprintf(str, "+%d drops to level up", num);
+	m_game->riseBufferUI(str);
+	m_game->DelayLevel(num);
 	return true;
 }
 
@@ -60,8 +72,11 @@ IMPLEMENT_PROP(RockJackpot)
 
 bool RockJackpot::function()
 {
+	if(!Jackpot::function())
+		return false;
 	if (!m_game)
 		return false;
+	m_game->riseBufferUI("Turn to Rock");
 	m_game->InsertRock(*m_grid);
 	return true;
 }
@@ -70,8 +85,11 @@ IMPLEMENT_PROP(BombJackpot)
 
 bool BombJackpot::function()
 {
+	if(!Jackpot::function())
+		return false;
 	if (!m_game)
 		return false;
+	m_game->riseBufferUI("Turn to Bomb");
 	m_game->InsertBomb(*m_grid);
 	return true;
 }
@@ -80,6 +98,8 @@ IMPLEMENT_PROP(DoubleScoreJackpot)
 
 bool DoubleScoreJackpot::function()
 {
+	if(!Jackpot::function())
+		return false;
 	if (!m_game)
 		return false;
 
@@ -87,12 +107,11 @@ bool DoubleScoreJackpot::function()
 	data->m_buf->m_period=5;
 	data->m_buf->m_type=BufferType(DOUBLESCORE);
 	data->m_buf->m_bufData=data->m_score;
-	ScoreData *doublescore=&ScoreData(*(data->m_score));
-	doublescore->m_name="DoubleScoreData";
+	ScoreData *doublescore= new ScoreData("DoubleScoreData",data->m_score->m_dropScore*2,data->m_score->m_killScore*2,data->m_score->m_propScore);
+	doublescore->m_total=data->m_score->m_total;
 	data->m_score=doublescore;
-	doublescore->m_dropScore*=2;
-	doublescore->m_killScore*=2;
 
+	m_game->riseBufferUI("Double Score");
 	return true;
 }
 
@@ -100,6 +119,8 @@ IMPLEMENT_PROP(PowerEnergyJackpot)
 
 bool PowerEnergyJackpot::function()
 {
+	if(!Jackpot::function())
+		return false;
 	if (!m_game)
 		return false;
 
@@ -107,11 +128,12 @@ bool PowerEnergyJackpot::function()
 	data->m_buf->m_period=5;
 	data->m_buf->m_type=BufferType(POWERENERGY);
 	data->m_buf->m_bufData=data->m_energy;
-	EnergyData *power=&EnergyData(*(data->m_energy));
-	power->m_name="PowerEnergy";
+	EnergyData *power=new EnergyData("PowerEnergyData",data->m_energy->m_spring);
+	power->m_totalEnergy=data->m_energy->m_totalEnergy;
 	data->m_energy=power;
 	power->m_multi*=1.5;
-
+	
+	m_game->riseBufferUI("Power Energy");
 	return true;
 }
 
@@ -119,6 +141,8 @@ IMPLEMENT_PROP(NoEnergyJackpot)
 
 bool NoEnergyJackpot::function()
 {
+	if(!Jackpot::function())
+		return false;
 	if (!m_game)
 		return false;
 
@@ -126,11 +150,13 @@ bool NoEnergyJackpot::function()
 	data->m_buf->m_period=5;
 	data->m_buf->m_type=BufferType(NOENERGY);
 	data->m_buf->m_bufData=data->m_energy;
-	EnergyData *power=&EnergyData(*(data->m_energy));
-	power->m_name="NoEnergy";
+	EnergyData *power=new EnergyData("NoEnergyData",data->m_energy->m_spring);
 	data->m_energy=power;
 	power->m_multi*=0;
 	power->m_totalEnergy=0;
+
+	m_game->riseBufferUI("No Energy");
+	m_game->LowEnergy();
 	return true;
 }
 
@@ -138,8 +164,11 @@ IMPLEMENT_PROP(LevelUpJackpot)
 
 bool LevelUpJackpot::function()
 {
+	if(!Jackpot::function())
+		return false;
 	if (!m_game)
 		return false;
+
 	m_game->levelUp();
 	return true;
 }

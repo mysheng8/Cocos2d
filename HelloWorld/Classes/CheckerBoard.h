@@ -35,15 +35,26 @@ public:
 	bool riseUp();
 	int getHeight(const int column);
 	void startLink(const Grid element,const bool isBomb);
-	void onRemovedPieces(const Grid element);
+	void breakRock(const Grid element);
+	void onRemovedPieces();
 	void onDropPieces();
 	bool Decline();
 	void KillPieces(vector<Grid>::iterator begin, vector<Grid>::iterator end);
 	void Explosion(const Grid element);
 
+	//jackpot function
+	void setJackpot();
+
+	void ApplyJackpot();
+	bool hasJackpot(CheckerPiece *p){return p==jackpot_p;};
+	
+
 private:
 	
 	CheckerPiece **content;
+
+	CheckerPiece *jackpot_p;
+
 	
 	vector<CheckerPiece*> removeList;
 
@@ -55,12 +66,18 @@ private:
 	void checkColumnPiece(const int column);
 	void checkRowPiece(const int row);
 	void arrangePieceColumn(const int column);
-	void breakRock(const Grid element);
+	
 	void removePieces();
 
 	void guideView();
 	vector<Grid> removeGrid;
 	void DrawLink(bool horizontal);
+
+	//Jackpot
+	void initJackpot();
+	void clearJackpot();
+	
+	
 
 #ifdef DEBUGVIEW
 	void DebugView();
@@ -68,5 +85,8 @@ private:
 	vector<CCLabelTTF*> Debuglabels;
 #endif
 };
+
+
+
 
 #endif //__CHECKERBOARD_H__
