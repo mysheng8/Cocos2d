@@ -32,7 +32,6 @@ class CheckerBoard;
 
 class CheckerPiece: public CCNode
 {
-	friend class CheckerBoard;
 public:
 	CheckerPiece():m_type(PieceType(0)),m_num(0),m_rock(0),m_sp(0),jackpot_sp(0){};
 	~CheckerPiece(){};
@@ -60,9 +59,10 @@ public:
 	void onExplose();
 	void AddContent(const int num,const bool isRock,const bool isBomb);
 	void BreakRock();
-	void Empty(){m_type=PieceType(0);};
+	void Empty(){m_type=PieceType(0);m_sp=0;};
 	void initJackpot();
 	void clearJackpot();
+	void clearSprite();
 
 private:
 	PieceType m_type;

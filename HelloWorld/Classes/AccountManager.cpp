@@ -6,7 +6,7 @@ AccountManager& AccountManager::sharedAccountManager()
 	return _manager;
 }
 
-Account* AccountManager::createAccount(string str,Callback *action=0)
+Account* AccountManager::createAccount(string str,Callback *action)
 {
 	Account *a=getAccount(str);
 	if(a==NULL)

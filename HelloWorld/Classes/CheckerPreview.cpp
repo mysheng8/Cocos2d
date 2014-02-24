@@ -126,6 +126,7 @@ void CheckerPreview::EndPreview(int column)
 void CheckerPreview::onPreviewDrop(CCNode* node)
 {
 	m_sp->removeFromParent();
+	m_sp=0;
 	SimpleAudioEngine::sharedEngine()->playEffect(s_pClick);
 	m_parent->startLink(m_column,isBomb);
 }

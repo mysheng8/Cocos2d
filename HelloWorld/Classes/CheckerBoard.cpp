@@ -274,8 +274,8 @@ bool CheckerBoard::Decline()
 		int j = 0;
 		if(content[i][j].IsEmpty())
 			continue;
+		content[i][j].clearSprite();
 		content[i][j].Empty();
-		content[i][j].m_sp->removeFromParent();
 		while(j!=7)
 		{
 			if(!content[i][j+1].IsEmpty())
@@ -335,13 +335,11 @@ bool Comp(const CheckerPiece* a, const CheckerPiece* b)
 
 void CheckerBoard::startLink(const Grid element,const bool isBomb)
 {
+	removeList.clear();
+
 	if(isBomb)
-	{
 		content[element.x][element.y].Explose();
-	}
-	else
-	{
-		removeList.clear();
+	else{
 		m_parent->ResetMulti();
 
 		checkRowPiece(element.y);
@@ -359,6 +357,7 @@ void CheckerBoard::startLink(const Grid element,const bool isBomb)
 			SimpleAudioEngine::sharedEngine()->playEffect(s_pRemove);
 		}
 	}
+	
 #ifdef DEBUGVIEW
 	DebugView();
 #endif
@@ -427,6 +426,9 @@ void CheckerBoard::KillPieces(vector<Grid>::iterator begin, vector<Grid>::iterat
 
 void CheckerBoard::Explosion(const Grid element)
 {
+	
+	//++m_removedPieces;//count +1 for bomb piece removed
+
 	unsigned int left=(element.x-1<0)?0:(element.x-1);
 	unsigned int right=(element.x+1>6)?6:(element.x+1);
 	unsigned int bottom=(element.y-1<0)?0:(element.y-1);

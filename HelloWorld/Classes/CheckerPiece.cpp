@@ -45,6 +45,7 @@ void CheckerPiece::BreakRock()
 	}
 	m_sp->removeFromParent();
 	m_sp=m_parent->m_parent->DrawPiece(m_grid,m_num,m_rock,false);
+	
 }
 
 CheckerPiece& CheckerPiece::operator=(const CheckerPiece& rhs)
@@ -59,7 +60,6 @@ CheckerPiece& CheckerPiece::operator=(const CheckerPiece& rhs)
 };
 void CheckerPiece::Clear()
 {
-	Empty();
 	CCFiniteTimeAction*  empty = CCSequence::create(
 		CCScaleBy::create(0.02,2.0,2.0),
 		CCScaleBy::create(0.03,0.7,0.7),
@@ -75,28 +75,28 @@ void CheckerPiece::Clear()
 
 void CheckerPiece::Explose()
 {
-	Empty();
 	CCFiniteTimeAction*  action = CCSequence::create(
 		CCTintTo::create(0.5, 255, 0, 0),
 		CCFadeOut::create(0.2),
 		CCCallFunc::create(this, callfunc_selector(CheckerPiece::onExplose)),
 		NULL);
-
 	m_sp->runAction(action);
 }
 
 void CheckerPiece::onExplose()
 {
-	m_sp->removeFromParent();
-
+	clearSprite();
+	Empty();
 	m_parent->Explosion(m_grid);
 }
 
 void CheckerPiece::onRemoveSprite()
 {
-	m_sp->removeFromParent();
+	clearSprite();
+	Empty();
 	if(m_parent->hasJackpot(this))
 		m_parent->ApplyJackpot();
+	
 	if(IsBomb())
 	{
 		Explose();
@@ -144,5 +144,12 @@ void CheckerPiece::initJackpot()
 void CheckerPiece::clearJackpot()
 {
 	jackpot_sp->removeFromParent();
+	jackpot_sp=0;
+}
+
+void CheckerPiece::clearSprite()
+{
+	m_sp->removeFromParent();
+	m_sp=0;
 }
 
