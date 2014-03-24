@@ -37,7 +37,7 @@ public:
 	static RegistJackpot* m_##jackpotName##dc ;\
 	static void* createInstance(){return new jackpotName;};\
 
-#define IMPLEMENT_PROP(jackpotName)\
+#define IMPLEMENT_JACKPOT(jackpotName)\
 	RegistJackpot* jackpotName::m_##jackpotName##dc = new RegistJackpot(#jackpotName, jackpotName::createInstance) ;\
 	const char* jackpotName::GetType()\
 	{\

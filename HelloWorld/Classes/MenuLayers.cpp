@@ -720,7 +720,7 @@ void PropsMenuLayer::AddButton(const string propName,const int row, const int co
 																CCMenuItemSprite::create( spriteSelected,spriteSelected,spriteDisabled2),
                                                                 NULL );
 	//CCMenuItemSprite* item = CCMenuItemSprite::create(spriteNormal, spriteSelected, spriteDisabled, this, menu_selector(PropsMenuLayer::selectCallback));
-	sp_Map.insert(make_pair<CCMenuItemToggle*,string>(item,propName));
+	sp_Map.insert(make_pair(item,propName));
 	pMenu->addChild(item);
 	item->setPosition(VisibleRect::center().x+(row-1)*(PROP_SPACE+20),VisibleRect::center().y+(1-column)*(PROP_SPACE+20));
 }

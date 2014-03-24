@@ -107,7 +107,7 @@ private:
 	int m_column;
 	int m_row;
 
-
+	void onRemoveSprite(CCNode* sender);
 
 	int containsTouchColumnLocation(CCTouch* touch);
 	int containsTouchRowLocation(CCTouch* touch);

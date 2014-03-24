@@ -7,9 +7,10 @@
 #include "GameSettingData.h"
 #include <stdio.h>
 #include <vector>
+#include <list>
 
 
-using std::vector;
+using namespace std;
 
 //#define DEBUGVIEW 
 
@@ -36,15 +37,16 @@ public:
 	int getHeight(const int column);
 	void startLink(const Grid element,const bool isBomb);
 	void breakRock(const Grid element);
-	void onRemovedPieces();
+	void onRemovedPieces(const Grid element,bool isBreakRock);
 	void onDropPieces();
 	bool Decline();
 	void KillPieces(vector<Grid>::iterator begin, vector<Grid>::iterator end);
+	void DestoryPieces(vector<Grid>::iterator begin, vector<Grid>::iterator end);
 	void Explosion(const Grid element);
-
+	void removePieces();
 	//jackpot function
 	void setJackpot();
-
+	void clearJackpot();
 	void ApplyJackpot();
 	bool hasJackpot(CheckerPiece *p){return p==jackpot_p;};
 	
@@ -56,7 +58,7 @@ private:
 	CheckerPiece *jackpot_p;
 
 	
-	vector<CheckerPiece*> removeList;
+	list<CheckerPiece*> removeList;
 
 	int m_removedPieces;
 	int m_dropedPieces;
@@ -67,7 +69,7 @@ private:
 	void checkRowPiece(const int row);
 	void arrangePieceColumn(const int column);
 	
-	void removePieces();
+	
 
 	void guideView();
 	vector<Grid> removeGrid;
@@ -75,7 +77,7 @@ private:
 
 	//Jackpot
 	void initJackpot();
-	void clearJackpot();
+	
 	
 	
 

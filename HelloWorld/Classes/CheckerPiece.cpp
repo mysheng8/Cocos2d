@@ -61,9 +61,9 @@ CheckerPiece& CheckerPiece::operator=(const CheckerPiece& rhs)
 void CheckerPiece::Clear()
 {
 	CCFiniteTimeAction*  empty = CCSequence::create(
-		CCScaleBy::create(0.02,2.0,2.0),
-		CCScaleBy::create(0.03,0.7,0.7),
-		CCScaleBy::create(0.6,0.2,0.2),
+		CCScaleBy::create(0.02f,2.0f,2.0f),
+		CCScaleBy::create(0.03f,0.7f,0.7f),
+		CCScaleBy::create(0.6f,0.2f,0.2f),
 		CCCallFunc::create(this, callfunc_selector(CheckerPiece::onRemoveSprite)),
 		NULL);
 	CCAction*  action = CCSpawn::create(
@@ -76,18 +76,38 @@ void CheckerPiece::Clear()
 void CheckerPiece::Explose()
 {
 	CCFiniteTimeAction*  action = CCSequence::create(
-		CCTintTo::create(0.5, 255, 0, 0),
-		CCFadeOut::create(0.2),
+		CCTintTo::create(0.5f, 255.0f, 0.0f, 0.0f),
+		CCFadeOut::create(0.2f),
 		CCCallFunc::create(this, callfunc_selector(CheckerPiece::onExplose)),
 		NULL);
 	m_sp->runAction(action);
 }
+
+void CheckerPiece::Destory()
+{
+	CCFiniteTimeAction*  action = CCSequence::create(
+		CCTintTo::create(0.5f, 255.0f, 0.0f, 0.0f),
+		CCFadeOut::create(0.2f),
+		CCCallFunc::create(this, callfunc_selector(CheckerPiece::onDestory)),
+		NULL);
+	m_sp->runAction(action);
+}
+
 
 void CheckerPiece::onExplose()
 {
 	clearSprite();
 	Empty();
 	m_parent->Explosion(m_grid);
+}
+
+void CheckerPiece::onDestory()
+{
+	clearSprite();
+	Empty();
+	if(m_parent->hasJackpot(this))
+		m_parent->clearJackpot();
+	m_parent->onRemovedPieces(m_grid,false);
 }
 
 void CheckerPiece::onRemoveSprite()
@@ -103,30 +123,34 @@ void CheckerPiece::onRemoveSprite()
 	}
 	else
 	{
-		m_parent->breakRock(m_grid);
-		m_parent->onRemovedPieces();
+		m_parent->onRemovedPieces(m_grid,true);
 	}
 }
 
 void CheckerPiece::Drop(const int dis)
 {
 	float i=dis*VisibleRect::unit();
+	if(m_parent->hasJackpot(this))
+	{
+		CCActionInterval*  jmove = CCMoveBy::create(0.001f, ccp(0,-i));
+		CCActionInterval* jmove_ease_out = CCEaseOut::create((CCActionInterval*)(jmove->copy()->autorelease()) , 0.5f);
+		jackpot_sp->runAction( CCSequence::create(jmove_ease_out,NULL));
+	}
 	CCActionInterval*  move = CCMoveBy::create(0.001f, ccp(0,-i));
 	CCActionInterval* move_ease_out = CCEaseOut::create((CCActionInterval*)(move->copy()->autorelease()) , 0.5f);
 	m_sp->runAction( CCSequence::create(move_ease_out,CCCallFunc::create(this, callfunc_selector(CheckerPiece::onDropSprite)),NULL));
-	if(m_parent->hasJackpot(this))
-		jackpot_sp->runAction( CCSequence::create(move_ease_out,NULL));
-//	m_sp->runAction(move_ease_out);
 }
 
 void CheckerPiece::Rise(const int dis)
 {
 	float i=dis*VisibleRect::unit();
+	if(m_parent->hasJackpot(this))
+	{
+		CCActionInterval*  jmove = CCMoveBy::create(0.001f, ccp(0,i));
+		jackpot_sp->runAction( jmove);
+	}
 	CCActionInterval*  move = CCMoveBy::create(0.001f, ccp(0,i));
 	m_sp->runAction( move);
-	if(m_parent->hasJackpot(this))
-		jackpot_sp->runAction( move);
-//	m_sp->runAction(move_ease_out);
 }
 
 void CheckerPiece::onDropSprite()

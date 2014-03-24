@@ -11,7 +11,7 @@ class Callback
 public:
 	virtual void operator()(){};
 };
-
+/*
 class OnRemoveCallback
 {
 public:
@@ -60,5 +60,5 @@ public:
 private:
 	map<string,Account*> m_accountMap;
 };
-
+*/
 #endif

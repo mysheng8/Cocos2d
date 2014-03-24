@@ -5,6 +5,7 @@
 
 static const char s_pPathCloseNormal[]          = "menuNormal.png";
 static const char s_pPathCloseSelect[]          = "menuSelected.png";
+static const char s_pPathClick[]				= "click.png";
 static const char s_pPathBG[]					= "BG01.png";
 static const char s_pPathMenuBG[]				= "BG02.png";
 static const char s_pPathAnchor[]				= "anchor.png";

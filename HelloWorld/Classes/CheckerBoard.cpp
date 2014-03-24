@@ -126,7 +126,7 @@ void CheckerBoard::checkColumnPiece(const int column)
 		cp=&content[column][n];
 		if(cp->IsNum()&&j == cp->GetNum())
 		{
-			vector<CheckerPiece*>::size_type wc =count(removeList.begin(), removeList.end(), cp); 
+			list<CheckerPiece*>::size_type wc =count(removeList.begin(), removeList.end(), cp); 
 			if(!wc)
 			{
 				removeList.push_back(cp);
@@ -154,7 +154,7 @@ void CheckerBoard::checkRowPiece(const int row)
 				cp=&content[n][row];
 				if(cp->IsNum()&&sum==cp->GetNum())
 				{
-					vector<CheckerPiece*>::size_type wc =count(removeList.begin(), removeList.end(), cp); 
+					list<CheckerPiece*>::size_type wc =count(removeList.begin(), removeList.end(), cp); 
 					if(!wc)
 					{
 						removeList.push_back(cp);
@@ -180,7 +180,7 @@ void CheckerBoard::checkRowPiece(const int row)
 		cp=&content[n][row];
 		if(cp->IsNum()&&sum==cp->GetNum())
 		{
-			vector<CheckerPiece*>::size_type wc =count(removeList.begin(), removeList.end(), cp); 
+			list<CheckerPiece*>::size_type wc =count(removeList.begin(), removeList.end(), cp); 
 			if(!wc)
 			{
 				removeList.push_back(cp);
@@ -194,13 +194,16 @@ void CheckerBoard::checkRowPiece(const int row)
 		m_parent->DrawGuide(Grid(7-sum,row),Grid(6,row));
 }
 
-void CheckerBoard::onRemovedPieces()
+void CheckerBoard::onRemovedPieces(const Grid element,bool isBreakRock)
 {
-	//re-arrange pieces after all the checked pieces removed.
-	++m_removedPieces;	
-	if (m_removedPieces==removeList.size())
+	CheckerPiece* cp=getCheckerPiece(element);
+	list<CheckerPiece*>::iterator it=find(removeList.begin(),removeList.end(),cp);
+	if(it!=removeList.end())
+		removeList.erase(it);
+	if(isBreakRock)
+		breakRock(element);
+	if (removeList.empty())
 	{
-		m_removedPieces=0;
 		unsigned int i(0);
 		m_preDropPieces=0;
 		while(i!=7)
@@ -281,6 +284,8 @@ bool CheckerBoard::Decline()
 			if(!content[i][j+1].IsEmpty())
 			{
 				content[i][j]=content[i][j+1];
+				if(hasJackpot(&content[i][j+1]))
+					jackpot_p=&content[i][j];
 				content[i][j].Rise(-1);
 				content[i][j+1].Empty();
 			}
@@ -313,9 +318,9 @@ void CheckerBoard::arrangePieceColumn(const int column)
 			if(j!=k)
 			{
 				content[column][k]=content[column][j];
+				content[column][j].Drop((j-k));
 				if(hasJackpot(&content[column][j]))
 					jackpot_p=&content[column][k];
-				content[column][j].Drop((j-k));
 				content[column][j].Empty();
 				++m_preDropPieces;
 			}
@@ -349,7 +354,7 @@ void CheckerBoard::startLink(const Grid element,const bool isBomb)
 			m_parent->endLink();
 		else
 		{
-			for(vector<CheckerPiece*>::iterator it=removeList.begin();it!=removeList.end();++it)
+			for(list<CheckerPiece*>::iterator it=removeList.begin();it!=removeList.end();++it)
 			{
 				(*it)->Clear();
 				m_parent->ScoreUp();
@@ -365,7 +370,6 @@ void CheckerBoard::startLink(const Grid element,const bool isBomb)
 
 void CheckerBoard::removePieces()
 {
-	removeList.clear();
 	unsigned int i(0),j(0);
 
 	removeGrid.clear();
@@ -388,7 +392,7 @@ void CheckerBoard::removePieces()
 	if(!removeList.empty())
 	{
 		m_parent->ScoreRiseMulti();
-		for(vector<CheckerPiece*>::iterator it=removeList.begin();it!=removeList.end();++it)
+		for(list<CheckerPiece*>::iterator it=removeList.begin();it!=removeList.end();++it)
 		{
 			(*it)->Clear();
 			m_parent->ScoreUp();
@@ -411,37 +415,50 @@ void CheckerBoard::KillPieces(vector<Grid>::iterator begin, vector<Grid>::iterat
 	{
 		CheckerPiece *cp=getCheckerPiece(*it);
 		if(!cp->IsEmpty())
-			removeList.push_back(cp);
-	}
-	if(!removeList.empty())
-	{
-		for(vector<CheckerPiece*>::iterator it=removeList.begin();it!=removeList.end();++it)
 		{
-			(*it)->Clear();
-			SimpleAudioEngine::sharedEngine()->playEffect(effect[(*it)->GetNum()-1].c_str());
+			removeList.push_back(cp);
+			cp->Clear();
+			SimpleAudioEngine::sharedEngine()->playEffect(effect[(cp)->GetNum()-1].c_str());
 		}
 	}
-
 }
 
 void CheckerBoard::Explosion(const Grid element)
 {
-	
 	//++m_removedPieces;//count +1 for bomb piece removed
-
+	CheckerPiece *cp=getCheckerPiece(element);
+	list<CheckerPiece*>::iterator it=find(removeList.begin(),removeList.end(),cp);
+	if(it!=removeList.end())
+		removeList.erase(it);
 	unsigned int left=(element.x-1<0)?0:(element.x-1);
 	unsigned int right=(element.x+1>6)?6:(element.x+1);
 	unsigned int bottom=(element.y-1<0)?0:(element.y-1);
 	unsigned int top=(element.y+1>6)?6:(element.y+1);
-	vector<Grid> list;
+	vector<Grid> _list;
 	for(unsigned int i=left;i!=right+1;++i)
 	{
 		for(unsigned int j=bottom;j!=top+1;++j)
 		{
-			list.push_back(Grid(i,j));
+			if(Grid(i,j)!=element)
+				_list.push_back(Grid(i,j));
 		}
 	}
-	KillPieces(list.begin(),list.end());
+	DestoryPieces(_list.begin(),_list.end());
+}
+
+void CheckerBoard::DestoryPieces(vector<Grid>::iterator begin, vector<Grid>::iterator end)
+{
+	for(vector<Grid>::iterator it=begin;it!=end;++it)
+	{
+		CheckerPiece *cp=getCheckerPiece(*it);
+
+		if(!cp->IsEmpty())
+		{
+			removeList.push_back(cp);
+			cp->Destory();
+			SimpleAudioEngine::sharedEngine()->playEffect(effect[(cp)->GetNum()-1].c_str());
+		}
+	}
 }
 
 void CheckerBoard::DrawLink(bool horizontal)

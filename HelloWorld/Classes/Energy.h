@@ -1,7 +1,7 @@
 #ifndef __ENERGY_H__
 #define __ENERGY_H__
 
-#include"cocos2d.h";
+#include"cocos2d.h"
 #include"GameSettingData.h"
 
 USING_NS_CC;

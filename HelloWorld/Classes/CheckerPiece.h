@@ -16,7 +16,7 @@ struct Grid
 	};
 	bool operator!=(const Grid &rhs)
 	{
-		return x!=rhs.x&&y!=rhs.y;
+		return x!=rhs.x||y!=rhs.y;
 	};
 };
 
@@ -54,9 +54,11 @@ public:
 	void Rise(const int dis);
 	void Clear();
 	void Explose();
+	void Destory();
 	void onDropSprite();
 	void onRemoveSprite();
 	void onExplose();
+	void onDestory();
 	void AddContent(const int num,const bool isRock,const bool isBomb);
 	void BreakRock();
 	void Empty(){m_type=PieceType(0);m_sp=0;};

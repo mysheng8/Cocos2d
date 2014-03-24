@@ -189,6 +189,8 @@ void GameLayer::startLink(int column,const bool isBomb)
 
 void GameLayer::endLink()
 {
+	if(data->m_level->m_next==0)
+		levelUp();
 	this->setTouchEnabled(true);
 	if(m_preview->NeedReset())
 	{
@@ -207,12 +209,17 @@ void GameLayer::levelUp()
 {
 	if(!m_content->riseUp())
 		gameOver();
+	else
+	{
+		char string[12] = {0};
+		sprintf(string, "Level%d", data->m_level->m_current);
+		m_levelLabel->setString(string);
+		mScore->levelUp();
+		data->m_level=data->m_level->m_nextlevel;
+		m_content->removePieces();
+	}
+		
 
-	char string[12] = {0};
-	sprintf(string, "Level%d", data->m_level->m_current);
-	m_levelLabel->setString(string);
-	mScore->levelUp();
-	data->m_level=data->m_level->m_nextlevel;
 	
 }
 
@@ -234,8 +241,16 @@ void GameLayer::RandomMode()
 	m_preview->RandomMode();
 }
 
+void GameLayer::onRemoveSprite(CCNode* sender)
+{
+	sender->removeFromParent();
+}
+
 bool GameLayer::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)
 {
+
+	
+	
 	if(m_canProp)
 	{
 		if(m_killmode)
@@ -247,8 +262,7 @@ bool GameLayer::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)
 		{
 			if(!canStart())
 				gameOver();
-			if(data->m_level->m_next==0)
-				levelUp();
+
 			m_column=containsTouchColumnLocation(pTouch);
 			if(m_column>=0)
 				m_preview->StartPreview(m_column);
@@ -294,6 +308,15 @@ void GameLayer::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
 			m_dropLabel->setString(string);
 		}
 	}
+	CCSprite *pClick_sp=CCSprite::create(s_pPathClick,CCRectMake(0,0,64,64));
+	pClick_sp->setPosition(pTouch->getLocation());
+	addChild(pClick_sp,20);
+	CCFiniteTimeAction*  empty = CCSequence::create(
+		CCScaleBy::create(0.2f,2.0f,2.0f),
+		CCCallFuncN::create(this, callfuncN_selector(GameLayer::onRemoveSprite)),
+		NULL);
+	CCAction*  action = CCSpawn::create(CCFadeOut::create(0.2f),empty,NULL);
+	pClick_sp->runAction(action);
 	
 }
 

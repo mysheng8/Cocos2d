@@ -29,7 +29,7 @@ JackpotFactory& JackpotFactory::sharedClassFactory()
 	return _sharedClassFactory;
 }
 
-IMPLEMENT_PROP(Jackpot)
+IMPLEMENT_JACKPOT(Jackpot)
 void Jackpot::setGrid( Grid *grid)
 {
 	m_grid = grid;
@@ -52,7 +52,7 @@ bool Jackpot::function()
 	return true;
 }
 
-IMPLEMENT_PROP(LongLiveJackpot)
+IMPLEMENT_JACKPOT(LongLiveJackpot)
 
 bool LongLiveJackpot::function()
 {
@@ -68,7 +68,7 @@ bool LongLiveJackpot::function()
 	return true;
 }
 
-IMPLEMENT_PROP(RockJackpot)
+IMPLEMENT_JACKPOT(RockJackpot)
 
 bool RockJackpot::function()
 {
@@ -81,7 +81,7 @@ bool RockJackpot::function()
 	return true;
 }
 
-IMPLEMENT_PROP(BombJackpot)
+IMPLEMENT_JACKPOT(BombJackpot)
 
 bool BombJackpot::function()
 {
@@ -94,7 +94,7 @@ bool BombJackpot::function()
 	return true;
 }
 
-IMPLEMENT_PROP(DoubleScoreJackpot)
+IMPLEMENT_JACKPOT(DoubleScoreJackpot)
 
 bool DoubleScoreJackpot::function()
 {
@@ -115,7 +115,7 @@ bool DoubleScoreJackpot::function()
 	return true;
 }
 
-IMPLEMENT_PROP(PowerEnergyJackpot)
+IMPLEMENT_JACKPOT(PowerEnergyJackpot)
 
 bool PowerEnergyJackpot::function()
 {
@@ -137,7 +137,7 @@ bool PowerEnergyJackpot::function()
 	return true;
 }
 
-IMPLEMENT_PROP(NoEnergyJackpot)
+IMPLEMENT_JACKPOT(NoEnergyJackpot)
 
 bool NoEnergyJackpot::function()
 {
@@ -160,7 +160,7 @@ bool NoEnergyJackpot::function()
 	return true;
 }
 
-IMPLEMENT_PROP(LevelUpJackpot)
+IMPLEMENT_JACKPOT(LevelUpJackpot)
 
 bool LevelUpJackpot::function()
 {

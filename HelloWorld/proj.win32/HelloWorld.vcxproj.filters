@@ -57,9 +57,6 @@
     <ClCompile Include="..\Classes\Jackpot.cpp">
       <Filter>Classes</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\AccountManager.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -114,9 +111,6 @@
       <Filter>Classes</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\JackpotLayer.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\AccountManager.h">
       <Filter>Classes</Filter>
     </ClInclude>
   </ItemGroup>
