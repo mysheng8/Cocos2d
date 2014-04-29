@@ -10,7 +10,7 @@ using namespace CocosDenshion;
 
 
 
-#define LINE_SPACE          80
+
 #define RANK_SPACE          30
 
 const std::string g_PauseMenu[] = {
@@ -46,7 +46,9 @@ PopoutMenu::PopoutMenu()
     CCSprite* pSprite = CCSprite::create(s_pPathMenuBG);
     pSprite->setPosition(ccp( VisibleRect::center().x,  VisibleRect::center().y ));
     addChild(pSprite, 0);
-	setPosition(0,6*LINE_SPACE);
+	
+	setPosition(0,VisibleRect::height());
+	
 
 }
 PopoutMenu::~PopoutMenu()
@@ -58,14 +60,14 @@ PopoutMenu::~PopoutMenu()
 
 void PopoutMenu::jumpIn()
 {
-	CCActionInterval*  drop = CCMoveBy::create(0.5f, ccp( 0,  -6*LINE_SPACE));
+	CCActionInterval*  drop = CCMoveBy::create(0.5f, ccp( 0,  -1*(VisibleRect::height())));
 	CCActionInterval*  move_ease_in = CCEaseElasticOut::create((CCActionInterval*)(drop->copy()->autorelease()) , 0.5f);
 	runAction(move_ease_in);
 }
 
 void PopoutMenu::jumpOut(CCCallFunc *action)
 {
-	CCActionInterval*  drop = CCMoveBy::create(0.3f, ccp( 0,  6*LINE_SPACE));
+	CCActionInterval*  drop = CCMoveBy::create(0.3f, ccp( 0,  (VisibleRect::height())));
 	CCActionInterval* move_ease_in = CCEaseIn::create((CCActionInterval*)(drop->copy()->autorelease()) , 2.0f);
 	if(!action)
 		runAction(move_ease_in);
@@ -109,21 +111,22 @@ QuitLayer::QuitLayer()
 	m_pMainMenu = CCMenu::create();
 
 	CCLabelBMFont* title = CCLabelBMFont::create(g_quit.c_str(), s_pPathScoreFont);  
-	title->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y -  LINE_SPACE) ));
+	title->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y -  (VisibleRect::lineSpace())) ));
 	addChild(title, 2);
 
 	CCLabelBMFont* oklabel = CCLabelBMFont::create("Yes", s_pPathMenuFont);  
     CCMenuItemLabel* pOkItem = CCMenuItemLabel::create(oklabel, this, menu_selector(QuitLayer::quitCallback));
     m_pMainMenu->addChild(pOkItem, 2);
-    pOkItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 3* LINE_SPACE) ));
+    pOkItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 3* (VisibleRect::lineSpace())) ));
 
 	CCLabelBMFont* nolabel = CCLabelBMFont::create("No", s_pPathMenuFont);  
     CCMenuItemLabel* pNoItem = CCMenuItemLabel::create(nolabel, this, menu_selector(QuitLayer::backCallback));
     m_pMainMenu->addChild(pNoItem, 2);
-    pNoItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 4* LINE_SPACE) ));
-	m_pMainMenu->setContentSize(CCSizeMake(VisibleRect::getVisibleRect().size.width, 2 * (LINE_SPACE)));
+    pNoItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 4* (VisibleRect::lineSpace())) ));
+	m_pMainMenu->setContentSize(CCSizeMake(VisibleRect::getVisibleRect().size.width, 2 * (VisibleRect::lineSpace())));
 	m_pMainMenu->setPosition(CCPointZero);
     addChild(m_pMainMenu,1);
+
 }
 
 QuitLayer::~QuitLayer()
@@ -163,27 +166,27 @@ MenuLayer::MenuLayer()
 	CCLabelBMFont* newlabel = CCLabelBMFont::create(g_PauseMenu[1].c_str(), s_pPathMenuFont);     
     CCMenuItemLabel* pNewItem = CCMenuItemLabel::create(newlabel, this, menu_selector(MenuLayer::restartCallback));
     m_pMainMenu->addChild(pNewItem, 2);
-    pNewItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 2* LINE_SPACE) ));
+    pNewItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 2* (VisibleRect::lineSpace())) ));
 
 	// add menu resume game
 	CCLabelBMFont* resumelabel = CCLabelBMFont::create(g_PauseMenu[0].c_str(), s_pPathMenuFont);     
     CCMenuItemLabel* pResumeItem = CCMenuItemLabel::create(resumelabel, this, menu_selector(MenuLayer::resumeCallback));
     m_pMainMenu->addChild(pResumeItem, 2);
-    pResumeItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 3* LINE_SPACE) ));
+    pResumeItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 3* (VisibleRect::lineSpace())) ));
 
 
 	// add option
 	CCLabelBMFont* oplabel = CCLabelBMFont::create(g_PauseMenu[2].c_str(), s_pPathMenuFont);     
     CCMenuItemLabel* pOptionItem = CCMenuItemLabel::create(oplabel, this, menu_selector(MenuLayer::optionCallback));
     m_pMainMenu->addChild(pOptionItem, 2);
-    pOptionItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 4 * LINE_SPACE) ));
+    pOptionItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 4 * (VisibleRect::lineSpace())) ));
 
 
 	// add menu quit
 	CCLabelBMFont* quitlabel = CCLabelBMFont::create(g_PauseMenu[3].c_str(), s_pPathMenuFont);     
     CCMenuItemLabel* pQuitItem = CCMenuItemLabel::create(quitlabel, this, menu_selector(MenuLayer::quitCallback));
     m_pMainMenu->addChild(pQuitItem, 2);
-    pQuitItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 5 * LINE_SPACE) ));
+    pQuitItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 5 * (VisibleRect::lineSpace())) ));
 
 
 
@@ -249,14 +252,14 @@ MenuLayer::MenuLayer()
 
 
 
-    m_pMainMenu->setContentSize(CCSizeMake(VisibleRect::getVisibleRect().size.width, 5 * (LINE_SPACE)));
+    m_pMainMenu->setContentSize(CCSizeMake(VisibleRect::getVisibleRect().size.width, 5 * (VisibleRect::lineSpace())));
     m_pMainMenu->setPosition(CCPointZero);
     addChild(m_pMainMenu,1);
 	m_pMainMenu->retain();
 
-	
-	    // add "HelloWorld" splash screen"
+
 }
+
 MenuLayer::~MenuLayer()
 {
 	m_pSubMenu->release();
@@ -295,7 +298,7 @@ GameOverLayer::GameOverLayer(GameScene *parent)
 	:pScene(parent)
 {
 	CCLabelBMFont* title = CCLabelBMFont::create("Game Over", s_pPathMenuFont); 
-	title->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 1* LINE_SPACE) ));
+	title->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 1* (VisibleRect::lineSpace())) ));
 	addChild(title, 1);
 
 	if(pScene)
@@ -304,7 +307,7 @@ GameOverLayer::GameOverLayer(GameScene *parent)
 		GameData *data=static_cast<GameData*>(GameSettingData::sharedSettingData().GetData("GameData"));
 		sprintf(string, "Score: %d",data->m_score->m_total);
 		CCLabelBMFont* score = CCLabelBMFont::create(string, s_pPathScoreFont); 
-		score->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 2* LINE_SPACE) ));
+		score->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 2* (VisibleRect::lineSpace())) ));
 		addChild(score, 1);
 	}
 
@@ -314,21 +317,21 @@ GameOverLayer::GameOverLayer(GameScene *parent)
 	CCLabelBMFont* submitlabel = CCLabelBMFont::create(g_GameOverMenu[0].c_str(), s_pPathScoreFont);     
     pSubmitItem = CCMenuItemLabel::create(submitlabel, this, menu_selector(GameOverLayer::submitCallback));
     m_pItemMenu->addChild(pSubmitItem, 2);
-    pSubmitItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 3* LINE_SPACE) ));
+    pSubmitItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 3* (VisibleRect::lineSpace())) ));
 	
 	// add restart game item
 	CCLabelBMFont* newlabel = CCLabelBMFont::create(g_GameOverMenu[1].c_str(), s_pPathScoreFont);     
     CCMenuItemLabel* pNewItem = CCMenuItemLabel::create(newlabel, this, menu_selector(GameOverLayer::restartCallback));
     m_pItemMenu->addChild(pNewItem, 2);
-    pNewItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 4* LINE_SPACE) ));
+    pNewItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 4* (VisibleRect::lineSpace())) ));
 
 	// add back to menu item
 	CCLabelBMFont* quitlabel = CCLabelBMFont::create(g_GameOverMenu[2].c_str(), s_pPathScoreFont);     
     CCMenuItemLabel* pQuitItem = CCMenuItemLabel::create(quitlabel, this, menu_selector(GameOverLayer::quitCallback));
     m_pItemMenu->addChild(pQuitItem, 2);
-    pQuitItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 5 * LINE_SPACE) ));
+    pQuitItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 5 * (VisibleRect::lineSpace())) ));
 
-    m_pItemMenu->setContentSize(CCSizeMake(VisibleRect::getVisibleRect().size.width, 3 * (LINE_SPACE)));
+    m_pItemMenu->setContentSize(CCSizeMake(VisibleRect::getVisibleRect().size.width, 3 * (VisibleRect::lineSpace())));
     m_pItemMenu->setPosition(CCPointZero);
     addChild(m_pItemMenu,1);
 
@@ -364,7 +367,7 @@ InputLayer::InputLayer()
     setTouchEnabled(true);
 
 	CCLabelBMFont* title = CCLabelBMFont::create("Submit your name", s_pPathScoreFont); 
-	title->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 1* LINE_SPACE) ));
+	title->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 1* (VisibleRect::lineSpace())) ));
 	addChild(title, 1);
 
     // add CCTextFieldTTF
@@ -373,7 +376,7 @@ InputLayer::InputLayer()
     CCTextFieldTTF * pTextField = CCTextFieldTTF::textFieldWithPlaceHolder("<click here for input>",
         s_pPathInputFont,
         30);
-	pTextField->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 2* LINE_SPACE) ));
+	pTextField->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 2* (VisibleRect::lineSpace())) ));
     addChild(pTextField,1);
 
     m_pTrackNode = pTextField;
@@ -384,17 +387,18 @@ InputLayer::InputLayer()
 	CCLabelBMFont* submitlabel = CCLabelBMFont::create("back", s_pPathScoreFont);     
     CCMenuItemLabel* pSubmitItem = CCMenuItemLabel::create(submitlabel, this, menu_selector(InputLayer::backCallback));
     pMenu->addChild(pSubmitItem, 4);
-    pSubmitItem->setPosition( ccp( VisibleRect::center().x - LINE_SPACE, (VisibleRect::top().y - 5* LINE_SPACE) ));
+    pSubmitItem->setPosition( ccp( VisibleRect::center().x - (VisibleRect::lineSpace()), (VisibleRect::top().y - 5* (VisibleRect::lineSpace())) ));
 	
 	// add restart game item
 	CCLabelBMFont* newlabel = CCLabelBMFont::create("next", s_pPathScoreFont);     
     CCMenuItemLabel* pNewItem = CCMenuItemLabel::create(newlabel, this, menu_selector(InputLayer::nextCallback));
     pMenu->addChild(pNewItem, 4);
-    pNewItem->setPosition( ccp( VisibleRect::center().x + LINE_SPACE, (VisibleRect::top().y - 5* LINE_SPACE) ));
-	pMenu->setContentSize(CCSizeMake(VisibleRect::getVisibleRect().size.width, 2 * (LINE_SPACE)));
+    pNewItem->setPosition( ccp( VisibleRect::center().x + (VisibleRect::lineSpace()), (VisibleRect::top().y - 5* (VisibleRect::lineSpace())) ));
+	pMenu->setContentSize(CCSizeMake(VisibleRect::getVisibleRect().size.width, 2 * (VisibleRect::lineSpace())));
     pMenu->setPosition(CCPointZero);
 	
 	addChild(pMenu,1);
+
 }
 
 void InputLayer::registerWithTouchDispatcher()
@@ -550,7 +554,7 @@ void RankLayer::onEnter()
 	char string[25] = {0};
 	sprintf(string, "Score Rank");
 	CCLabelBMFont* item = CCLabelBMFont::create(string, s_pPathScoreFont); 
-	item->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 1* LINE_SPACE) ));
+	item->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 1* (VisibleRect::lineSpace())) ));
 	addChild(item, 1);
 
 	unsigned int n(2);
@@ -559,7 +563,7 @@ void RankLayer::onEnter()
 		char string[28] = {0};
 		sprintf(string, "%d.%s   %d",n-1, it->name.c_str(),it->score);
 		CCLabelBMFont* item = CCLabelBMFont::create(string, s_pPathScoreFont); 
-		item->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 1* LINE_SPACE - n* RANK_SPACE) ));
+		item->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 1* (VisibleRect::lineSpace()) - n* RANK_SPACE) ));
 		item->setScale(0.5f);
 		addChild(item, 1);
 		++n;
@@ -575,13 +579,13 @@ void RankLayer::addButtons(bool isGameOver)
 		CCLabelBMFont* submitlabel = CCLabelBMFont::create("back", s_pPathScoreFont);     
 		CCMenuItemLabel* pSubmitItem = CCMenuItemLabel::create(submitlabel, this, menu_selector(RankLayer::backCallback));
 		pMenu->addChild(pSubmitItem, 2);
-		pSubmitItem->setPosition( ccp( VisibleRect::center().x - LINE_SPACE, (VisibleRect::top().y - 5* LINE_SPACE) ));
+		pSubmitItem->setPosition( ccp( VisibleRect::center().x - (VisibleRect::lineSpace()), (VisibleRect::top().y - 5* (VisibleRect::lineSpace())) ));
 	
 		// add next item
 		CCLabelBMFont* newlabel = CCLabelBMFont::create("OK", s_pPathScoreFont);     
 		CCMenuItemLabel* pNewItem = CCMenuItemLabel::create(newlabel, this, menu_selector(RankLayer::nextCallback));
 		pMenu->addChild(pNewItem, 2);
-		pNewItem->setPosition( ccp( VisibleRect::center().x + LINE_SPACE, (VisibleRect::top().y - 5* LINE_SPACE) ));
+		pNewItem->setPosition( ccp( VisibleRect::center().x + (VisibleRect::lineSpace()), (VisibleRect::top().y - 5* (VisibleRect::lineSpace())) ));
 	}
 	else
 	{
@@ -589,9 +593,9 @@ void RankLayer::addButtons(bool isGameOver)
 		CCLabelBMFont* submitlabel = CCLabelBMFont::create("back", s_pPathScoreFont);     
 		CCMenuItemLabel* pSubmitItem = CCMenuItemLabel::create(submitlabel, this, menu_selector(RankLayer::quitCallback));
 		pMenu->addChild(pSubmitItem, 2);
-		pSubmitItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 5* LINE_SPACE) ));
+		pSubmitItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 5* (VisibleRect::lineSpace())) ));
 	}
-	pMenu->setContentSize(CCSizeMake(VisibleRect::getVisibleRect().size.width, 2 * (LINE_SPACE)));
+	pMenu->setContentSize(CCSizeMake(VisibleRect::getVisibleRect().size.width, 2 * (VisibleRect::lineSpace())));
     pMenu->setPosition(CCPointZero);
 
 	addChild(pMenu);
@@ -692,13 +696,14 @@ PropsMenuLayer::PropsMenuLayer()
 	char string[25] = {0};
 	sprintf(string, "Select Items");
 	CCLabelBMFont* item = CCLabelBMFont::create(string, s_pPathScoreFont); 
-	item->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 1* LINE_SPACE) ));
+	item->setPosition( ccp( VisibleRect::center().x, (VisibleRect::top().y - 1* (VisibleRect::lineSpace())) ));
 	addChild(item, 1);
 
 	CCLabelBMFont* submitlabel = CCLabelBMFont::create("Done", s_pPathScoreFont);     
 	CCMenuItemLabel* pSubmitItem = CCMenuItemLabel::create(submitlabel, this, menu_selector(PropsMenuLayer::startGameCallback));
 	pMenu->addChild(pSubmitItem, 2);
-	pSubmitItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::bottom().y + LINE_SPACE) ));
+	pSubmitItem->setPosition( ccp( VisibleRect::center().x, (VisibleRect::bottom().y + (VisibleRect::lineSpace())) ));
+
 }
 
 PropsMenuLayer::~PropsMenuLayer()

@@ -8,6 +8,7 @@ class VisibleRect
 {
 public:
     static CCRect getVisibleRect();
+	static float layerScale();
 
     static CCPoint left();
     static CCPoint right();
@@ -22,12 +23,14 @@ public:
 	static float width();
 	static float height();
 	static float unit();
+	static float lineSpace();
 	static CCPoint origin();
 	static CCPoint propOrigin();
 	static CCPoint propUnit();
 private:
     static void lazyInit();
     static CCRect s_visibleRect;
+	static CCRect s_sourceRect;
 };
 
 #endif /* __VISIBLERECT_H__ */

@@ -26,7 +26,7 @@ GameSettingData& GameSettingData::sharedSettingData()
 
 void GameSettingData::DelData(string name)
 {
-	map<string,EntityData*>::const_iterator iter;
+	map<string,EntityData*>::iterator iter;
 	iter=m_settings.find(name);
 	if(iter==m_settings.end())
 		return;

@@ -16,7 +16,10 @@ public:
     void closeCallback(CCObject * pSender);
 	void startGame(CCObject * pSender);
 	void rankCallback(CCObject * pSender);
-	
+
+	//Android function
+	virtual void keyBackClicked();
+
 
 private:
 	CCMenu* m_pItemMenu;

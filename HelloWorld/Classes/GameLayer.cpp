@@ -40,12 +40,11 @@ void GameLayer::restart()
 bool GameLayer::initilizeGame()
 {
 	data=static_cast<GameData*>(GameSettingData::sharedSettingData().GetData("GameData"));
-//	m_nextNum			=	0;
-//	m_nextIsRock		=	false;
 	m_column			=	-1;
 	m_canProp			=	true;
 	m_killmode			=	false;
-	
+	m_ClickSprite		=	0;
+
 	m_preview = new CheckerPreview(this);
 	m_content = new CheckerBoard(this);
 	resetNext();
@@ -101,7 +100,7 @@ int GameLayer::containsTouchColumnLocation(CCTouch* touch)
 	for ( int i=0;i!=7;++i)
 	{
 		CCRect rect=CCRectMake(VisibleRect::unit()*i+VisibleRect::origin().x, VisibleRect::origin().y, VisibleRect::unit(), VisibleRect::unit()*8);
-		if (rect.containsPoint(touch->getLocation()))
+		if (rect.containsPoint(touch->getLocation()/VisibleRect::layerScale()))
 		{
 			return i;
 		}
@@ -114,7 +113,7 @@ int GameLayer::containsTouchRowLocation(CCTouch* touch)
 	for ( int i=0;i!=7;++i)
 	{
 		CCRect rect=CCRectMake(VisibleRect::origin().x, VisibleRect::unit()*i+VisibleRect::origin().y, VisibleRect::unit()*7, VisibleRect::unit());
-		if (rect.containsPoint(touch->getLocation()))
+		if (rect.containsPoint(touch->getLocation()/VisibleRect::layerScale()))
 		{
 			return i;
 		}
@@ -248,7 +247,15 @@ void GameLayer::onRemoveSprite(CCNode* sender)
 
 bool GameLayer::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)
 {
-
+	CCSprite *pClick_sp=CCSprite::create(s_pPathClick,CCRectMake(0,0,64,64));
+	pClick_sp->setPosition(pTouch->getLocation()/VisibleRect::layerScale());
+	addChild(pClick_sp,20);
+	CCFiniteTimeAction*  empty = CCSequence::create(
+		CCScaleBy::create(0.1f,2.0f,2.0f),
+		CCCallFuncN::create(this, callfuncN_selector(GameLayer::onRemoveSprite)),
+		NULL);
+	CCAction*  action = CCSpawn::create(CCFadeOut::create(0.1f),empty,NULL);
+	pClick_sp->runAction(action);
 	
 	
 	if(m_canProp)
@@ -265,7 +272,10 @@ bool GameLayer::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)
 
 			m_column=containsTouchColumnLocation(pTouch);
 			if(m_column>=0)
+			{
 				m_preview->StartPreview(m_column);
+				m_ClickSprite=DrawRect(Grid(m_column,0),Grid(m_column,6));
+			}
 			m_canProp=false;
 		}
 	}
@@ -280,9 +290,16 @@ void GameLayer::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent)
 		m_row=containsTouchRowLocation(pTouch);
 	}
 	else{
-	m_column=containsTouchColumnLocation(pTouch);
-	if(m_column>=0)
-		m_preview->EditPreview(m_column);
+		int col=containsTouchColumnLocation(pTouch);
+		if(col>=0&&m_column!=col)
+		{
+			m_column=col;
+			m_preview->EditPreview(m_column);
+			if(m_ClickSprite!=0)
+				m_ClickSprite->removeFromParent();
+			m_ClickSprite=DrawRect(Grid(m_column,0),Grid(m_column,6));
+			
+		}
 	}
 }
 
@@ -299,6 +316,8 @@ void GameLayer::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
 	{
 		if (m_column>=0)
 		{
+			m_ClickSprite->removeFromParent();
+			m_ClickSprite=0;
 			m_preview->EndPreview(m_column);
 			if(m_content->getHeight(m_column)!=7)
 				this->setTouchEnabled(false);
@@ -308,15 +327,7 @@ void GameLayer::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
 			m_dropLabel->setString(string);
 		}
 	}
-	CCSprite *pClick_sp=CCSprite::create(s_pPathClick,CCRectMake(0,0,64,64));
-	pClick_sp->setPosition(pTouch->getLocation());
-	addChild(pClick_sp,20);
-	CCFiniteTimeAction*  empty = CCSequence::create(
-		CCScaleBy::create(0.2f,2.0f,2.0f),
-		CCCallFuncN::create(this, callfuncN_selector(GameLayer::onRemoveSprite)),
-		NULL);
-	CCAction*  action = CCSpawn::create(CCFadeOut::create(0.2f),empty,NULL);
-	pClick_sp->runAction(action);
+
 	
 }
 
@@ -339,7 +350,7 @@ CCSprite* GameLayer::DrawPiece(const Grid element,const int num,const int rock,c
 	pSprite->setScale(0.99f);
 	pSprite->setPosition(ccp(VisibleRect::unit()*element.x+0.5*VisibleRect::unit()+VisibleRect::origin().x, VisibleRect::unit()*element.y+0.5*VisibleRect::unit() +VisibleRect::origin().y));
 	//pSprite->autorelease();
-	addChild(pSprite,10);
+	addChild(pSprite,6);
 	return pSprite;
 }
 
@@ -361,7 +372,7 @@ void GameLayer::DrawBoard()
     addChild(pSprite, 0);
 }
 
-void GameLayer::DrawGuide(const Grid start,const Grid end)
+CCDrawNode* GameLayer::DrawRect(const Grid start,const Grid end)
 {
 	CCDrawNode *draw = CCDrawNode::create();
 	addChild(draw,12);
@@ -373,9 +384,16 @@ void GameLayer::DrawGuide(const Grid start,const Grid end)
 						CCPoint(VisibleRect::unit()*(end.x+1)+VisibleRect::origin().x, VisibleRect::unit()*(end.y+1)+VisibleRect::origin().y),
 						CCPoint(VisibleRect::unit()*start.x+VisibleRect::origin().x, VisibleRect::unit()*(end.y+1)+VisibleRect::origin().y)};
 	draw->drawPolygon(points,4,ccc4f(1,1,1,0.5f), 0, ccc4f(0,0,0,0));
-	
+	return draw;
+
+}
+
+void GameLayer::DrawGuide(const Grid start,const Grid end)
+{
+	CCDrawNode *draw=DrawRect(start,end);
 	CCFiniteTimeAction*  fadeOut = CCSequence::create(
-		CCFadeOut::create(0.3),
+		CCDelayTime::create(0.4f),
+		CCFadeOut::create(0.1f),
 		CCCallFuncN::create(this, callfuncN_selector(GameLayer::onDrawGuide)),
         NULL);
 	draw->runAction(fadeOut);

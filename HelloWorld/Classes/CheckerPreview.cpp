@@ -7,7 +7,7 @@ USING_NS_CC;
 using namespace CocosDenshion;
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-
+const char s_pClick[] = "audio/click.wav";
 #else
 const char s_pClick[] = "audio/click.wav";
 #endif

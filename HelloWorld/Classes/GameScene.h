@@ -60,6 +60,9 @@ public:
 
 	void randomJackpot();
 
+	//Android function
+	virtual void keyMenuClicked();
+
 };
 
 

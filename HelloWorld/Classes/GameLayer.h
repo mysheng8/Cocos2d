@@ -54,6 +54,7 @@ public:
 
 	//Draw UI
 	CCSprite* DrawPiece(const Grid element,const int num,const int rock,const bool isBomb);
+	CCDrawNode* DrawRect(const Grid start,const Grid end);
 	void DrawGuide(const Grid start,const Grid end);
 	void DrawLink(const Grid *elements, const int count,bool horizontal);
 	CCSprite* DrawJackpot(const Grid grid);// draw jackpot
@@ -99,6 +100,7 @@ private:
 	bool m_killmode;
 	CCLabelBMFont* m_levelLabel;
 	CCLabelBMFont* m_dropLabel;
+	CCDrawNode* m_ClickSprite;
 
 //	int m_nextNum;// the number of next ball
 //	bool m_nextIsRock;// if the next ball is a rock

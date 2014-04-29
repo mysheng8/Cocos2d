@@ -6,6 +6,16 @@
 	</projects>
 	<buildSpec>
 		<buildCommand>
+			<name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
+			<triggers>full,incremental,</triggers>
+			<arguments>
+				<dictionary>
+					<key>LaunchConfigHandle</key>
+					<value>&lt;project&gt;/.externalToolBuilders/Native_Builder.launch</value>
+				</dictionary>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
 			<name>com.android.ide.eclipse.adt.ResourceManagerBuilder</name>
 			<arguments>
 			</arguments>
@@ -102,7 +112,7 @@
 		<link>
 			<name>Classes</name>
 			<type>2</type>
-			<location>COCOS2DX/projects/HelloWorld/Classes</location>
+			<locationURI>COCOS2DX/projects/HelloWorld/Classes</locationURI>
 		</link>
 		<link>
 			<name>cocos2dx</name>
@@ -112,7 +122,7 @@
 		<link>
 			<name>extensions</name>
 			<type>2</type>
-			<location>COCOS2DX/extensions</location>
+			<locationURI>COCOS2DX/extensions</locationURI>
 		</link>
 		<link>
 			<name>scripting</name>

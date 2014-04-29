@@ -8,15 +8,31 @@ USING_NS_CC;
 using namespace CocosDenshion;
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 	const std::string effect[] = {
-		"audio/1.ogg",
-		"audio/2.ogg",
-		"audio/3.ogg",
-		"audio/4.ogg",
-		"audio/5.ogg",
-		"audio/6.ogg",
-		"audio/7.ogg"
-
+		"audio/1.wav",
+		"audio/2.wav",
+		"audio/3.wav",
+		"audio/4.wav",
+		"audio/5.wav",
+		"audio/6.wav",
+		"audio/7.wav",
+		"audio/8.wav",
+		"audio/9.wav",
+		"audio/10.wav",
+		"audio/11.wav",
+		"audio/12.wav",
+		"audio/13.wav",
+		"audio/14.wav",
+		"audio/15.wav",
+		"audio/16.wav",
+		"audio/17.wav",
+		"audio/18.wav",
+		"audio/19.wav",
 	};
+
+	const char s_pRemove[] = "audio/remove.wav";
+	const char s_pBreak[] = "audio/break.wav";
+
+	
 #else
 	const std::string effect[] = {
 		"audio/1.wav",
@@ -536,7 +552,8 @@ void CheckerBoard::ApplyJackpot()
 	if(data->m_jackpotRuntime->hasJackpot)
 	{
 		Jackpot *j=static_cast<Jackpot*>(JackpotFactory::sharedClassFactory().GetJackpotByName(data->m_jackpotRuntime->m_jackpot->m_name));
-		j->setGrid(&(jackpot_p->GetGrid()));
+		Grid g=jackpot_p->GetGrid();
+		j->setGrid(&g);
 		j->function();
 		GameScene::sharedGameScene().randomJackpot();
 		//clear jackpot

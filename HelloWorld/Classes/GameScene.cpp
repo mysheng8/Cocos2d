@@ -20,6 +20,8 @@ GameScene::GameScene()
 	pCloseItem->setPosition(ccp( VisibleRect::right().x -40, VisibleRect::top().y - 40));
     pMenu->setPosition( CCPointZero );
 	addChild(pMenu, 1);
+	setAnchorPoint(ccp(0,0));
+	setScale(VisibleRect::layerScale());
 }
 
 GameScene& GameScene::sharedGameScene()
@@ -241,5 +243,16 @@ vector<JackpotData*>::iterator RandomJackpot::getRandomJackpot(vector<JackpotDat
 		++it;
 	}
 	return it;
+}
+
+void GameScene::keyMenuClicked()
+{
+	if(menuLayer==NULL)
+	{
+		menuLayer = new MenuLayer();
+		addChild(menuLayer,1);
+		menuLayer->release();
+		menuLayer->jumpIn();
+	}
 }
 

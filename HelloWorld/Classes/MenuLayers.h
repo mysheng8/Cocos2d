@@ -96,6 +96,7 @@ public:
 	void backCallback(CCObject * pSender);
 	void nextCallback(CCObject * pSender);
 
+
 protected:
     CCNode * m_pTrackNode;
     CCPoint  m_beginPos;
