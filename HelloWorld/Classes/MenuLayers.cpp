@@ -47,7 +47,7 @@ PopoutMenu::PopoutMenu()
     pSprite->setPosition(ccp( VisibleRect::center().x,  VisibleRect::center().y ));
     addChild(pSprite, 0);
 	
-	setPosition(0,VisibleRect::height());
+	setPosition(0,1.5*VisibleRect::height());
 	
 
 }
@@ -60,14 +60,14 @@ PopoutMenu::~PopoutMenu()
 
 void PopoutMenu::jumpIn()
 {
-	CCActionInterval*  drop = CCMoveBy::create(0.5f, ccp( 0,  -1*(VisibleRect::height())));
+	CCActionInterval*  drop = CCMoveBy::create(0.5f, ccp( 0,  -1.5*(VisibleRect::height())));
 	CCActionInterval*  move_ease_in = CCEaseElasticOut::create((CCActionInterval*)(drop->copy()->autorelease()) , 0.5f);
 	runAction(move_ease_in);
 }
 
 void PopoutMenu::jumpOut(CCCallFunc *action)
 {
-	CCActionInterval*  drop = CCMoveBy::create(0.3f, ccp( 0,  (VisibleRect::height())));
+	CCActionInterval*  drop = CCMoveBy::create(0.3f, ccp( 0, 1.5*(VisibleRect::height())));
 	CCActionInterval* move_ease_in = CCEaseIn::create((CCActionInterval*)(drop->copy()->autorelease()) , 2.0f);
 	if(!action)
 		runAction(move_ease_in);
